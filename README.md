@@ -114,26 +114,56 @@ O EduScience será organizado em três componentes principais:
 ```text
 eduscience/
 ├── frontend/
-│   ├── index.html
+│   ├── index.html                    # Redireciona para /pages/landing.html
 │   ├── pages/
+│   │   ├── landing.html              # Landing Page com carrossel de kits
+│   │   ├── login.html                # Form de login autenticado via API
+│   │   └── carrinho.html             # Interface do carrinho
 │   ├── css/
+│   │   ├── global.css                # :root com a paleta Gestalt e estilos base
+│   │   ├── landing.css
+│   │   ├── login.css
+│   │   └── carrinho.css
 │   ├── js/
+│   │   ├── api.js                    # Fetch/Axios centralizado para comunicação com a API
+│   │   ├── landing.js                # Lógica do carrossel em JS puro
+│   │   ├── login.js                  # Integração POST /api/login
+│   │   └── carrinho.js               # Adicionar, alterar quantidade, remover itens
 │   └── assets/
+│       ├── images/                   # Fotos dos kits de Química e Física
+│       └── icons/
 │
 ├── backend/
 │   ├── src/
 │   │   ├── config/
-│   │   ├── models/
+│   │   │   └── database.js           # Pool de conexões MariaDB
 │   │   ├── controllers/
+│   │   │   ├── authController.js     # Login / Autenticação
+│   │   │   ├── produtoController.js  # Catalogo / Kits
+│   │   │   └── carrinhoController.js # Operações do carrinho
+│   │   ├── models/
+│   │   │   ├── clienteModel.js
+│   │   │   ├── produtoModel.js
+│   │   │   └── carrinhoModel.js
 │   │   ├── routes/
+│   │   │   ├── authRoutes.js
+│   │   │   ├── produtoRoutes.js
+│   │   │   └── carrinhoRoutes.js
 │   │   ├── middlewares/
-│   │   └── app.js
+│   │   │   └── authMiddleware.js    
+│   │   └── app.js                    
 │   ├── .env.example
+│   ├── .env                         
 │   └── package.json
 │
 ├── database/
 │   ├── scripts/
+│   │   ├── schema.sql               
+│   │   ├── seeds.sql                 
+│   │   └── queries.sql               
 │   └── diagrams/
+│       ├── der_eduscience.puml
+│       └── mer_eduscience.puml
 │
 ├── docs/
 ├── .gitignore
