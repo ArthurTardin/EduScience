@@ -1,6 +1,6 @@
 @startuml DER_EduScience
 
-title Diagrama de Entidade-Relacionamento (DER) - EduScience
+title Diagrama Entidade-Relacionamento (DER/MER) - EduScience
 
 hide circle
 skinparam linetype ortho
@@ -18,15 +18,15 @@ skinparam NoteBackgroundColor #FEFECE
 entity "CLIENTE" as cliente {
   * id_cliente : INT <<PK>>
   --
-  * nome : VARCHAR(150)
+  * nome_escola : VARCHAR(150)
   * cnpj_cpf : VARCHAR(18)
   * email : VARCHAR(100)
   * telefone : VARCHAR(20)
   * data_cadastro : DATETIME
 }
 
-entity "ENDERECO" as endereco {
-  * id_endereco : INT <<PK>>
+entity "CADASTRO" as cadastro {
+  * id_cadastro : INT <<PK>>
   --
   * id_cliente : INT <<FK>>
   * logradouro : VARCHAR(255)
@@ -48,8 +48,8 @@ entity "LOGIN" as login {
   * ativo : BOOLEAN
 }
 
-entity "CONTATO_SUPORTE" as contato {
-  * id_contato : INT <<PK>>
+entity "CONSULTA" as consulta {
+  * id_consulta : INT <<PK>>
   --
   * id_cliente : INT <<FK>>
   * assunto : VARCHAR(100)
@@ -70,37 +70,30 @@ entity "PRODUTO" as produto {
   * ativo : BOOLEAN
 }
 
-entity "CARRINHO" as carrinho {
+entity "CARRINHO_DE_COMPRA" as carrinho_de_compra {
   * id_carrinho : INT <<PK>>
   --
   * id_cliente : INT <<FK>>
-  * data_criacao : DATETIME
-}
-
-entity "ITEM_CARRINHO" as item_carrinho {
-  * id_item_carrinho : INT <<PK>>
-  --
-  * id_carrinho : INT <<FK>>
   * id_produto : INT <<FK>>
   * quantidade : INT
-  * data_adicao : DATETIME
+  * data_atualizacao : DATETIME
 }
 
-entity "PEDIDO" as pedido {
-  * id_pedido : INT <<PK>>
+entity "COMPRA" as compra {
+  * id_compra : INT <<PK>>
   --
   * id_cliente : INT <<FK>>
-  * data_pedido : DATETIME
+  * data_compra : DATETIME
   * valor_frete : DECIMAL(10,2)
   * valor_total : DECIMAL(10,2)
   * status_pedido : VARCHAR(50)
   * metodo_pagamento : VARCHAR(50)
 }
 
-entity "ITEM_PEDIDO" as item_pedido {
-  * id_item_pedido : INT <<PK>>
+entity "VENDA" as venda {
+  * id_venda : INT <<PK>>
   --
-  * id_pedido : INT <<FK>>
+  * id_compra : INT <<FK>>
   * id_produto : INT <<FK>>
   * quantidade : INT
   * preco_unitario : DECIMAL(10,2)
@@ -110,7 +103,7 @@ entity "ITEM_PEDIDO" as item_pedido {
 entity "NOTA_FISCAL" as nota_fiscal {
   * id_nota_fiscal : INT <<PK>>
   --
-  * id_pedido : INT <<FK>>
+  * id_compra : INT <<FK>>
   * numero_nf : VARCHAR(50)
   * serie : VARCHAR(10)
   * chave_acesso : VARCHAR(44)
@@ -118,21 +111,27 @@ entity "NOTA_FISCAL" as nota_fiscal {
     xml_url : VARCHAR(255)
 }
 
-' Relacionamentos Cliente
-cliente ||--o{ endereco : possui (1..N)
-cliente ||--|| login : autentica (1..1)
-cliente ||--o{ contato : solicita (1..N)
-cliente ||--|| carrinho : mantem (1..1)
-cliente ||--o{ pedido : realiza (1..N)
+cliente -down-> cadastro
+cliente -down-> login
+cliente -down-> consulta
+cliente -right-> carrinho_de_compra
+cliente -right-> compra
 
-' Relacionamentos Carrinho
-carrinho ||--o{ item_carrinho : contem (1..N)
-produto ||--o{ item_carrinho : adicionado_em (0..N)
+carrinho_de_compra -down-> produto
+compra -down-> venda
+compra -right-> nota_fiscal
+venda -left-> produto
 
-' Relacionamentos Pedido (Antiga Compra/Venda)
-pedido ||--|{ item_pedido : composto_por (1..N)
-produto ||--o{ item_pedido : faturado_em (0..N)
-pedido ||--o| nota_fiscal : gera (0..1)
+cliente ||--|| cadastro : possui
+cliente ||--|| login : autentica
+cliente ||--o{ consulta : realiza
+cliente ||--o{ carrinho_de_compra : mantem
+cliente ||--o{ compra : realiza
+
+produto ||--o{ carrinho_de_compra : adicionado_em
+compra ||--|{ venda : contem
+produto ||--o{ venda : faturado_em
+compra ||--o| nota_fiscal : gera
 
 legend bottom
   |= Símbolo |= Significado |
@@ -140,9 +139,9 @@ legend bottom
   | PK | Chave Primária |
   | FK | Chave Estrangeira |
   | ||--|| | Relacionamento 1 para 1 |
-  | ||--o\| | Relacionamento 1 para 0..1 |
+  | ||--o| | Relacionamento 1 para 0..1 |
   | ||--o{ | Relacionamento 1 para 0..N |
-  | ||--\|{ | Relacionamento 1 para 1..N |
+  | ||--|{ | Relacionamento 1 para 1..N |
 endlegend
 
 @enduml
