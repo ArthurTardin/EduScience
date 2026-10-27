@@ -1,0 +1,101 @@
+@startuml DER_EduScience
+
+hide circle
+skinparam linetype ortho
+
+entity "CLIENTE" as cliente {
+  * id_cliente : INT <<PK>>
+  --
+  nome_escola : VARCHAR
+  cnpj_cpf : VARCHAR
+  email : VARCHAR
+  telefone : VARCHAR
+}
+
+entity "CADASTRO" as cadastro {
+  * id_cadastro : INT <<PK>>
+  --
+  * id_cliente : INT <<FK>>
+  logradouro : VARCHAR
+  cidade : VARCHAR
+  estado : VARCHAR
+  cep : VARCHAR
+}
+
+entity "LOGIN" as login {
+  * id_login : INT <<PK>>
+  --
+  * id_cliente : INT <<FK>>
+  usuario : VARCHAR
+  senha_hash : VARCHAR
+  ultimo_acesso : DATETIME
+}
+
+entity "CONSULTA" as consulta {
+  * id_consulta : INT <<PK>>
+  --
+  * id_cliente : INT <<FK>>
+  assunto : VARCHAR
+  mensagem : TEXT
+  data_envio : DATETIME
+}
+
+entity "PRODUTO" as produto {
+  * id_produto : INT <<PK>>
+  --
+  nome_kit : VARCHAR
+  categoria : VARCHAR
+  preco : DECIMAL
+  estoque : INT
+}
+
+entity "CARRINHO_DE_COMPRA" as carrinho {
+  * id_carrinho : INT <<PK>>
+  --
+  * id_cliente : INT <<FK>>
+  * id_produto : INT <<FK>>
+  quantidade : INT
+  data_atualizacao : DATETIME
+}
+
+entity "COMPRA" as compra {
+  * id_compra : INT <<PK>>
+  --
+  * id_cliente : INT <<FK>>
+  data_compra : DATETIME
+  valor_total : DECIMAL
+  status_pedido : VARCHAR
+}
+
+entity "VENDA" as venda {
+  * id_venda : INT <<PK>>
+  --
+  * id_compra : INT <<FK>>
+  * id_produto : INT <<FK>>
+  quantidade : INT
+  preco_unitario : DECIMAL
+}
+
+entity "NOTA_FISCAL" as nota_fiscal {
+  * id_nota_fiscal : INT <<PK>>
+  --
+  * id_compra : INT <<FK>>
+  numero_nf : VARCHAR
+  chave_acesso : VARCHAR
+  data_emissao : DATETIME
+}
+
+' Relacionamentos
+cliente ||--o| cadastro
+cliente ||--o| login
+cliente ||--o{ consulta
+cliente ||--o{ compra
+cliente ||--o{ carrinho
+
+compra ||--|| nota_fiscal
+compra ||--|{ venda
+
+produto ||--o{ carrinho
+produto ||--o{ venda
+
+@enduml
