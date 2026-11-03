@@ -1,6 +1,7 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { buscarPorLogin } from '../models/clienteModel.js';
+import jwtSecret from '../config/jwt.js';
 
 export async function login(req, res) {
     try {
@@ -29,14 +30,13 @@ export async function login(req, res) {
         }
 
         // Geração do Token JWT (Validade de 8 horas)
-        const secret = process.env.JWT_SECRET || 'eduscience_chave_secreta_super_segura_2026';
         const token = jwt.sign(
             { 
                 id_cliente: conta.id_cliente,
                 usuario: conta.usuario,
                 email: conta.email 
             },
-            secret,
+            jwtSecret,
             { expiresIn: '8h' }
         );
 

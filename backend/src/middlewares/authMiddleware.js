@@ -1,4 +1,5 @@
 import jwt from 'jsonwebtoken';
+import jwtSecret from '../config/jwt.js';
 
 export function autenticarToken(req, res, next) {
     const authHeader = req.headers['authorization'];
@@ -11,8 +12,7 @@ export function autenticarToken(req, res, next) {
     }
 
     try {
-        const secret = process.env.JWT_SECRET || 'eduscience_chave_secreta_super_segura_2026';
-        const usuarioDecodificado = jwt.verify(token, secret);
+        const usuarioDecodificado = jwt.verify(token, jwtSecret);
 
         req.usuario = usuarioDecodificado;
         return next();

@@ -17,6 +17,12 @@ http:
         "senha": "123456"
       }
   auth: inherit
+  script:
+    post-response: |
+      const body = res.getBody();
+      if (body?.token) {
+        bru.setVar("token", body.token);
+      }
 
 settings:
   encodeUrl: true

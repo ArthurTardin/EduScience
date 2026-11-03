@@ -2,6 +2,9 @@ CREATE DATABASE IF NOT EXISTS projeto_integrador CHARACTER SET utf8mb4 COLLATE u
 
 USE projeto_integrador;
 
+-- IMPORTANTE: este script cria a estrutura para ambientes novos.
+-- Em bancos já existentes, execute os comandos de migração abaixo para alinhar constraints adicionadas.
+
 CREATE TABLE IF NOT EXISTS cliente (
     id_cliente INT AUTO_INCREMENT PRIMARY KEY,
     nome_escola VARCHAR(150) NOT NULL,
@@ -65,6 +68,25 @@ CREATE TABLE IF NOT EXISTS carrinho_de_compra (
     CONSTRAINT fk_carrinho_cliente FOREIGN KEY (id_cliente) REFERENCES cliente(id_cliente) ON DELETE CASCADE ON UPDATE CASCADE,
     CONSTRAINT fk_carrinho_produto FOREIGN KEY (id_produto) REFERENCES produto(id_produto) ON DELETE CASCADE ON UPDATE CASCADE
 );
+
+SET @uk_cliente_produto_existe := (
+    SELECT COUNT(*)
+    FROM information_schema.table_constraints
+    WHERE constraint_schema = DATABASE()
+      AND table_name = 'carrinho_de_compra'
+      AND constraint_name = 'uk_cliente_produto'
+      AND constraint_type = 'UNIQUE'
+);
+
+SET @uk_cliente_produto_sql := IF(
+    @uk_cliente_produto_existe = 0,
+    'ALTER TABLE carrinho_de_compra ADD CONSTRAINT uk_cliente_produto UNIQUE (id_cliente, id_produto)',
+    'SELECT 1'
+);
+
+PREPARE uk_cliente_produto_stmt FROM @uk_cliente_produto_sql;
+EXECUTE uk_cliente_produto_stmt;
+DEALLOCATE PREPARE uk_cliente_produto_stmt;
 
 CREATE TABLE IF NOT EXISTS compra (
     id_compra INT AUTO_INCREMENT PRIMARY KEY,

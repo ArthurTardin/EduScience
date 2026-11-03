@@ -10,3 +10,6 @@ INSERT INTO produto (sku, nome_kit, descricao, categoria, preco, estoque) VALUES
 
 INSERT INTO cliente (nome_escola, cnpj_cpf, email, telefone) VALUES
 ('Colégio Exemplo de Ensino', '12.345.678/0001-90', 'contato@colegioexemplo.com.br', '(11) 98765-4321');
+
+INSERT INTO login (id_cliente, usuario, senha_hash, ativo) VALUES
+(1, 'admin', '$2b$10$TfbquDhONkJFxW36UYR9V.ZihbCBApkezIzBCsJF3JPIOxy6S7Dle', TRUE);
