@@ -1,4 +1,3 @@
-
 import { login } from "./api.js";
 
 const form = document.querySelector("#login-form");
@@ -9,7 +8,6 @@ const submitButton = document.querySelector("#submit-button");
 const msgErro = document.querySelector("#mensagem-erro");
 const statusMessage = document.querySelector("#status-message");
 
-// Mostrar e ocultar senha
 if (passwordToggle && passwordInput) {
     passwordToggle.addEventListener("click", () => {
         const mostrarSenha = passwordInput.type === "password";
@@ -24,7 +22,6 @@ if (passwordToggle && passwordInput) {
     });
 }
 
-// Fazer login
 form.addEventListener("submit", async (event) => {
     event.preventDefault();
 
@@ -50,10 +47,16 @@ form.addEventListener("submit", async (event) => {
     try {
         const dadosUsuario = await login(usuario, senha);
 
-        localStorage.setItem(
-            "usuario_eduscience",
-            JSON.stringify(dadosUsuario.usuario)
-        );
+        if (dadosUsuario.token) {
+            localStorage.setItem("@EduScience:token", dadosUsuario.token);
+        }
+        
+        if (dadosUsuario.usuario) {
+            localStorage.setItem(
+                "@EduScience:user",
+                JSON.stringify(dadosUsuario.usuario)
+            );
+        }
 
         if (statusMessage) {
             statusMessage.textContent = "Acesso confirmado.";
