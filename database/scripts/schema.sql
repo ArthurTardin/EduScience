@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS cadastro (
     complemento VARCHAR(100) NULL,
     bairro VARCHAR(100) NOT NULL,
     cidade VARCHAR(100) NOT NULL,
-    estado VARCHAR(100) NOT NULL,
+    estado CHAR(2) NOT NULL,
     cep VARCHAR(9) NOT NULL,
     CONSTRAINT fk_cadastro_cliente FOREIGN KEY (id_cliente) REFERENCES cliente(id_cliente) ON DELETE CASCADE ON UPDATE CASCADE
 );
@@ -31,7 +31,7 @@ CREATE TABLE IF NOT EXISTS login (
     senha_hash VARCHAR(255) NOT NULL,
     ultimo_acesso DATETIME NULL,
     ativo BOOLEAN DEFAULT TRUE,
-    CONSTRAINT fk_login_cliente FOREIGN KEY (id_cliente) REFERENCES cliente(id_cliente) ON DELETE CASCADE ON UPDATE CASCADE; 
+    CONSTRAINT fk_login_cliente FOREIGN KEY (id_cliente) REFERENCES cliente(id_cliente) ON DELETE CASCADE ON UPDATE CASCADE 
 );
 
 CREATE TABLE IF NOT EXISTS consulta (
@@ -61,6 +61,7 @@ CREATE TABLE IF NOT EXISTS carrinho_de_compra (
     id_produto INT NOT NULL,
     quantidade INT NOT NULL DEFAULT 1,
     data_atualizacao DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    CONSTRAINT uk_cliente_produto UNIQUE (id_cliente, id_produto),
     CONSTRAINT fk_carrinho_cliente FOREIGN KEY (id_cliente) REFERENCES cliente(id_cliente) ON DELETE CASCADE ON UPDATE CASCADE,
     CONSTRAINT fk_carrinho_produto FOREIGN KEY (id_produto) REFERENCES produto(id_produto) ON DELETE CASCADE ON UPDATE CASCADE
 );
@@ -73,7 +74,7 @@ CREATE TABLE IF NOT EXISTS compra (
     valor_total DECIMAL(10, 2) NOT NULL,
     status_pedido VARCHAR(50) NOT NULL,
     metodo_pagamento VARCHAR(50) NOT NULL,
-    CONSTRAINT fk_compa_cliente FOREIGN KEY (id_cliente) REFERENCES cliente(id_cliente) ON DELETE RESTRICT ON UPDATE CASCADE 
+    CONSTRAINT fk_compra_cliente FOREIGN KEY (id_cliente) REFERENCES cliente(id_cliente) ON DELETE RESTRICT ON UPDATE CASCADE 
 );
 
 CREATE TABLE IF NOT EXISTS venda (
@@ -82,7 +83,7 @@ CREATE TABLE IF NOT EXISTS venda (
     id_produto INT NOT NULL,
     quantidade INT NOT NULL,
     preco_unitario DECIMAL(10, 2) NOT NULL,
-    subtotal DECIMAL(10, 2) NOT NULL,
+    subtotal DECIMAL(10, 2) GENERATED ALWAYS AS (quantidade * preco_unitario) STORED,
     CONSTRAINT fk_venda_compra FOREIGN KEY (id_compra) REFERENCES compra(id_compra) ON DELETE CASCADE ON UPDATE CASCADE,
     CONSTRAINT fk_venda_produto FOREIGN KEY (id_produto) REFERENCES produto(id_produto) ON DELETE RESTRICT ON UPDATE CASCADE
 );
