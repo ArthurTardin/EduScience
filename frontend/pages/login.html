@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - EduScience</title>
+</head>
+
+<body>
+
+    <h1>EduScience</h1>
+
+    <h2>Entrar na conta</h2>
+
+    <form id="login-form">
+
+        <label for="usuario">Usuário:</label>
+        <input
+            type="text"
+            id="usuario"
+            name="usuario"
+            required
+        >
+
+        <br><br>
+
+        <label for="senha">Senha:</label>
+        <input
+            type="password"
+            id="senha"
+            name="senha"
+            required
+        >
+
+        <button type="button" id="password-toggle">
+            Mostrar
+        </button>
+
+        <br><br>
+
+        <button type="submit" id="submit-button">
+            Entrar
+        </button>
+
+        <div id="mensagem-erro" role="alert" hidden></div>
+
+        <p id="status-message"></p>
+
+    </form>
+
+    <script type="module" src="../js/login.js"></script>
+
+</body>
+</html>

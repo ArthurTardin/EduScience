@@ -1,20 +1,22 @@
-const API_URL = "http://localhost:8080";
+const API_BASE_URL = "http://localhost:3000/api";
 
-export async function login(email, senha) {
-  const response = await fetch(`${API_URL}/login`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      email,
-      senha,
-    }),
-  });
+export async function login(usuario, senha) {
+    const response = await fetch(`${API_BASE_URL}/auth/login`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            usuario: usuario,
+            senha: senha
+        })
+    });
 
-  if (!response.ok) {
-    throw new Error("Falha ao realizar login");
-  }
+    const data = await response.json();
 
-  return await response.json();
+    if (!response.ok) {
+        throw new Error(data.error || data.message || "Erro ao realizar login.");
+    }
+
+    return data;
 }
