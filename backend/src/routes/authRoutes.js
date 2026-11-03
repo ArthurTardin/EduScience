@@ -1,8 +1,16 @@
 import { Router } from 'express';
-import * as authController from '../controllers/authController.js';
+import { login } from '../controllers/authController.js';
+import { autenticarToken } from '../middlewares/authMiddleware.js';
 
 const router = Router();
 
-router.post('/login', authController.login);
+router.post('/login', login);
+
+router.get('/me', autenticarToken, (req, res) => {
+    res.status(200).json({
+        message: 'Acesso autorizado à rota protegida.',
+        usuario: req.usuario
+    });
+});
 
 export default router;
