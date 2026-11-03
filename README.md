@@ -49,7 +49,7 @@ O projeto será desenvolvido com front-end web, API REST e banco de dados relaci
 ### Usuários e autenticação
 
 - [ ] Cadastro de usuários.
-- [ ] Login integrado à API.
+- [X] Login integrado à API.
 - [ ] Validação dos dados cadastrais.
 - [ ] Gerenciamento de usuários.
 - [ ] Proteção de operações restritas.
@@ -77,10 +77,10 @@ O projeto será desenvolvido com front-end web, API REST e banco de dados relaci
 
 ### API REST
 
-- [ ] Endpoints CRUD.
-- [ ] Integração com MariaDB.
-- [ ] Arquitetura MVC.
-- [ ] Pool de conexões com o banco de dados.
+- [X] Endpoints CRUD.
+- [X] Integração com MariaDB.
+- [X] Arquitetura MVC.
+- [X] Pool de conexões com o banco de dados.
 - [ ] Tratamento de erros e validação de entradas.
 
 > As funcionalidades estão planejadas e serão marcadas como concluídas somente após sua implementação e validação.
