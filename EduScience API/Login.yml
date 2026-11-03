@@ -16,19 +16,13 @@ http:
         "usuario": "admin",
         "senha": "123456"
       }
-  script:
-    post-response: |-
-      const body = res.getBody();
-      if (body && body.token) {
-        bru.setVar('token', body.token);
-      }
   auth: inherit
-  script:
-    post-response: |
-      const body = res.getBody();
-      if (body?.token) {
-        bru.setVar("token", body.token);
-      }
+
+script:post-response: |-
+  const body = res.getBody();
+  if (body?.token) {
+    bru.setVar("token", body.token);
+  }
 
 settings:
   encodeUrl: true

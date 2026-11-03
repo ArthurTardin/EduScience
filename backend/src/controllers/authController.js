@@ -1,5 +1,5 @@
-import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import bcrypt from 'bcryptjs';
 import { buscarPorLogin } from '../models/clienteModel.js';
 import jwtSecret from '../config/jwt.js';
 
@@ -8,28 +8,27 @@ export async function login(req, res) {
         const { usuario, senha } = req.body;
 
         if (!usuario || !senha) {
-            return res.status(400).json({
-                error: 'Usuário e senha são obrigatórios.'
+            return res.status(400).json({ 
+                error: 'Usuário e senha são obrigatórios.' 
             });
         }
 
         const conta = await buscarPorLogin(usuario);
 
         if (!conta || !conta.senha) {
-            return res.status(401).json({
-                error: 'Usuário ou senha inválidos.'
+            return res.status(401).json({ 
+                error: 'Usuário ou senha inválidos.' 
             });
         }
 
         const senhaValida = await bcrypt.compare(senha, conta.senha);
 
         if (!senhaValida) {
-            return res.status(401).json({
-                error: 'Usuário ou senha inválidos.'
+            return res.status(401).json({ 
+                error: 'Usuário ou senha inválidos.' 
             });
         }
 
-        // Geração do Token JWT (Validade de 8 horas)
         const token = jwt.sign(
             { 
                 id_cliente: conta.id_cliente,
