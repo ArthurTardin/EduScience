@@ -1,11 +1,19 @@
-import { Router } from 'express';
-import * as carrinhoController from '../controllers/carrinhoController.js';
+import express from 'express';
+import { 
+    listarItens, 
+    adicionarItem, 
+    atualizarQuantidade, 
+    removerItem 
+} from '../controllers/carrinhoController.js';
+import { autenticarToken } from '../middlewares/authMiddleware.js';
 
-router = Router();
+const router = express.Router();
 
-router.get('/:idCliente', carrinhoController.listarItens);
-router.post('/', carrinhoController.adicionarItem);
-router.put('/:idCarrinho', carrinhoController.atualizarQuantidade);
-router.delete('/:idCarrinho', carrinhoController.removerItem);
+router.use(autenticarToken);
+
+router.get('/:idCliente', listarItens);
+router.post('/adicionar', adicionarItem);
+router.put('/atualizar/:idCarrinho', atualizarQuantidade);
+router.delete('/remover/:idCarrinho', removerItem);
 
 export default router;
