@@ -20,7 +20,8 @@
   <a href="#funcionalidades">Funcionalidades</a> •
   <a href="#tecnologias">Tecnologias</a> •
   <a href="#como-executar">Instalação</a> •
-  <a href="#contribuição">Contribuição</a>
+  <a href="#contribuição">Contribuição</a> •
+  <a href="#versionamento">Versionamento</a>
 </p>
 
 ---
@@ -33,7 +34,7 @@ O sistema tem como público-alvo professores e instituições de ensino que dese
 
 A proposta contempla uma jornada integrada de compra, desde a apresentação dos produtos até o gerenciamento do carrinho, registro das operações comerciais, acompanhamento de suporte pedagógico e organização de informações fiscais e financeiras.
 
-O projeto será desenvolvido com front-end web, API REST e banco de dados relacional, aplicando conceitos de desenvolvimento de sistemas, modelagem de dados e integração entre aplicações.
+O projeto é desenvolvido com front-end web (Vanilla JS em ES Modules), API REST (Node.js/Express) e banco de dados relacional (MariaDB), aplicando arquitetura MVC, Clean Code e integração segura via JWT.
 
 ## Funcionalidades
 
@@ -49,7 +50,7 @@ O projeto será desenvolvido com front-end web, API REST e banco de dados relaci
 ### Usuários e autenticação
 
 - [ ] Cadastro de usuários.
-- [ ] Login integrado à API.
+- [x] Login integrado à API (com persistência JWT).
 - [ ] Validação dos dados cadastrais.
 - [ ] Gerenciamento de usuários.
 - [ ] Proteção de operações restritas.
@@ -77,96 +78,65 @@ O projeto será desenvolvido com front-end web, API REST e banco de dados relaci
 
 ### API REST
 
-- [ ] Endpoints CRUD.
-- [ ] Integração com MariaDB.
-- [ ] Arquitetura MVC.
-- [ ] Pool de conexões com o banco de dados.
-- [ ] Tratamento de erros e validação de entradas.
+- [x] Endpoints CRUD.
+- [x] Integração com MariaDB.
+- [x] Arquitetura MVC.
+- [x] Pool de conexões com o banco de dados.
+- [x] Tratamento de erros e validação de entradas.
 
-> As funcionalidades estão planejadas e serão marcadas como concluídas somente após sua implementação e validação.
+---
 
 ## Tecnologias
 
 | Tecnologia | Finalidade |
 |---|---|
-| HTML5 | Estrutura das páginas |
-| CSS3 | Estilização, responsividade e animações |
-| JavaScript | Interatividade e comunicação com a API |
+| HTML5 | Estrutura semântica e acessível das páginas |
+| CSS3 | Estilização, variáveis CSS (`:root`), flexbox e grid responsivo |
+| JavaScript (ES6+) | Módulos (`type="module"`), Fetch API e manipulação assíncrona do DOM |
 | Node.js | Ambiente de execução do back-end |
-| Express | Desenvolvimento da API REST |
+| Express | Framework para desenvolvimento da API REST |
 | MariaDB | Banco de dados relacional |
-| `mariadb` | Driver de conexão com o banco |
-| `cors` | Configuração de acesso entre origens |
-| `dotenv` | Gerenciamento de variáveis de ambiente |
-| Git | Controle de versão |
-| GitHub | Hospedagem do repositório e colaboração |
+| `mariadb` | Driver oficial de conexão com pool do banco |
+| `cors` | Gerenciamento de segurança de acesso entre origens |
+| `dotenv` | Isolamento de credenciais e variáveis de ambiente |
+| Git & GitHub | Controle de versão, code review e regras de branch protection |
+
+---
 
 ## Arquitetura e estrutura
 
-O EduScience será organizado em três componentes principais:
-
-- **Front-end:** interface web desenvolvida com HTML, CSS e JavaScript.
-- **Back-end:** API REST desenvolvida com Node.js e Express, organizada segundo o padrão MVC.
-- **Banco de dados:** MariaDB, responsável pela persistência e integridade dos dados.
-
-### Estrutura prevista
+O EduScience é organizado em três componentes desacoplados:
 
 ```text
 eduscience/
 ├── frontend/
-│   ├── index.html                    # Redireciona para /pages/landing.html
 │   ├── pages/
-│   │   ├── landing.html              # Landing Page com carrossel de kits
-│   │   ├── login.html                # Form de login autenticado via API
-│   │   └── carrinho.html             # Interface do carrinho
+│   │   ├── landing.html
+│   │   └── login.html                # Formulário com suporte a a11y (aria-pressed)
 │   ├── css/
-│   │   ├── global.css                # :root com a paleta Gestalt e estilos base
-│   │   ├── landing.css
-│   │   ├── login.css
-│   │   └── carrinho.css
-│   ├── js/
-│   │   ├── api.js                    # Fetch/Axios centralizado para comunicação com a API
-│   │   ├── landing.js                # Lógica do carrossel em JS puro
-│   │   ├── login.js                  # Integração POST /api/login
-│   │   └── carrinho.js               # Adicionar, alterar quantidade, remover itens
-│   └── assets/
-│       ├── images/                   # Fotos dos kits de Química e Física
-│       └── icons/
+│   │   ├── global.css                # Variáveis de cor, tipografia e reset
+│   │   └── login.css
+│   └── js/
+│       ├── api.js                    # Wrapper de Fetch, interceptador de erros HTTP/JSON
+│       └── login.js                  # Manipulador de eventos de auth e localStorage (@EduScience)
 │
 ├── backend/
 │   ├── src/
 │   │   ├── config/
 │   │   │   └── database.js           # Pool de conexões MariaDB
 │   │   ├── controllers/
-│   │   │   ├── authController.js     # Login / Autenticação
-│   │   │   ├── produtoController.js  # Catalogo / Kits
-│   │   │   └── carrinhoController.js # Operações do carrinho
-│   │   ├── models/
-│   │   │   ├── clienteModel.js
-│   │   │   ├── produtoModel.js
-│   │   │   └── carrinhoModel.js
+│   │   │   └── authController.js     # Geração e validação de JWT / Login
 │   │   ├── routes/
-│   │   │   ├── authRoutes.js
-│   │   │   ├── produtoRoutes.js
-│   │   │   └── carrinhoRoutes.js
-│   │   ├── middlewares/
-│   │   │   └── authMiddleware.js    
-│   │   └── app.js                    
+│   │   │   └── authRoutes.js
+│   │   └── app.js
 │   ├── .env.example
-│   ├── .env                         
 │   └── package.json
 │
 ├── database/
-│   ├── scripts/
-│   │   ├── schema.sql               
-│   │   ├── seeds.sql                 
-│   │   └── queries.sql               
-│   └── diagrams/
-│       ├── der_eduscience.puml
-│       └── mer_eduscience.puml
+│   └── scripts/
+│       ├── schema.sql
+│       └── seeds.sql                 # Dados iniciais para validação e testes
 │
-├── docs/
-├── .gitignore
 └── README.md
 ```
 
@@ -294,9 +264,9 @@ Os comandos de execução dos testes serão documentados após a configuração 
 
 ## Roadmap
 
-- [ ] Finalizar os requisitos do sistema.
-- [ ] Definir o catálogo inicial de kits.
-- [ ] Finalizar o DER/MER e os scripts SQL.
+- [x] Finalizar os requisitos do sistema.
+- [x] Definir o catálogo inicial de kits.
+- [x] Finalizar o DER/MER e os scripts SQL.
 - [ ] Implementar a estrutura da API REST.
 - [ ] Desenvolver cadastro e autenticação.
 - [ ] Implementar o catálogo de produtos.
@@ -324,15 +294,25 @@ Para contribuir:
 | Responsabilidade | Integrante |
 |---|---|
 | Scrum Master | [Arthur Tardin](https://github.com/ArthurTardin) |
-| Desenvolvimento do banco de dados | A definir |
-| Desenvolvimento do back-end | A definir |
-| Desenvolvimento do front-end | A definir |
+| Desenvolvimento do banco de dados | Equipe EduScience |
+| Desenvolvimento do back-end | Equipe EduScience |
+| Desenvolvimento do front-end | Equipe EduScience |
 
 ## Versionamento
 
 O projeto utilizará Git para controle de versão e GitHub para hospedagem do repositório, revisão de alterações e organização das entregas.
 
-As regras de branches, commits e pull requests serão definidas pela equipe.
+O repositório adota um fluxo de desenvolvimento rigoroso para garantir a estabilidade da branch main:
+
+- Branch Protection: Commits diretos na branch main são estritamente bloqueados.
+
+- Branches de Feature: Todas as alterações devem ser desenvolvidas em branches separadas seguindo a convenção feat/nome-da-feature ou fix/nome-do-bug.
+
+- Pull Requests & Code Review: Toda alteração exige abertura de Pull Request (PR) com revisão de código obrigatória e aprovação do líder técnico/peer reviewer.
+
+- Conventional Commits: Títulos de PRs e commits seguem o padrão (ex: feat(frontend): integra tela de login).
+
+- Squash and Merge: Todo o histórico de branches é condensado em um único commit atômico e limpo ao integrar na main
 
 ## Licença
 
