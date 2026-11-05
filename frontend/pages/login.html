@@ -1,47 +1,58 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="../css/login.css">
-    <title>login</title>
-</head>
-<body>
-    <h1> Login </h1>
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login</title>
+    <link rel="stylesheet" href="../css/global.css" />
+    <link rel="stylesheet" href="../css/login.css" />
+  </head>
+  <body>
+    <main class="login-container">
+      <h1>Login</h1>
+      <p class="subtitle">Entre em sua conta</p>
 
-    <p> Entre em sua conta </p>
-    
-    <form action="inicio" method="post">
-        <label for="Usuario">Usuario:</label>
-
-        <br><br>
-        
-        <input 
+      <form id="login-form" method="post">
+        <div class="field">
+          <label for="usuario">Usuário</label>
+          <input
             type="text"
-            id="senha"
-            name="senha"
-            placeholder="Digite seu Email"
+            id="usuario"
+            name="usuario"
+            placeholder="Digite seu usuário"
+            autocomplete="username"
             required
-        
-        >
+          />
+        </div>
 
-        <input 
-            type="text"
+        <div class="field">
+          <label for="senha">Senha</label>
+          <input
+            type="password"
             id="senha"
             name="senha"
             placeholder="Digite sua senha"
+            autocomplete="current-password"
             required
-        >
-        <p>
-            <a href="landing.html"> Esqueci a senha </a>
+            minlength="6"
+          />
+        </div>
+
+        <p class="forgot">
+          <a href="#">Esqueci a senha</a>
         </p>
-        
-        <br><br>
-        <button type="submit">Entrar</button>
-    </form>
-    <p>
-        Não tem conta ?
-        <a href="landing.html"> Cadastre </a>
-    </p>
-</body>
+
+        <div id="mensagem-erro" class="mensagem-erro hidden" role="alert"></div>
+
+        <button id="submit-button" type="submit">Entrar</button>
+      </form>
+
+      <p class="signup">
+        Não tem conta?
+        <a href="cadastro.html">Cadastre-se</a>
+      </p>
+    </main>
+
+    <script type="module" src="../js/login.js"></script>
+  </body>
 </html>
