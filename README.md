@@ -42,14 +42,14 @@ O projeto será desenvolvido com front-end web, API REST e banco de dados relaci
 - [ ] Landing page institucional.
 - [ ] Catálogo de kits experimentais.
 - [ ] Carrossel dinâmico de produtos.
-- [ ] Interface responsiva.
-- [ ] Padronização visual com variáveis CSS.
-- [ ] Animações e interações visuais.
+- [x] Interface responsiva.
+- [x] Padronização visual com variáveis CSS.
+- [x] Animações e interações visuais.
 
 ### Usuários e autenticação
 
 - [ ] Cadastro de usuários.
-- [X] Login integrado à API.
+- [ ] Login integrado à API.
 - [ ] Validação dos dados cadastrais.
 - [ ] Gerenciamento de usuários.
 - [ ] Proteção de operações restritas.
@@ -77,10 +77,10 @@ O projeto será desenvolvido com front-end web, API REST e banco de dados relaci
 
 ### API REST
 
-- [X] Endpoints CRUD.
-- [X] Integração com MariaDB.
-- [X] Arquitetura MVC.
-- [X] Pool de conexões com o banco de dados.
+- [ ] Endpoints CRUD.
+- [ ] Integração com MariaDB.
+- [ ] Arquitetura MVC.
+- [ ] Pool de conexões com o banco de dados.
 - [ ] Tratamento de erros e validação de entradas.
 
 > As funcionalidades estão planejadas e serão marcadas como concluídas somente após sua implementação e validação.
