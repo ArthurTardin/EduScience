@@ -46,6 +46,34 @@ label {
   font-weight: 600;
 }
 
+.password-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password-wrapper input {
+  padding-right: 80px;
+}
+
+.btn-toggle-password {
+  position: absolute;
+  right: 8px;
+  width: auto;
+  padding: 6px 10px;
+  background: transparent;
+  color: var(--color-primary, #4f46e5);
+  font-size: 0.85rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.btn-toggle-password:hover {
+  background-color: var(--color-background, #f4f6fb);
+}
+
 input {
   width: 100%;
   padding: 10px;
@@ -80,7 +108,7 @@ a:focus-visible {
   margin-top: 20px;
 }
 
-button {
+button[type="submit"] {
   width: 100%;
   padding: 12px;
   background-color: var(--color-primary, #4f46e5);
@@ -88,6 +116,7 @@ button {
   border: none;
   border-radius: 8px;
   font-size: 1rem;
+  font-weight: 600;
   cursor: pointer;
 }
 
@@ -105,6 +134,13 @@ button:disabled {
   cursor: not-allowed;
 }
 
+.status-message {
+  margin-bottom: 12px;
+  font-size: 0.875rem;
+  color: var(--color-text-muted, #6b7280);
+  text-align: center;
+}
+
 .mensagem-erro {
   margin-bottom: 16px;
   padding: 12px 16px;
@@ -116,6 +152,6 @@ button:disabled {
   font-weight: 600;
 }
 
-.hidden {
+[hidden] {
   display: none !important;
 }
