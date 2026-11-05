@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EduScience - Kits Práticos de Ciência</title>
+  <link rel="stylesheet" href="../css/global.css">
+  <link rel="stylesheet" href="../css/landing.css">
+</head>
+<body>
+  <header class="navbar">
+    <div class="logo">
+      <h1>EduScience</h1>
+    </div>
+    <nav>
+      <a href="landing.html" class="active">Início</a>
+      <a href="carrinho.html">Carrinho</a>
+      <a href="login.html" class="btn-login">Entrar</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <h2>Experimentos Científicos Práticos para a sua Escola</h2>
+      <p>Kits completos de Química e Física desenvolvidos para potencializar o aprendizado.</p>
+    </section>
+
+    <section class="carousel-container">
+      <h2>Kits em Destaque</h2>
+      <div class="carousel">
+        <button class="carousel-btn prev" id="prevBtn">&#10094;</button>
+        
+        <div class="carousel-track-container">
+          <ul class="carousel-track" id="carouselTrack">
+            <li class="carousel-slide current-slide">
+              <div class="kit-card">
+                <div class="kit-image placeholder-chem"></div>
+                <h3>Kit Reações Químicas Base</h3>
+                <p>Experimentos de ácido-base com indicadores visuais para ensino médio.</p>
+                <span class="price">R$ 189,90</span>
+                <button class="btn-add">Adicionar ao Carrinho</button>
+              </div>
+            </li>
+            <li class="carousel-slide">
+              <div class="kit-card">
+                <div class="kit-image placeholder-phys"></div>
+                <h3>Kit Circuitos Elétricos</h3>
+                <p>Montagem de circuitos em série e paralelo com LEDs e resistores.</p>
+                <span class="price">R$ 210,00</span>
+                <button class="btn-add">Adicionar ao Carrinho</button>
+              </div>
+            </li>
+            <li class="carousel-slide">
+              <div class="kit-card">
+                <div class="kit-image placeholder-optics"></div>
+                <h3>Kit Óptica & Lentes</h3>
+                <p>Estudo de refração, reflexão e prisma para laboratórios escolares.</p>
+                <span class="price">R$ 155,50</span>
+                <button class="btn-add">Adicionar ao Carrinho</button>
+              </div>
+            </li>
+          </ul>
+        </div>
+
+        <button class="carousel-btn next" id="nextBtn">&#10095;</button>
+      </div>
+
+      <div class="carousel-nav" id="carouselNav">
+        <button class="indicator current-slide"></button>
+        <button class="indicator"></button>
+        <button class="indicator"></button>
+      </div>
+    </section>
+  </main>
+
+  <script src="../js/api.js"></script>
+  <script src="../js/landing.js"></script>
+</body>
+</html>
