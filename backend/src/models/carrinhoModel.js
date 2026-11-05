@@ -1,64 +1,40 @@
-import { pool } from '../config/database.js'
+import { pool } from '../config/database.js';
 
 export async function listarPorCliente(idCliente) {
-    let conn;
-    try {
-        conn = await pool.getConnection();
-        const sql = `SELECT car.id_carrinho, car.id_produto, p.nome_kit, p.categoria, p.preco, car.quantidade,
-                            (car.quantidade * p.preco) AS subtotal
-                    FROM carrinho_de_compra car
-                    INNER JOIN produto p ON car.id_produto = p.id_produto
-                    WHERE car.id_cliente = ?`;
-
-        const [rows] = await conn.query(sql, [idCliente]);
-        return rows
-    } finally {
-        if (conn) conn.release();
-    }
+    const query = `
+        SELECT c.id, c.id_produto, c.quantidade, p.nome, p.preco, p.imagem
+        FROM carrinho c
+        JOIN produtos p ON c.id_produto = p.id
+        WHERE c.id_cliente = ?
+    `;
+    const [linhas] = await pool.execute(query, [idCliente]);
+    return linhas;
 }
 
 export async function adicionarOuAtualizar(idCliente, idProduto, quantidade) {
-    let conn;
-    try {
-        conn = await pool.getConnection();
-        const sqlCheck = `SELECT id_carrinho, quantidade FROM carrinho_de_compra WHERE id_cliente = ? AND id_produto = ?`;
-        const [itemExistente] = await conn.query(sqlCheck, [idCliente, idProduto]);
+    const queryExiste = `SELECT id, quantidade FROM carrinho WHERE id_cliente = ? AND id_produto = ?`;
+    const [existente] = await pool.execute(queryExiste, [idCliente, idProduto]);
 
-        if (itemExistente.length > 0) {
-            const novaQtd = itemExistente[0].quantidade + quantidade;
-            const sqlUpdate = `UPDATE carrinho_de_compra SET quantidade = ? WHERE id_carrinho = ?`;
-            await conn.query(sqlUpdate, [novaQtd, itemExistente[0].id_carrinho]);
-            return { id_carrinho: itemExistente[0].id_carrinho, quantidade: novaQtd };
-        } else {
-            const sqlInsert = `INSERT INTO carrinho_de_compra (id_cliente, id_produto, quantidade) VALUES (?, ?, ?)`;
-            const [result] = await conn.query(sqlInsert, [idCliente, idProduto, quantidade]);
-            return { id_carrinho: Number(result.insertId), quantidade };
-        }
-    } finally {
-        if (conn) conn.release();
+    if (existente.length > 0) {
+        const novaQtd = existente[0].quantidade + quantidade;
+        const queryUpdate = `UPDATE carrinho SET quantidade = ? WHERE id = ?`;
+        await pool.execute(queryUpdate, [novaQtd, existente[0].id]);
+        return { id: existente[0].id, idCliente, idProduto, quantidade: novaQtd };
     }
+
+    const queryInsert = `INSERT INTO carrinho (id_cliente, id_produto, quantidade) VALUES (?, ?, ?)`;
+    const [resultado] = await pool.execute(queryInsert, [idCliente, idProduto, quantidade]);
+    return { id: resultado.insertId, idCliente, idProduto, quantidade };
 }
 
 export async function atualizarQuantidade(idCarrinho, quantidade) {
-    let conn;
-    try {
-        conn = await pool.getConnection();
-        const sql = `UPDATE carrinho_de_compra SET quantidade = ? WHERE id_carrinho = ?`;
-        const [result] = await conn.query(sql, [quantidade, idCarrinho]);
-        return result.affectedRows > 0;
-    } finally {
-        if (conn) conn.release();
-    }
+    const query = `UPDATE carrinho SET quantidade = ? WHERE id = ?`;
+    const [resultado] = await pool.execute(query, [quantidade, idCarrinho]);
+    return resultado.affectedRows > 0;
 }
 
 export async function removerItem(idCarrinho) {
-    let conn;
-    try {
-        conn = await pool.getConnection();
-        const sql = `DELETE FROM carrinho_de_compra WHERE id_carrinho = ?`;
-        const [result] = await conn.query(sql, [idCarrinho]);
-        return result.affectedRows > 0;
-    } finally {
-        if (conn) conn.release();
-    }
+    const query = `DELETE FROM carrinho WHERE id = ?`;
+    const [resultado] = await pool.execute(query, [idCarrinho]);
+    return resultado.affectedRows > 0;
 }
