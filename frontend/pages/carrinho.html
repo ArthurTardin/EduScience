@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Carrinho - EduScience</title>
+  <link rel="stylesheet" href="../css/global.css">
+  <link rel="stylesheet" href="../css/carrinho.css">
+</head>
+<body>
+  <header class="navbar">
+    <div class="logo">
+      <h1>EduScience</h1>
+    </div>
+    <nav>
+      <a href="landing.html">Início</a>
+      <a href="carrinho.html" class="active" aria-current="page">Carrinho</a>
+      <a href="login.html" class="btn-login">Entrar</a>
+    </nav>
+  </header>
+
+  <main class="cart-page">
+    <div class="cart-header">
+      <h2>Meu Carrinho</h2>
+      <p class="cart-count">3 itens</p>
+    </div>
+
+    <div class="cart-layout">
+      <!-- Lista de itens e tabela de preços -->
+      <section class="cart-items" aria-labelledby="titulo-itens">
+        <h3 id="titulo-itens" class="visually-hidden">Itens do carrinho</h3>
+
+        <table class="cart-table">
+          <thead>
+            <tr>
+              <th scope="col">Produto</th>
+              <th scope="col">Preço unitário</th>
+              <th scope="col">Quantidade</th>
+              <th scope="col">Subtotal</th>
+              <th scope="col"><span class="visually-hidden">Ações</span></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="cart-row">
+              <td data-label="Produto">
+                <div class="product-info">
+                  <div class="product-thumb placeholder-chem" aria-hidden="true"></div>
+                  <div>
+                    <p class="product-name">Kit Reações Químicas Base</p>
+                    <p class="product-desc">Ácido-base com indicadores visuais</p>
+                  </div>
+                </div>
+              </td>
+              <td data-label="Preço unitário">R$ 189,90</td>
+              <td data-label="Quantidade">
+                <div class="qty-control">
+                  <button type="button" class="qty-btn" aria-label="Diminuir quantidade">&minus;</button>
+                  <input type="number" class="qty-input" value="1" min="1" aria-label="Quantidade">
+                  <button type="button" class="qty-btn" aria-label="Aumentar quantidade">+</button>
+                </div>
+              </td>
+              <td data-label="Subtotal" class="item-subtotal">R$ 189,90</td>
+              <td class="cell-remove">
+                <button type="button" class="btn-remove" aria-label="Remover Kit Reações Químicas Base">Remover</button>
+              </td>
+            </tr>
+
+            <tr class="cart-row">
+              <td data-label="Produto">
+                <div class="product-info">
+                  <div class="product-thumb placeholder-phys" aria-hidden="true"></div>
+                  <div>
+                    <p class="product-name">Kit Circuitos Elétricos</p>
+                    <p class="product-desc">Circuitos em série e paralelo</p>
+                  </div>
+                </div>
+              </td>
+              <td data-label="Preço unitário">R$ 210,00</td>
+              <td data-label="Quantidade">
+                <div class="qty-control">
+                  <button type="button" class="qty-btn" aria-label="Diminuir quantidade">&minus;</button>
+                  <input type="number" class="qty-input" value="2" min="1" aria-label="Quantidade">
+                  <button type="button" class="qty-btn" aria-label="Aumentar quantidade">+</button>
+                </div>
+              </td>
+              <td data-label="Subtotal" class="item-subtotal">R$ 420,00</td>
+              <td class="cell-remove">
+                <button type="button" class="btn-remove" aria-label="Remover Kit Circuitos Elétricos">Remover</button>
+              </td>
+            </tr>
+
+            <tr class="cart-row">
+              <td data-label="Produto">
+                <div class="product-info">
+                  <div class="product-thumb placeholder-optics" aria-hidden="true"></div>
+                  <div>
+                    <p class="product-name">Kit Óptica &amp; Lentes</p>
+                    <p class="product-desc">Refração, reflexão e prisma</p>
+                  </div>
+                </div>
+              </td>
+              <td data-label="Preço unitário">R$ 155,50</td>
+              <td data-label="Quantidade">
+                <div class="qty-control">
+                  <button type="button" class="qty-btn" aria-label="Diminuir quantidade">&minus;</button>
+                  <input type="number" class="qty-input" value="1" min="1" aria-label="Quantidade">
+                  <button type="button" class="qty-btn" aria-label="Aumentar quantidade">+</button>
+                </div>
+              </td>
+              <td data-label="Subtotal" class="item-subtotal">R$ 155,50</td>
+              <td class="cell-remove">
+                <button type="button" class="btn-remove" aria-label="Remover Kit Óptica e Lentes">Remover</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <!-- Estado vazio (exibir via JS removendo o atributo hidden) -->
+        <div class="cart-empty" id="cartEmpty" hidden>
+          <p>Seu carrinho está vazio.</p>
+          <a href="landing.html" class="btn btn-secondary">Ver kits disponíveis</a>
+        </div>
+      </section>
+
+      <!-- Resumo de valores -->
+      <aside class="cart-summary" aria-labelledby="titulo-resumo">
+        <h3 id="titulo-resumo">Resumo do pedido</h3>
+
+        <dl class="summary-list">
+          <div class="summary-row">
+            <dt>Subtotal</dt>
+            <dd id="resumoSubtotal">R$ 765,40</dd>
+          </div>
+          <div class="summary-row">
+            <dt>Frete</dt>
+            <dd id="resumoFrete">R$ 25,00</dd>
+          </div>
+          <div class="summary-row summary-total">
+            <dt>Total</dt>
+            <dd id="resumoTotal">R$ 790,40</dd>
+          </div>
+        </dl>
+
+        <div class="summary-actions">
+          <button type="button" class="btn btn-primary" id="checkoutBtn">Finalizar compra</button>
+          <a href="landing.html" class="btn btn-secondary">Continuar comprando</a>
+          <button type="button" class="btn btn-link" id="clearCartBtn">Limpar carrinho</button>
+        </div>
+      </aside>
+    </div>
+  </main>
+</body>
+</html>
