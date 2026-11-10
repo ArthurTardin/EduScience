@@ -1,6 +1,24 @@
 const CART_STORAGE_KEY = 'eduscience_cart';
 
-document.addEventListener("DOMContentLoaded", carregarCarrinho);
+document.addEventListener("DOMContentLoaded", () => {
+  carregarCarrinho();
+});
+
+document.addEventListener("click", async (e) => {
+  const btn = e.target.closest("button");
+  if (!btn || !btn.dataset.action) return;
+
+  const id = Number(btn.dataset.id);
+  const action = btn.dataset.action;
+
+  if (action === "increase") {
+    await processarAlteracao(id, 1);
+  } else if (action === "decrease") {
+    await processarAlteracao(id, -1);
+  } else if (action === "remove") {
+    await processarRemocao(id);
+  }
+});
 
 function carregarCarrinho() {
   const cartTableBody = document.querySelector(".cart-table tbody");
@@ -9,7 +27,6 @@ function carregarCarrinho() {
   try {
     produtos = JSON.parse(localStorage.getItem(CART_STORAGE_KEY)) || [];
   } catch (err) {
-    console.error("Erro ao ler localStorage, reiniciando carrinho:", err);
     localStorage.removeItem(CART_STORAGE_KEY);
     produtos = [];
   }
@@ -19,8 +36,11 @@ function carregarCarrinho() {
   if (produtos.length === 0) {
     cartTableBody.innerHTML = `
       <tr>
-        <td colspan="5" class="cart-empty">
-          <p>Seu carrinho está vazio.</p>
+        <td colspan="5">
+          <div class="cart-empty-container">
+            <p>Seu carrinho está vazio no momento.</p>
+            <a href="landing.html" class="btn btn-primary">Explorar Kits de Ciência</a>
+          </div>
         </td>
       </tr>
     `;
@@ -36,7 +56,7 @@ function carregarCarrinho() {
     const preco = Number(produto.preco) || 0;
     const qtd = Number(produto.quantidade) || 1;
     const subtotal = preco * qtd;
-    
+
     valorTotalGeral += subtotal;
     totalItens += qtd;
 
@@ -55,14 +75,14 @@ function carregarCarrinho() {
       <td data-label="Preço">R$ ${preco.toFixed(2).replace('.', ',')}</td>
       <td data-label="Quantidade">
         <div class="qty-control">
-          <button type="button" class="qty-btn" onclick="window.alterarQuantidade(${produto.id}, -1)">-</button>
+          <button type="button" class="qty-btn" data-action="decrease" data-id="${produto.id}">-</button>
           <input type="number" class="qty-input" value="${qtd}" readonly />
-          <button type="button" class="qty-btn" onclick="window.alterarQuantidade(${produto.id}, 1)">+</button>
+          <button type="button" class="qty-btn" data-action="increase" data-id="${produto.id}">+</button>
         </div>
       </td>
       <td data-label="Subtotal" class="item-subtotal">R$ ${subtotal.toFixed(2).replace('.', ',')}</td>
       <td class="cell-remove">
-        <button type="button" class="btn-remove" onclick="window.removerItem(${produto.id})">Remover</button>
+        <button type="button" class="btn-remove" data-action="remove" data-id="${produto.id}">Remover</button>
       </td>
     `;
     cartTableBody.appendChild(tr);
@@ -81,7 +101,7 @@ function atualizarTotais(totalValor, totalItens) {
   if (totalEl) totalEl.textContent = `R$ ${totalValor.toFixed(2).replace('.', ',')}`;
 }
 
-window.alterarQuantidade = async function(id, delta) {
+async function processarAlteracao(id, delta) {
   let produtos = JSON.parse(localStorage.getItem(CART_STORAGE_KEY)) || [];
   const item = produtos.find(p => p.id === id);
   if (!item) return;
@@ -91,7 +111,7 @@ window.alterarQuantidade = async function(id, delta) {
 
   if (token) {
     try {
-      await fetch(`http://localhost:3000/api/carrinho/${id}`, {
+      const response = await fetch(`http://localhost:3000/api/carrinho/${id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -99,8 +119,12 @@ window.alterarQuantidade = async function(id, delta) {
         },
         body: JSON.stringify({ quantidade: novaQuantidade })
       });
+
+      if (!response.ok) {
+        exibirToast("Não foi possível sincronizar as alterações com o servidor.", "error");
+      }
     } catch (error) {
-      console.log("Tentativa de envio HTTP para API realizada.");
+      exibirToast("Servidor offline. Suas alterações foram salvas apenas localmente.", "error");
     }
   }
 
@@ -112,21 +136,23 @@ window.alterarQuantidade = async function(id, delta) {
 
   localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(produtos));
   carregarCarrinho();
-};
+}
 
-window.removerItem = async function(id) {
+async function processarRemocao(id) {
   const token = localStorage.getItem("token");
 
   if (token) {
     try {
-      await fetch(`http://localhost:3000/api/carrinho/${id}`, {
+      const response = await fetch(`http://localhost:3000/api/carrinho/${id}`, {
         method: "DELETE",
-        headers: {
-          "Authorization": `Bearer ${token}`
-        }
+        headers: { "Authorization": `Bearer ${token}` }
       });
+
+      if (!response.ok) {
+        exibirToast("Erro ao remover o item no servidor.", "error");
+      }
     } catch (error) {
-      console.log("Tentativa de remoção HTTP para API realizada.");
+      exibirToast("Servidor offline. Item removido apenas localmente.", "error");
     }
   }
 
@@ -134,4 +160,19 @@ window.removerItem = async function(id) {
   produtos = produtos.filter(p => p.id !== id);
   localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(produtos));
   carregarCarrinho();
-};
+}
+
+function exibirToast(mensagem, tipo = "error") {
+  const container = document.getElementById("toast-container");
+  if (!container) return;
+
+  const toast = document.createElement("div");
+  toast.classList.add("toast", `toast-${tipo}`);
+  toast.textContent = mensagem;
+
+  container.appendChild(toast);
+
+  setTimeout(() => {
+    toast.remove();
+  }, 4000);
+}

@@ -1,84 +1,67 @@
-import { login } from "./api.js";
+document.addEventListener("DOMContentLoaded", () => {
+  const formLogin = document.querySelector("#form-login");
+  const mensagemErro = document.querySelector("#mensagem-erro");
+  const btnSubmit = formLogin?.querySelector("button[type='submit']");
 
-const form = document.querySelector("#login-form");
-const usuarioInput = document.querySelector("#usuario");
-const passwordInput = document.querySelector("#senha");
-const passwordToggle = document.querySelector("#password-toggle");
-const submitButton = document.querySelector("#submit-button");
-const msgErro = document.querySelector("#mensagem-erro");
-const statusMessage = document.querySelector("#status-message");
+  if (formLogin) {
+    formLogin.removeAttribute("action");
+    formLogin.removeAttribute("method");
 
-if (passwordToggle && passwordInput) {
-    passwordToggle.addEventListener("click", () => {
-        const mostrarSenha = passwordInput.type === "password";
+    formLogin.addEventListener("submit", (evento) => {
+      evento.preventDefault();
+      evento.stopPropagation();
 
-        passwordInput.type = mostrarSenha ? "text" : "password";
-        passwordToggle.textContent = mostrarSenha ? "Ocultar" : "Mostrar";
-        passwordToggle.setAttribute("aria-pressed", String(mostrarSenha));
-        passwordToggle.setAttribute(
-            "aria-label",
-            mostrarSenha ? "Ocultar senha" : "Mostrar senha"
-        );
+      const usuarioInput = document.querySelector("#usuario");
+      const senhaInput = document.querySelector("#senha");
+
+      const usuario = usuarioInput ? usuarioInput.value.trim() : "";
+      const senha = senhaInput ? senhaInput.value.trim() : "";
+
+      if (mensagemErro) mensagemErro.textContent = "";
+
+      if (btnSubmit) {
+        btnSubmit.disabled = true;
+        btnSubmit.textContent = "Entrando...";
+      }
+
+      setTimeout(() => {
+        if (usuario && senha) {
+          const header = btoa(JSON.stringify({ alg: "HS256", typ: "JWT" }));
+          const payload = btoa(JSON.stringify({ 
+            exp: Math.floor(Date.now() / 1000) + 3600, 
+            user: usuario 
+          }));
+          const tokenMock = `${header}.${payload}.signature_mock`;
+
+          localStorage.setItem("token", tokenMock);
+
+          console.log("Login mock aprovado com sucesso!");
+
+          const params = new URLSearchParams(window.location.search);
+          const rotaDeRetorno = params.get("next");
+          
+          const eRotaSegura = rotaDeRetorno && 
+                              !rotaDeRetorno.includes("://") && 
+                              !rotaDeRetorno.startsWith("//");
+
+          if (eRotaSegura) {
+            window.location.href = rotaDeRetorno;
+          } else {
+            window.location.href = "landing.html";
+          }
+        } else {
+          if (mensagemErro) {
+            mensagemErro.textContent = "Preencha o usuário e a senha.";
+          } else {
+            alert("Preencha o usuário e a senha.");
+          }
+
+          if (btnSubmit) {
+            btnSubmit.disabled = false;
+            btnSubmit.textContent = "Entrar";
+          }
+        }
+      }, 400);
     });
-}
-
-form.addEventListener("submit", async (event) => {
-    event.preventDefault();
-
-    if (!form.reportValidity()) {
-        return;
-    }
-
-    const usuario = usuarioInput.value.trim();
-    const senha = passwordInput.value.trim();
-
-    if (msgErro) {
-        msgErro.hidden = true;
-        msgErro.textContent = "";
-    }
-
-    submitButton.disabled = true;
-    submitButton.textContent = "Entrando...";
-
-    if (statusMessage) {
-        statusMessage.textContent = "Validando acesso com o servidor...";
-    }
-
-    try {
-        const dadosUsuario = await login(usuario, senha);
-
-        if (dadosUsuario.token) {
-            localStorage.setItem("@EduScience:token", dadosUsuario.token);
-        }
-        
-        if (dadosUsuario.usuario) {
-            localStorage.setItem(
-                "@EduScience:user",
-                JSON.stringify(dadosUsuario.usuario)
-            );
-        }
-
-        if (statusMessage) {
-            statusMessage.textContent = "Acesso confirmado.";
-        }
-
-        submitButton.textContent = "Login realizado!";
-
-        setTimeout(() => {
-            window.location.href = "./landing.html";
-        }, 600);
-
-    } catch (error) {
-        if (msgErro) {
-            msgErro.textContent = error.message;
-            msgErro.hidden = false;
-        }
-
-        if (statusMessage) {
-            statusMessage.textContent = "Não foi possível realizar o login.";
-        }
-
-        submitButton.disabled = false;
-        submitButton.textContent = "Entrar";
-    }
+  }
 });
