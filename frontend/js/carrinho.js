@@ -1,56 +1,99 @@
 document.addEventListener("DOMContentLoaded", carregarCarrinho);
 
-async function carregarCarrinho() {
-    const listaCarrinho = document.getElementById("lista-carrinho");
-    const token = localStorage.getItem("token");
+const CART_STORAGE_KEY = 'eduscience_cart';
 
-    try {
-        const response = await fetch("/api/carrinho", {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${token}`
-            }
-        });
+function carregarCarrinho() {
+  const cartTableBody = document.querySelector(".cart-table tbody");
+  const cartCountEl = document.querySelector(".cart-count");
+  const subtotalEl = document.getElementById("cart-subtotal");
+  const totalEl = document.getElementById("cart-total");
 
-        if (!response.ok) {
-            throw new Error("Erro ao carregar carrinho");
-        }
+  let produtos = JSON.parse(localStorage.getItem(CART_STORAGE_KEY)) || [];
 
-        const produtos = await response.json();
-
-        listaCarrinho.innerHTML = "";
-
-        if (!produtos.length) {
-            listaCarrinho.innerHTML = `
-                <p class="carrinho-vazio">
-                    Seu carrinho está vazio.
-                </p>
-            `;
-            return;
-        }
-
-        produtos.forEach(produto => {
-            const item = document.createElement("div");
-
-            item.classList.add("produto-carrinho");
-
-            item.innerHTML = `
-                <h3>${produto.nome}</h3>
-                <p>Preço: R$ ${produto.preco}</p>
-                <p>Quantidade: ${produto.quantidade}</p>
-            `;
-
-            listaCarrinho.appendChild(item);
-        });
-
-    } catch (error) {
-        console.error(error);
-
-        listaCarrinho.innerHTML = `
-            <p class="erro-carrinho">
-                Nao foi possível carregar os produtos do carrinho.
-            </p>
-        `;
+  if (produtos.length === 0) {
+    if (cartTableBody) {
+      cartTableBody.innerHTML = `
+        <tr>
+          <td colspan="5" class="cart-empty">
+            <p>Seu carrinho está vazio.</p>
+            <a href="landing.html" class="btn btn-secondary">Ver Kits Didáticos</a>
+          </td>
+        </tr>
+      `;
     }
+    atualizarTotais(0, 0);
+    return;
+  }
+
+  if (cartTableBody) {
+    cartTableBody.innerHTML = "";
+    let valorTotalGeral = 0;
+    let totalItens = 0;
+
+    produtos.forEach((produto) => {
+      const subtotal = produto.preco * produto.quantidade;
+      valorTotalGeral += subtotal;
+      totalItens += produto.quantidade;
+
+      const tr = document.createElement("tr");
+      tr.classList.add("cart-row");
+      tr.innerHTML = `
+        <td data-label="Produto">
+          <div class="product-info">
+            <div class="product-thumb ${produto.categoriaClass || 'placeholder-chem'}"></div>
+            <div>
+              <p class="product-name">${produto.nome}</p>
+              <p class="product-desc">${produto.descricao || 'Kit educacional de ciências'}</p>
+            </div>
+          </div>
+        </td>
+        <td data-label="Preço">R$ ${Number(produto.preco).toFixed(2).replace('.', ',')}</td>
+        <td data-label="Quantidade">
+          <div class="qty-control">
+            <button type="button" class="qty-btn" onclick="alterarQuantidade(${produto.id}, -1)">-</button>
+            <input type="number" class="qty-input" value="${produto.quantidade}" readonly />
+            <button type="button" class="qty-btn" onclick="alterarQuantidade(${produto.id}, 1)">+</button>
+          </div>
+        </td>
+        <td data-label="Subtotal" class="item-subtotal">R$ ${subtotal.toFixed(2).replace('.', ',')}</td>
+        <td class="cell-remove">
+          <button type="button" class="btn-remove" onclick="removerItem(${produto.id})">Remover</button>
+        </td>
+      `;
+      cartTableBody.appendChild(tr);
+    });
+
+    atualizarTotais(valorTotalGeral, totalItens);
+  }
 }
+
+function atualizarTotais(totalValor, totalItens) {
+  const cartCountEl = document.querySelector(".cart-count");
+  const subtotalEl = document.getElementById("cart-subtotal");
+  const totalEl = document.getElementById("cart-total");
+
+  if (cartCountEl) cartCountEl.textContent = `(${totalItens} ${totalItens === 1 ? 'item' : 'itens'})`;
+  if (subtotalEl) subtotalEl.textContent = `R$ ${totalValor.toFixed(2).replace('.', ',')}`;
+  if (totalEl) totalEl.textContent = `R$ ${totalValor.toFixed(2).replace('.', ',')}`;
+}
+
+window.alterarQuantidade = function(id, delta) {
+  let produtos = JSON.parse(localStorage.getItem(CART_STORAGE_KEY)) || [];
+  const item = produtos.find(p => p.id === id);
+
+  if (item) {
+    item.quantidade += delta;
+    if (item.quantidade <= 0) {
+      produtos = produtos.filter(p => p.id !== id);
+    }
+    localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(produtos));
+    carregarCarrinho();
+  }
+};
+
+window.removerItem = function(id) {
+  let produtos = JSON.parse(localStorage.getItem(CART_STORAGE_KEY)) || [];
+  produtos = produtos.filter(p => p.id !== id);
+  localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(produtos));
+  carregarCarrinho();
+};
