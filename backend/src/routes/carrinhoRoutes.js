@@ -11,7 +11,8 @@ const router = express.Router();
 
 router.use(autenticarToken);
 
-router.get('/:idCliente', listarItens);
+router.get(['/', '/:idCliente'], listarItens);
+
 router.post('/adicionar', adicionarItem);
 router.put('/atualizar/:idCarrinho', atualizarQuantidade);
 router.delete('/remover/:idCarrinho', removerItem);

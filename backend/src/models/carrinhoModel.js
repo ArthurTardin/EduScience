@@ -2,9 +2,15 @@ import { pool } from '../config/database.js';
 
 export async function listarPorCliente(idCliente) {
     const query = `
-        SELECT c.id, c.id_produto, c.quantidade, p.nome, p.preco, p.imagem
+        SELECT 
+            c.id, 
+            c.id_produto, 
+            c.quantidade, 
+            p.nome, 
+            p.preco, 
+            p.imagem
         FROM carrinho c
-        JOIN produtos p ON c.id_produto = p.id
+        JOIN produto p ON c.id_produto = p.id_produto
         WHERE c.id_cliente = ?
     `;
     const [linhas] = await pool.execute(query, [idCliente]);

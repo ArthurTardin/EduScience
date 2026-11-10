@@ -7,13 +7,14 @@ setInterval(() => {
             rateLimitStore.delete(chave);
         }
     }
-}, 5 * 60 * 1000);
+}, 60 * 1000);
 
 export function rateLimitAuthRoutes(req, res, next) {
     const chave = req.ip || req.socket?.remoteAddress || 'desconhecido';
     const agora = Date.now();
     const janelaMs = 60 * 1000;
     const limite = 60;
+
     const atual = rateLimitStore.get(chave);
 
     if (!atual || agora > atual.expiraEm) {
