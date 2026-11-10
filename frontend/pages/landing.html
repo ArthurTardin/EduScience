@@ -14,7 +14,7 @@
     </div>
     <nav>
       <a href="landing.html" class="active">Início</a>
-      <a href="carrinho.html">Carrinho</a>
+      <a href="carrinho.html">Carrinho <span class="nav-cart-count">0</span></a>
       <a href="login.html" class="btn-login">Entrar</a>
     </nav>
   </header>
@@ -38,7 +38,15 @@
                 <h3>Kit Reações Químicas Base</h3>
                 <p>Experimentos de ácido-base com indicadores visuais para ensino médio.</p>
                 <span class="price">R$ 189,90</span>
-                <button class="btn-add">Adicionar ao Carrinho</button>
+                <button type="button" 
+                  class="btn-add btn-add-cart" 
+                  data-id="1" 
+                  data-nome="Kit Reações Químicas Base" 
+                  data-descricao="Experimentos de ácido-base com indicadores visuais para ensino médio." 
+                  data-preco="189.90" 
+                  data-categoria="placeholder-chem">
+                  Adicionar ao Carrinho
+                </button>
               </div>
             </li>
             <li class="carousel-slide">
@@ -47,7 +55,15 @@
                 <h3>Kit Circuitos Elétricos</h3>
                 <p>Montagem de circuitos em série e paralelo com LEDs e resistores.</p>
                 <span class="price">R$ 210,00</span>
-                <button class="btn-add">Adicionar ao Carrinho</button>
+                <button type="button" 
+                  class="btn-add btn-add-cart" 
+                  data-id="2" 
+                  data-nome="Kit Circuitos Elétricos" 
+                  data-descricao="Montagem de circuitos em série e paralelo com LEDs e resistores." 
+                  data-preco="210.00" 
+                  data-categoria="placeholder-phys">
+                  Adicionar ao Carrinho
+                </button>
               </div>
             </li>
             <li class="carousel-slide">
@@ -56,7 +72,15 @@
                 <h3>Kit Óptica & Lentes</h3>
                 <p>Estudo de refração, reflexão e prisma para laboratórios escolares.</p>
                 <span class="price">R$ 155,50</span>
-                <button class="btn-add">Adicionar ao Carrinho</button>
+                <button type="button" 
+                  class="btn-add btn-add-cart" 
+                  data-id="3" 
+                  data-nome="Kit Óptica & Lentes" 
+                  data-descricao="Estudo de refração, reflexão e prisma para laboratórios escolares." 
+                  data-preco="155.50" 
+                  data-categoria="placeholder-optics">
+                  Adicionar ao Carrinho
+                </button>
               </div>
             </li>
           </ul>
@@ -73,7 +97,6 @@
     </section>
   </main>
 
-  <script src="../js/api.js"></script>
   <script src="../js/landing.js"></script>
 </body>
 </html>

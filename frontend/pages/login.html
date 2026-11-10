@@ -8,22 +8,11 @@
     <link rel="stylesheet" href="../css/login.css" />
   </head>
   <body>
-    <header class="navbar">
-      <div class="logo">
-        <h1>EduScience</h1>
-      </div>
-      <nav>
-        <a href="landing.html">Início</a>
-        <a href="carrinho.html">Carrinho</a>
-        <a href="login.html" class="active">Entrar</a>
-      </nav>
-    </header>
-
     <main class="login-container">
       <h1>Login</h1>
       <p class="subtitle">Entre em sua conta</p>
 
-      <form id="login-form" action="#" method="post" novalidate>
+      <form id="form-login">
         <div class="field">
           <label for="usuario">Usuário</label>
           <input
@@ -62,9 +51,10 @@
           <a href="#">Esqueci a senha</a>
         </p>
 
-        <div id="mensagem-status" class="mensagem-status" role="alert" aria-live="polite" hidden></div>
+        <div id="status-message" class="status-message" aria-live="polite"></div>
+        <div id="mensagem-erro" class="mensagem-erro" role="alert" hidden></div>
 
-        <button id="submit-button" type="submit" class="btn btn-primary">Entrar</button>
+        <button id="submit-button" type="submit">Entrar</button>
       </form>
 
       <p class="signup">
