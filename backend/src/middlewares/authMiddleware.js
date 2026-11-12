@@ -15,6 +15,8 @@ export function autenticarToken(req, res, next) {
         const usuarioDecodificado = jwt.verify(token, jwtSecret);
 
         req.usuario = usuarioDecodificado;
+        req.user = usuarioDecodificado;
+
         return next();
     } catch (error) {
         return res.status(403).json({
