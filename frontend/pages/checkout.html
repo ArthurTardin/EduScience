@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finalizar Compra | EduScience</title>
+    <style>
+        :root {
+            --primary: #0f4c81;
+            --primary-hover: #0a365c;
+            --bg: #f4f7fa;
+            --card: #ffffff;
+            --border: #dce3ec;
+            --text: #1e293b;
+            --muted: #64748b;
+            --danger: #dc2626;
+            --success: #16a34a;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; }
+        body { background: var(--bg); color: var(--text); line-height: 1.5; }
+
+        header {
+            background: var(--primary);
+            color: #fff;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        header a { color: #fff; text-decoration: none; font-weight: 600; }
+
+        .container {
+            max-width: 1100px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+            display: grid;
+            grid-template-columns: 1.5fr 1fr;
+            gap: 1.5rem;
+        }
+
+        @media (max-width: 820px) {
+            .container { grid-template-columns: 1fr; }
+        }
+
+        .card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+        }
+
+        h1, h2 { margin-bottom: 1rem; color: var(--primary); }
+        h2 { font-size: 1.15rem; border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        .full-width { grid-column: 1 / -1; }
+
+        label { display: block; font-size: 0.875rem; font-weight: 600; margin-bottom: 0.3rem; }
+        input, select {
+            width: 100%;
+            padding: 0.65rem 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 0.95rem;
+        }
+        input:focus, select:focus { outline: none; border-color: var(--primary); }
+        input.invalid { border-color: var(--danger); background: #fef2f2; }
+
+        .payment-methods {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+        .payment-option {
+            border: 2px solid var(--border);
+            border-radius: 6px;
+            padding: 0.75rem;
+            text-align: center;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.15s ease;
+        }
+        .payment-option.active {
+            border-color: var(--primary);
+            background: #eff6ff;
+            color: var(--primary);
+        }
+        .payment-option input { display: none; }
+
+        .payment-details {
+            background: #f8fafc;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            padding: 1rem;
+            margin-bottom: 1.25rem;
+        }
+        .hidden { display: none; }
+
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.6rem 0;
+            border-bottom: 1px solid var(--border);
+            font-size: 0.92rem;
+        }
+        .summary-totals { margin-top: 1rem; }
+        .summary-row { display: flex; justify-content: space-between; margin-bottom: 0.4rem; }
+        .summary-total {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--primary);
+            border-top: 2px solid var(--border);
+            padding-top: 0.6rem;
+            margin-top: 0.6rem;
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 0.9rem;
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 1rem;
+        }
+        .btn-submit:hover:not(:disabled) { background: var(--primary-hover); }
+        .btn-submit:disabled { opacity: 0.6; cursor: not-allowed; }
+
+        .alert {
+            padding: 0.75rem 1rem;
+            border-radius: 6px;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+            display: none;
+        }
+        .alert.error { display: block; background: #fee2e2; color: var(--danger); border: 1px solid #fecaca; }
+        .alert.success { display: block; background: #dcfce7; color: var(--success); border: 1px solid #bbf7d0; }
+    </style>
+</head>
+<body>
+    <header>
+        <a href="../index.html">EduScience</a>
+        <a href="carrinho.html">← Voltar ao Carrinho</a>
+    </header>
+
+    <main class="container">
+        <section class="card">
+            <h1>Finalizar Pedido</h1>
+            <div id="feedback-alert" class="alert" role="alert"></div>
+
+            <form id="checkout-form" novalidate>
+                <h2>1. Dados de Entrega</h2>
+                <div class="form-grid">
+                    <div>
+                        <label for="cep">CEP *</label>
+                        <input type="text" id="cep" name="cep" placeholder="00000-000" maxlength="9" required>
+                    </div>
+                    <div>
+                        <label for="estado">Estado (UF) *</label>
+                        <select id="estado" name="estado" required>
+                            <option value="SP" selected>SP - São Paulo</option>
+                            <option value="RJ">RJ - Rio de Janeiro</option>
+                            <option value="MG">MG - Minas Gerais</option>
+                            <option value="PR">PR - Paraná</option>
+                            <option value="RS">RS - Rio Grande do Sul</option>
+                            <option value="OUTRO">Outros Estados</option>
+                        </select>
+                    </div>
+                    <div class="full-width">
+                        <label for="logradouro">Logradouro (Rua / Avenida) *</label>
+                        <input type="text" id="logradouro" name="logradouro" placeholder="Ex: Av. Paulista" required>
+                    </div>
+                    <div>
+                        <label for="numero">Número *</label>
+                        <input type="text" id="numero" name="numero" placeholder="Ex: 1000" required>
+                    </div>
+                    <div>
+                        <label for="complemento">Complemento</label>
+                        <input type="text" id="complemento" name="complemento" placeholder="Bloco, Sala, Lab...">
+                    </div>
+                    <div>
+                        <label for="bairro">Bairro *</label>
+                        <input type="text" id="bairro" name="bairro" required>
+                    </div>
+                    <div>
+                        <label for="cidade">Cidade *</label>
+                        <input type="text" id="cidade" name="cidade" required>
+                    </div>
+                </div>
+
+                <h2>2. Forma de Pagamento</h2>
+                <div class="payment-methods" id="payment-selector">
+                    <label class="payment-option active" data-method="PIX">
+                        <input type="radio" name="metodo_pagamento" value="PIX" checked>
+                        PIX (Aprovação Imediata)
+                    </label>
+                    <label class="payment-option" data-method="Cartao">
+                        <input type="radio" name="metodo_pagamento" value="Cartao">
+                        Cartão de Crédito
+                    </label>
+                    <label class="payment-option" data-method="Boleto">
+                        <input type="radio" name="metodo_pagamento" value="Boleto">
+                        Boleto Bancário
+                    </label>
+                </div>
+
+                <div id="details-PIX" class="payment-details">
+                    <p><strong>Pagamento via PIX:</strong> O QR Code e o código Copia e Cola serão gerados imediatamente após a confirmação do pedido junto com a Nota Fiscal.</p>
+                </div>
+
+                <div id="details-Cartao" class="payment-details hidden">
+                    <div class="form-grid" style="margin-bottom: 0;">
+                        <div class="full-width">
+                            <label for="cartao-numero">Número do Cartão *</label>
+                            <input type="text" id="cartao-numero" placeholder="0000 0000 0000 0000" maxlength="19">
+                        </div>
+                        <div class="full-width">
+                            <label for="cartao-titular">Nome Impresso no Cartão *</label>
+                            <input type="text" id="cartao-titular" placeholder="Nome completo">
+                        </div>
+                        <div>
+                            <label for="cartao-validade">Validade (MM/AA) *</label>
+                            <input type="text" id="cartao-validade" placeholder="12/29" maxlength="5">
+                        </div>
+                        <div>
+                            <label for="cartao-cvv">CVV *</label>
+                            <input type="text" id="cartao-cvv" placeholder="123" maxlength="4">
+                        </div>
+                    </div>
+                </div>
+
+                <div id="details-Boleto" class="payment-details hidden">
+                    <p><strong>Boleto Bancário Institucional:</strong> Vencimento em 3 dias úteis. A linha digitável será disponibilizada no comprovante da compra.</p>
+                </div>
+
+                <button type="submit" id="btn-finalizar" class="btn-submit">Confirmar Pedido e Emitir NF-e</button>
+            </form>
+        </section>
+
+        <aside class="card">
+            <h2>Resumo do Pedido</h2>
+            <div id="resumo-itens">
+                <p style="color: var(--muted);">Carregando itens do carrinho...</p>
+            </div>
+
+            <div class="summary-totals">
+                <div class="summary-row">
+                    <span>Subtotal dos Kits:</span>
+                    <span id="resumo-subtotal">R$ 0,00</span>
+                </div>
+                <div class="summary-row">
+                    <span>Frete Estimado:</span>
+                    <span id="resumo-frete">R$ 0,00</span>
+                </div>
+                <div class="summary-row summary-total">
+                    <span>Total a Pagar:</span>
+                    <span id="resumo-total">R$ 0,00</span>
+                </div>
+            </div>
+        </aside>
+    </main>
+
+    <script type="module" src="../js/checkout.js"></script>
+</body>
+</html>
