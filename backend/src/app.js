@@ -8,6 +8,7 @@ import authRoutes from './routes/authRoutes.js';
 import produtoRoutes from './routes/produtoRoutes.js';
 import carrinhoRoutes from './routes/carrinhoRoutes.js';
 import checkoutRoutes from './routes/checkoutRoutes.js';
+import pedidoRoutes from './routes/pedidoRoutes.js';
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -27,6 +28,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/produtos', produtoRoutes);
 app.use('/api/carrinho', carrinhoRoutes);
 app.use('/api/checkout', checkoutRoutes);
+app.use('/api/pedidos', pedidoRoutes);
 
 app.use((req, res) => {
   res.status(404).json({ mensagem: 'Rota não encontrada.' });
