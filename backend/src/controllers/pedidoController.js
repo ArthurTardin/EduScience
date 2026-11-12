@@ -1,4 +1,5 @@
 import { pool } from '../config/database.js';
+import { emitirNotaFiscal, buscarNotaFiscalPorPedido } from '../services/notaFiscalService.js';
 
 export async function criarPedido(req, res) {
     const idCliente = req.user?.id_cliente || req.usuario?.id_cliente;
@@ -73,9 +74,11 @@ export async function criarPedido(req, res) {
             const precoUnitario = Number(item.preco);
             const subtotalItem = Number((precoUnitario * item.quantidade).toFixed(2));
 
-            await conn.execute(`INSERT INTO venda (id_compra, id_produto, quantidade, preco_unitario, subtotal)
+            await conn.execute(
+                `INSERT INTO venda (id_compra, id_produto, quantidade, preco_unitario, subtotal)
                  VALUES (?, ?, ?, ?, ?)`,
-                [idCompra, item.id_produto, item.quantidade, precoUnitario, subtotalItem]);
+                [idCompra, item.id_produto, item.quantidade, precoUnitario, subtotalItem]
+            );
 
             await conn.execute(
                 `UPDATE produto SET estoque = estoque - ? WHERE id_produto = ?`,
@@ -91,6 +94,8 @@ export async function criarPedido(req, res) {
             });
         }
 
+        const notasFiscal = await emitirNotaFiscal(idCompra, conn);
+
         await conn.execute(
             `DELETE FROM carrinho_de_compra WHERE id_cliente = ?`,
             [idCliente]
@@ -99,7 +104,7 @@ export async function criarPedido(req, res) {
         await conn.commit();
 
         return res.status(201).json({
-            message: 'Pedido criado com sucesso.',
+           message: 'Pedido criado e Nota Fiscal emitida com sucesso.',
             pedido: {
                 id_compra: idCompra,
                 id_cliente: idCliente,
@@ -109,7 +114,8 @@ export async function criarPedido(req, res) {
                 status_pedido: 'Confirmado',
                 metodo_pagamento: metodoPagamento,
                 itens: itensRegistrados
-            }
+            },
+            nota_fiscal: notasFiscal
         });
     } catch(err) {
         if (conn) await conn.rollback();
@@ -117,5 +123,33 @@ export async function criarPedido(req, res) {
         return res.status(500).json({ error: 'Erro interno ao registrar pedido. '});
     } finally {
         if (conn) conn.release();
+    }
+}
+
+export async function obterNotaFiscalPedido(req, res) {
+    const idCliente = req.user?.id_cliente || req.usuario?.id_cliente;
+    const idCompra = Number(req.params.id);
+
+    if (!idCliente) {
+        return res.status(401).json({ error: 'Cliente não autenticado.' });
+    }
+
+    if (!Number.isInteger(idCompra) || idCompra <= 0) {
+        return res.status(400).json({ error: 'ID do pedido inválido.' });
+    } 
+
+    try {
+        const comprovante = await buscarNotaFiscalPorPedido(idCompra, idCliente);
+
+        if (!comprovante) {
+            return res.status(404).json({
+                error: 'Nota Fiscal não encontrado para este pedido ou acesso não autorizado.'
+            });
+        }
+
+        return  res.status(200).json(comprovante);
+    } catch(err) {
+        console.error('Erro ao buscar Nota Fiscal:', err);
+        return res.status(500).json({ error: 'Erro interno ao consultar Nota Fiscal' });
     }
 }
