@@ -1,0 +1,33 @@
+.field-error {
+  display: block;
+  margin-top: var(--space-1);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-error);
+}
+
+.field-error[hidden] {
+  display: none;
+}
+
+input.is-invalid,
+input.is-invalid:focus,
+select.is-invalid,
+select.is-invalid:focus,
+textarea.is-invalid,
+textarea.is-invalid:focus {
+  border-color: var(--color-error);
+  background-color: var(--color-error-bg);
+}
+
+input.is-invalid:focus,
+select.is-invalid:focus,
+textarea.is-invalid:focus {
+  box-shadow: 0 0 0 3px var(--color-error-border);
+}
+
+input.is-valid,
+select.is-valid,
+textarea.is-valid {
+  border-color: var(--color-success);
+}
