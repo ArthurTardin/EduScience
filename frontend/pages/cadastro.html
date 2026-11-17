@@ -4,13 +4,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Cadastro da Escola | EduScience</title>
-  <!-- Caminhos corrigidos para apontar para a pasta css -->
   <link rel="stylesheet" href="../css/global.css">
   <link rel="stylesheet" href="../css/validacoes.css">
   <link rel="stylesheet" href="../css/cadastro.css">
 </head>
 <body>
-  <!-- Cabeçalho (Navbar) restaurado para manter o padrão -->
   <header class="navbar">
     <div class="logo">
       <h1>EduScience</h1>
@@ -43,26 +41,24 @@
           <div class="form-row">
             <div class="form-group">
               <label for="cnpj_cpf">CNPJ ou CPF *</label>
-              <!-- MÁSCARA ADICIONADA AQUI -->
               <input type="text" id="cnpj_cpf" name="cnpj_cpf" maxlength="18"
-                     inputmode="numeric" placeholder="00.000.000-00"
-                     required data-mascara="cpf" data-validate="cnpj_cpf">
+                     inputmode="numeric" placeholder="00.000.000/0000-00"
+                     required data-mask="cnpj_cpf" data-validate="cnpj_cpf">
             </div>
 
             <div class="form-group">
               <label for="telefone">Telefone *</label>
               <input type="tel" id="telefone" name="telefone" maxlength="20"
                      inputmode="tel" placeholder="(11) 99999-9999"
-                     required data-validate="telefone">
+                     required data-mask="telefone" data-validate="telefone">
             </div>
           </div>
 
           <div class="form-group">
             <label for="email">E-mail Institucional *</label>
-            <!-- MÁSCARA ADICIONADA AQUI -->
             <input type="email" id="email" name="email" maxlength="100"
                    placeholder="contato@escola.edu.br" autocomplete="email"
-                   required data-mascara="email" data-validate="email">
+                   required data-validate="email">
           </div>
         </fieldset>
 
@@ -72,10 +68,9 @@
           <div class="form-row">
             <div class="form-group">
               <label for="cep">CEP *</label>
-              <!-- MÁSCARA ADICIONADA AQUI -->
               <input type="text" id="cep" name="cep" maxlength="9"
                      inputmode="numeric" placeholder="00000-000"
-                     required data-mascara="cep" data-validate="cep">
+                     required data-mask="cep" data-validate="cep">
             </div>
 
             <div class="form-group">
@@ -83,8 +78,19 @@
               <select id="estado" name="estado" required>
                 <option value="">Selecione...</option>
                 <option value="AC">AC</option><option value="AL">AL</option>
-                <option value="SP">SP</option><option value="RJ">RJ</option>
-                <!-- Reduzi a lista de opções aqui para ser mais conciso, pode usar a sua completa -->
+                <option value="AP">AP</option><option value="AM">AM</option>
+                <option value="BA">BA</option><option value="CE">CE</option>
+                <option value="DF">DF</option><option value="ES">ES</option>
+                <option value="GO">GO</option><option value="MA">MA</option>
+                <option value="MT">MT</option><option value="MS">MS</option>
+                <option value="MG">MG</option><option value="PA">PA</option>
+                <option value="PB">PB</option><option value="PR">PR</option>
+                <option value="PE">PE</option><option value="PI">PI</option>
+                <option value="RJ">RJ</option><option value="RN">RN</option>
+                <option value="RS">RS</option><option value="RO">RO</option>
+                <option value="RR">RR</option><option value="SC">SC</option>
+                <option value="SP">SP</option><option value="SE">SE</option>
+                <option value="TO">TO</option>
               </select>
             </div>
           </div>
@@ -160,7 +166,6 @@
     </section>
   </main>
 
-  <!-- Caminho corrigido para a pasta js -->
   <script type="module" src="../js/cadastro.js"></script>
 </body>
 </html>

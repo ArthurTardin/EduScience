@@ -1,18 +1,3 @@
-import { iniciarValidacoesEmTempoReal } from './validacoes.js'; // <- ADICIONAR ISTO AQUI
-
-// ... [resto das suas outras importações, se existirem] ...
-
-document.addEventListener('DOMContentLoaded', () => {
-    
-    iniciarValidacoesEmTempoReal(); // <- ADICIONAR ESTA CHAMADA AQUI
-    
-    // O SEU CÓDIGO ATUAL DE SUBMISSÃO FICA INTACTO DAQUI PARA BAIXO
-    const form = document.getElementById('cadastro-form');
-    if (!form) return;
-    
-    // ... [resto da sua lógica atual] ...
-});
-
 import {
   somenteDigitos,
   mascaras,
