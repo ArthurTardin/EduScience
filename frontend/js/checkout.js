@@ -71,29 +71,36 @@ async function carregarResumoCarrinho() {
         itensCarrinho = data.itens || data || [];
 
         const containerItens = document.getElementById('resumo-itens');
+        containerItens.replaceChildren();
 
         if (!Array.isArray(itensCarrinho) || itensCarrinho.length === 0) {
-            containerItens.innerHTML = '<p style="color: #dc2626;">Seu carrinho está vazio.</p>';
+            const emptyMsg = document.createElement('p');
+            emptyMsg.className = 'field-error';
+            emptyMsg.textContent = 'Seu carrinho está vazio.';
+            containerItens.appendChild(emptyMsg);
             btnFinalizar.disabled = true;
             return;
         }
 
         subtotalProdutos = 0;
-        containerItens.innerHTML = itensCarrinho
-            .map((item) => {
-                const preco = Number(item.preco || item.preco_unitario || 0);
-                const qtd = Number(item.quantidade || 1);
-                const sub = preco * qtd;
-                subtotalProdutos += sub;
+        itensCarrinho.forEach((item) => {
+            const preco = Number(item.preco || item.preco_unitario || 0);
+            const qtd = Number(item.quantidade || 1);
+            const sub = preco * qtd;
+            subtotalProdutos += sub;
 
-                return `
-                    <div class="summary-item">
-                        <span>${qtd}x ${item.nome_kit}</span>
-                        <strong>${formatarMoeda(sub)}</strong>
-                    </div>
-                `;
-            })
-            .join('');
+            const row = document.createElement('div');
+            row.className = 'summary-item';
+
+            const nomeSpan = document.createElement('span');
+            nomeSpan.textContent = `${qtd}x ${item.nome_kit}`;
+
+            const precoStrong = document.createElement('strong');
+            precoStrong.textContent = formatarMoeda(sub);
+
+            row.append(nomeSpan, precoStrong);
+            containerItens.appendChild(row);
+        });
 
         document.getElementById('resumo-subtotal').textContent = formatarMoeda(subtotalProdutos);
         calcularFrete();
@@ -105,31 +112,21 @@ async function carregarResumoCarrinho() {
 }
 
 function configurarInteracoesFormulario() {
-    // Máscaras (CPF, CEP, cartão, validade, CVV) e validação inline
-    // são aplicadas pelo validacao.js via atributos data-mask / data-validate.
-
     estadoSelect.addEventListener('change', calcularFrete);
 
-    const options = document.querySelectorAll('.payment-option');
-    options.forEach((opt) => {
-        opt.addEventListener('click', () => {
-            options.forEach((o) => o.classList.remove('active'));
-            opt.classList.add('active');
-            const radio = opt.querySelector('input[type="radio"]');
-            radio.checked = true;
+    document.querySelectorAll('input[name="metodo_pagamento"]').forEach((radio) => {
+        radio.addEventListener('change', () => {
+            document.querySelectorAll('.payment-option').forEach((opt) => {
+                opt.classList.toggle('active', opt.contains(radio));
+            });
 
-            const metodo = radio.value;
             ['PIX', 'Cartao', 'Boleto'].forEach((m) => {
-                document.getElementById(`details-${m}`).classList.toggle('hidden', m !== metodo);
+                document.getElementById(`details-${m}`).classList.toggle('hidden', m !== radio.value);
             });
         });
     });
 }
 
-/**
- * Valida todos os campos visíveis (os do cartão só contam quando o método
- * Cartão está selecionado, pois os demais ficam dentro de .hidden).
- */
 function validarFormulario() {
     limparAlerta();
 

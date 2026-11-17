@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Pedido Confirmado - EduScience</title>
-  <link rel="stylesheet" href="../css/global.css">
   <link rel="stylesheet" href="../css/sucesso.css">
 </head>
 <body>
@@ -14,18 +13,17 @@
     </div>
     <nav>
       <a href="landing.html">Início</a>
-      <a href="carrinho.html">Carrinho <span class="nav-cart-count">0</span></a>
+      <a href="carrinho.html">Carrinho <span class="nav-cart-count" id="nav-cart-count">0</span></a>
       <a href="login.html" class="btn-login">Entrar</a>
     </nav>
   </header>
 
   <main class="success-page">
-    <!-- Carregando -->
     <section id="estado-carregando" class="state-card" aria-live="polite">
       <p>Carregando o resumo da sua compra...</p>
     </section>
 
-    <section id="estado-erro" class="state-card state-error" role="alert" hidden>
+    <section id="estado-erro" class="state-card state-error" role="alert" aria-live="assertive" hidden>
       <h2>Não foi possível exibir o comprovante</h2>
       <p id="erro-mensagem"></p>
       <div class="actions">
@@ -42,9 +40,17 @@
       </div>
 
       <article class="receipt" aria-labelledby="receipt-title">
-        <h3 id="receipt-title">Comprovante / Nota Fiscal</h3>
+        <h3 id="receipt-title">Comprovante / Nota Fiscal (DANFE Simplificado)</h3>
 
         <dl class="receipt-meta">
+          <div class="meta-row">
+            <dt>Emitente</dt>
+            <dd id="emitente-info">EduScience Equipamentos Educacionais LTDA</dd>
+          </div>
+          <div class="meta-row">
+            <dt>Destinatário</dt>
+            <dd id="destinatario-info">-</dd>
+          </div>
           <div class="meta-row">
             <dt>Pedido</dt>
             <dd id="pedido-numero">-</dd>
@@ -88,6 +94,22 @@
             <dt>Frete</dt>
             <dd id="resumo-frete">R$ 0,00</dd>
           </div>
+          <div class="summary-row">
+            <dt id="label-icms">ICMS (18,00%)</dt>
+            <dd id="resumo-icms">R$ 0,00</dd>
+          </div>
+          <div class="summary-row">
+            <dt id="label-pis">PIS (1,65%)</dt>
+            <dd id="resumo-pis">R$ 0,00</dd>
+          </div>
+          <div class="summary-row">
+            <dt id="label-cofins">COFINS (7,60%)</dt>
+            <dd id="resumo-cofins">R$ 0,00</dd>
+          </div>
+          <div class="summary-row">
+            <dt>Total aproximado de tributos</dt>
+            <dd id="resumo-tributos">R$ 0,00</dd>
+          </div>
           <div class="summary-row summary-total">
             <dt>Total pago</dt>
             <dd id="resumo-total">R$ 0,00</dd>
@@ -103,6 +125,6 @@
     </section>
   </main>
 
-  <script src="../js/sucesso.js"></script>
+  <script type="module" src="../js/sucesso.js"></script>
 </body>
 </html>

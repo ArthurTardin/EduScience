@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Finalizar Compra | EduScience</title>
-    <link rel="stylesheet" href="../css/validacao.css">
-    <link rel="stylesheet" href="../css/checkout.css">
+    <link rel="stylesheet" href="../css/validacoes.css">
+    <link rel="stylesheet" href="../css/chekout.css">
 </head>
 <body>
     <header>
@@ -16,7 +16,7 @@
     <main class="container">
         <section class="card">
             <h1>Finalizar Pedido</h1>
-            <div id="feedback-alert" class="alert" role="alert"></div>
+            <div id="feedback-alert" class="alert" role="alert" aria-live="polite"></div>
 
             <form id="checkout-form" novalidate>
                 <h2>1. Dados do Comprador</h2>
@@ -44,7 +44,7 @@
                     </div>
                     <div>
                         <label for="estado">Estado (UF) *</label>
-                        <select id="estado" name="estado" required>
+                        <select id="estado" name="estado" autocomplete="address-level1" required>
                             <option value="SP" selected>SP - São Paulo</option>
                             <option value="RJ">RJ - Rio de Janeiro</option>
                             <option value="MG">MG - Minas Gerais</option>
@@ -55,7 +55,8 @@
                     </div>
                     <div class="full-width">
                         <label for="logradouro">Logradouro (Rua / Avenida) *</label>
-                        <input type="text" id="logradouro" name="logradouro" placeholder="Ex: Av. Paulista" required>
+                        <input type="text" id="logradouro" name="logradouro" placeholder="Ex: Av. Paulista"
+                               autocomplete="street-address" required>
                     </div>
                     <div>
                         <label for="numero">Número *</label>
@@ -71,7 +72,7 @@
                     </div>
                     <div>
                         <label for="cidade">Cidade *</label>
-                        <input type="text" id="cidade" name="cidade" required>
+                        <input type="text" id="cidade" name="cidade" autocomplete="address-level2" required>
                     </div>
                 </div>
 

@@ -1,7 +1,5 @@
 export const somenteDigitos = (valor) => String(valor ?? '').replace(/\D/g, '');
 
-/* ---------------------------- Máscaras ---------------------------------- */
-
 export const mascaras = {
   cpf(valor) {
     const d = somenteDigitos(valor).slice(0, 11);
@@ -30,10 +28,6 @@ export const mascaras = {
     return somenteDigitos(valor).slice(0, 4);
   }
 };
-
-/* --------------------------- Validadores -------------------------------- */
-/* Cada validador recebe o valor (já não vazio) e devolve '' se válido
-   ou a mensagem de erro. */
 
 function algoritmoLuhn(digitos) {
   let soma = 0;
@@ -109,8 +103,6 @@ export const validadores = {
   }
 };
 
-/* ------------------------- Mensagem de erro ----------------------------- */
-
 const SELETOR_CAMPOS =
   'input[required], select[required], textarea[required], [data-mask], [data-validate]';
 
@@ -118,7 +110,6 @@ function campoOculto(el) {
   return el.disabled || Boolean(el.closest('.hidden, [hidden]'));
 }
 
-/** Devolve a mensagem de erro do campo ('' se válido ou ignorado). */
 export function obterMensagemErro(el) {
   if (campoOculto(el)) return '';
 
@@ -141,7 +132,8 @@ function obterCaixaErro(el) {
     caixa.className = 'field-error';
     caixa.setAttribute('aria-live', 'polite');
     caixa.hidden = true;
-    el.insertAdjacentElement('afterend', caixa);
+    const alvo = el.closest('.password-wrapper') || el;
+    alvo.insertAdjacentElement('afterend', caixa);
   }
   return caixa;
 }
@@ -160,17 +152,12 @@ function exibirErroInline(el, mensagem) {
   else el.removeAttribute('aria-describedby');
 }
 
-/** Valida um campo e atualiza a mensagem inline. Devolve true se válido. */
 export function validarCampo(el) {
   const mensagem = obterMensagemErro(el);
   exibirErroInline(el, mensagem);
   return !mensagem;
 }
 
-/**
- * Valida todos os campos do formulário (mostrando os erros inline).
- * Devolve o primeiro campo inválido ou null se estiver tudo certo.
- */
 export function primeiroCampoInvalido(form) {
   let primeiro = null;
   form.querySelectorAll(SELETOR_CAMPOS).forEach((el) => {
@@ -179,8 +166,6 @@ export function primeiroCampoInvalido(form) {
   });
   return primeiro;
 }
-
-/* ------------------------- Aplicação da máscara ------------------------- */
 
 function aplicarMascara(el) {
   const mascara = mascaras[el.dataset.mask];
@@ -192,7 +177,6 @@ function aplicarMascara(el) {
 
   el.value = mascara(el.value);
 
-  // Mantém o cursor na posição certa ao editar no meio do texto.
   if (!emFoco || posicao === null) return;
   let novaPosicao = el.value.length;
   if (digitosAntesCursor === 0) {
@@ -210,11 +194,8 @@ function aplicarMascara(el) {
   try {
     el.setSelectionRange(novaPosicao, novaPosicao);
   } catch (err) {
-    /* tipos de input sem seleção: ignora */
   }
 }
-
-/* ------------------------------ Inicialização --------------------------- */
 
 function configurarCampo(el) {
   if (el.dataset.validacaoIniciada) return;
@@ -246,7 +227,6 @@ function configurarCampo(el) {
 export function iniciarValidacao(raiz = document) {
   raiz.querySelectorAll(SELETOR_CAMPOS).forEach(configurarCampo);
 
-  // Opcional: <form data-validar-submit> bloqueia o envio se houver erro.
   raiz.querySelectorAll('form[data-validar-submit]').forEach((form) => {
     if (form.dataset.validacaoSubmit) return;
     form.dataset.validacaoSubmit = 'true';
