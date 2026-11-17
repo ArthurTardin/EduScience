@@ -1,6 +1,7 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import pool from '../config/database.js';
+import { JWT_SECRET } from '../config/auth.js';
 
 export async function login(req, res) {
   const { usuario, email, senha } = req.body;
@@ -47,7 +48,7 @@ export async function login(req, res) {
         usuario: conta.usuario,
         email: conta.email
       },
-      process.env.JWT_SECRET,
+      JWT_SECRET,
       { expiresIn: '8h' }
     );
 
@@ -123,7 +124,7 @@ export async function register(req, res) {
 
     const token = jwt.sign(
       { id_cliente: idCliente, usuario: usuario.trim(), email: email.trim().toLowerCase() },
-      process.env.JWT_SECRET,
+      JWT_SECRET,
       { expiresIn: '8h' }
     );
 
@@ -136,7 +137,9 @@ export async function register(req, res) {
     await connection.rollback();
 
     if (error.code === 'ER_DUP_ENTRY') {
-      const campo = error.message.includes('usuario') ? 'Usuário' : 'E-mail';
+      let campo = 'E-mail';
+      if (error.message.includes('usuario')) campo = 'Usuário';
+      else if (error.message.includes('cnpj_cpf')) campo = 'CNPJ/CPF';
       return res.status(409).json({ erro: `${campo} já cadastrado no sistema.` });
     }
 

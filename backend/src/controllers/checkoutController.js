@@ -1,12 +1,18 @@
 import { pool } from '../config/database.js';
 
+const METODOS_PERMITIDOS = ['PIX', 'Cartao', 'Boleto'];
+
 export async function processarCheckout(req, res) {
     const idCliente = req.user?.id_cliente || req.usuario?.id_cliente;
     const metodoPagamento = req.body?.metodo_pagamento || req.body?.metodoPagamento || 'PIX';
-    const valorFrete = Number(req.body?.valor_frete || req.body?.valorFrete || 0);
+    const valorFrete = Math.max(0, Number(req.body?.valor_frete ?? req.body?.valorFrete ?? 0) || 0);
 
     if (!idCliente) {
-        return res.status(401).json({ error: 'Cliente não identificado no token.' });
+        return res.status(401).json({ erro: 'Cliente não identificado no token.' });
+    }
+
+    if (!METODOS_PERMITIDOS.includes(metodoPagamento)) {
+        return res.status(400).json({ erro: 'Método de pagamento inválido.' });
     }
 
     let conn;
@@ -18,13 +24,14 @@ export async function processarCheckout(req, res) {
             `SELECT c.id_produto, c.quantidade, p.preco, p.estoque, p.nome_kit
              FROM carrinho_de_compra c
              JOIN produto p ON c.id_produto = p.id_produto
-             WHERE c.id_cliente = ?`,
+             WHERE c.id_cliente = ?
+             FOR UPDATE`,
             [idCliente]
         );
 
         if (itensCarrinho.length === 0) {
             await conn.rollback();
-            return res.status(400).json({ error: 'O carrinho está vazio.' });
+            return res.status(400).json({ erro: 'O carrinho está vazio.' });
         }
 
         let subtotalProdutos = 0;
@@ -32,7 +39,7 @@ export async function processarCheckout(req, res) {
             if (item.estoque < item.quantidade) {
                 await conn.rollback();
                 return res.status(400).json({
-                    error: `Estoque insuficiente para "${item.nome_kit}". Disponível: ${item.estoque}.`
+                    erro: `Estoque insuficiente para "${item.nome_kit}". Disponível: ${item.estoque}.`
                 });
             }
             subtotalProdutos += Number(item.preco) * item.quantidade;
@@ -71,7 +78,7 @@ export async function processarCheckout(req, res) {
         await conn.commit();
 
         return res.status(201).json({
-            message: 'Compra finalizada com sucesso.',
+            mensagem: 'Compra finalizada com sucesso.',
             pedido: {
                 id_compra: idCompra,
                 subtotal: subtotalProdutos,
@@ -84,7 +91,7 @@ export async function processarCheckout(req, res) {
     } catch (err) {
         if (conn) await conn.rollback();
         console.error('Erro ao processar checkout:', err);
-        return res.status(500).json({ error: 'Erro interno ao processar checkout.' });
+        return res.status(500).json({ erro: 'Erro interno ao processar checkout.' });
     } finally {
         if (conn) conn.release();
     }
