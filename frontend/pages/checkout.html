@@ -1,164 +1,165 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Finalizar Compra | EduScience</title>
-    <link rel="stylesheet" href="../css/validacoes.css">
-    <link rel="stylesheet" href="../css/chekout.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Checkout | EduScience</title>
+  <link rel="stylesheet" href="../css/global.css">
+  <link rel="stylesheet" href="../css/validacoes.css">
+  <link rel="stylesheet" href="../css/checkout.css">
 </head>
 <body>
-    <header>
-        <a href="../index.html">EduScience</a>
-        <a href="carrinho.html">← Voltar ao Carrinho</a>
-    </header>
+  <header class="navbar">
+    <div class="logo">
+      <h1>EduScience</h1>
+    </div>
+    <nav>
+      <a href="landing.html">Início</a>
+      <a href="carrinho.html">Carrinho</a>
+      <a href="login.html" class="btn-login">Sair</a>
+    </nav>
+  </header>
 
-    <main class="container">
-        <section class="card">
-            <h1>Finalizar Pedido</h1>
-            <div id="feedback-alert" class="alert" role="alert" aria-live="polite"></div>
+  <main class="container checkout-grid">
+    <section class="card">
+      <h2>Finalizar Pedido</h2>
 
-            <form id="checkout-form" novalidate>
-                <h2>1. Dados do Comprador</h2>
-                <div class="form-grid">
-                    <div>
-                        <label for="cpf">CPF *</label>
-                        <input type="text" id="cpf" name="cpf" placeholder="000.000.000-00"
-                               maxlength="14" inputmode="numeric" autocomplete="off"
-                               required data-mask="cpf" data-validate="cpf">
-                    </div>
-                    <div>
-                        <label for="email">E-mail *</label>
-                        <input type="email" id="email" name="email" placeholder="voce@exemplo.com"
-                               autocomplete="email" required data-validate="email">
-                    </div>
-                </div>
+      <div id="feedback-alert" class="alert" role="alert" aria-live="polite"></div>
 
-                <h2>2. Dados de Entrega</h2>
-                <div class="form-grid">
-                    <div>
-                        <label for="cep">CEP *</label>
-                        <input type="text" id="cep" name="cep" placeholder="00000-000"
-                               maxlength="9" inputmode="numeric" autocomplete="postal-code"
-                               required data-mask="cep" data-validate="cep">
-                    </div>
-                    <div>
-                        <label for="estado">Estado (UF) *</label>
-                        <select id="estado" name="estado" autocomplete="address-level1" required>
-                            <option value="SP" selected>SP - São Paulo</option>
-                            <option value="RJ">RJ - Rio de Janeiro</option>
-                            <option value="MG">MG - Minas Gerais</option>
-                            <option value="PR">PR - Paraná</option>
-                            <option value="RS">RS - Rio Grande do Sul</option>
-                            <option value="OUTRO">Outros Estados</option>
-                        </select>
-                    </div>
-                    <div class="full-width">
-                        <label for="logradouro">Logradouro (Rua / Avenida) *</label>
-                        <input type="text" id="logradouro" name="logradouro" placeholder="Ex: Av. Paulista"
-                               autocomplete="street-address" required>
-                    </div>
-                    <div>
-                        <label for="numero">Número *</label>
-                        <input type="text" id="numero" name="numero" placeholder="Ex: 1000" required>
-                    </div>
-                    <div>
-                        <label for="complemento">Complemento</label>
-                        <input type="text" id="complemento" name="complemento" placeholder="Bloco, Sala, Lab...">
-                    </div>
-                    <div>
-                        <label for="bairro">Bairro *</label>
-                        <input type="text" id="bairro" name="bairro" required>
-                    </div>
-                    <div>
-                        <label for="cidade">Cidade *</label>
-                        <input type="text" id="cidade" name="cidade" autocomplete="address-level2" required>
-                    </div>
-                </div>
+      <form id="checkout-form" novalidate>
+        <fieldset class="form-section">
+          <legend>1. Dados do Destinatário e Entrega</legend>
 
-                <h2>3. Forma de Pagamento</h2>
-                <div class="payment-methods" id="payment-selector">
-                    <label class="payment-option active" data-method="PIX">
-                        <input type="radio" name="metodo_pagamento" value="PIX" checked>
-                        PIX (Aprovação Imediata)
-                    </label>
-                    <label class="payment-option" data-method="Cartao">
-                        <input type="radio" name="metodo_pagamento" value="Cartao">
-                        Cartão de Crédito
-                    </label>
-                    <label class="payment-option" data-method="Boleto">
-                        <input type="radio" name="metodo_pagamento" value="Boleto">
-                        Boleto Bancário
-                    </label>
-                </div>
+          <div class="form-group">
+            <label for="nome_destinatario">Nome do Responsável / Escola *</label>
+            <input type="text" id="nome_destinatario" name="nome_destinatario"
+                   placeholder="Nome completo" required data-validate="nome">
+          </div>
 
-                <div id="details-PIX" class="payment-details">
-                    <p><strong>Pagamento via PIX:</strong> O QR Code e o código Copia e Cola serão gerados imediatamente após a confirmação do pedido junto com a Nota Fiscal.</p>
-                </div>
-
-                <div id="details-Cartao" class="payment-details hidden">
-                    <div class="form-grid form-grid-flush">
-                        <div class="full-width">
-                            <label for="cartao-numero">Número do Cartão *</label>
-                            <input type="text" id="cartao-numero" name="cartao-numero"
-                                   placeholder="0000 0000 0000 0000" maxlength="19"
-                                   inputmode="numeric" autocomplete="cc-number"
-                                   required data-mask="cartao" data-validate="cartao">
-                        </div>
-                        <div class="full-width">
-                            <label for="cartao-titular">Nome Impresso no Cartão *</label>
-                            <input type="text" id="cartao-titular" name="cartao-titular"
-                                   placeholder="Nome completo" autocomplete="cc-name"
-                                   required data-validate="nome">
-                        </div>
-                        <div>
-                            <label for="cartao-validade">Validade (MM/AA) *</label>
-                            <input type="text" id="cartao-validade" name="cartao-validade"
-                                   placeholder="12/29" maxlength="5"
-                                   inputmode="numeric" autocomplete="cc-exp"
-                                   required data-mask="validade" data-validate="validade">
-                        </div>
-                        <div>
-                            <label for="cartao-cvv">CVV *</label>
-                            <input type="text" id="cartao-cvv" name="cartao-cvv"
-                                   placeholder="123" maxlength="4"
-                                   inputmode="numeric" autocomplete="cc-csc"
-                                   required data-mask="cvv" data-validate="cvv">
-                        </div>
-                    </div>
-                </div>
-
-                <div id="details-Boleto" class="payment-details hidden">
-                    <p><strong>Boleto Bancário Institucional:</strong> Vencimento em 3 dias úteis. A linha digitável será disponibilizada no comprovante da compra.</p>
-                </div>
-
-                <button type="submit" id="btn-finalizar" class="btn-submit">Confirmar Pedido e Emitir NF-e</button>
-            </form>
-        </section>
-
-        <aside class="card">
-            <h2>Resumo do Pedido</h2>
-            <div id="resumo-itens">
-                <p class="summary-loading">Carregando itens do carrinho...</p>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="cpf">CPF do Responsável *</label>
+              <input type="text" id="cpf" name="cpf" maxlength="14"
+                     inputmode="numeric" placeholder="000.000.000-00"
+                     required data-mask="cpf" data-validate="cpf">
             </div>
 
-            <div class="summary-totals">
-                <div class="summary-row">
-                    <span>Subtotal dos Kits:</span>
-                    <span id="resumo-subtotal">R$ 0,00</span>
-                </div>
-                <div class="summary-row">
-                    <span>Frete Estimado:</span>
-                    <span id="resumo-frete">R$ 0,00</span>
-                </div>
-                <div class="summary-row summary-total">
-                    <span>Total a Pagar:</span>
-                    <span id="resumo-total">R$ 0,00</span>
-                </div>
+            <div class="form-group">
+              <label for="email">E-mail para envio da NF-e *</label>
+              <input type="email" id="email" name="email"
+                     placeholder="financeiro@escola.edu.br"
+                     required data-validate="email">
             </div>
-        </aside>
-    </main>
+          </div>
 
-    <script type="module" src="../js/checkout.js"></script>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="cep">CEP de Entrega *</label>
+              <input type="text" id="cep" name="cep" maxlength="9"
+                     inputmode="numeric" placeholder="00000-000"
+                     required data-mask="cep" data-validate="cep">
+            </div>
+
+            <div class="form-group">
+              <label for="estado">Estado (UF) *</label>
+              <select id="estado" name="estado" required>
+                <option value="">Selecione...</option>
+                <option value="AC">AC</option><option value="AL">AL</option>
+                <option value="AP">AP</option><option value="AM">AM</option>
+                <option value="BA">BA</option><option value="CE">CE</option>
+                <option value="DF">DF</option><option value="ES">ES</option>
+                <option value="GO">GO</option><option value="MA">MA</option>
+                <option value="MT">MT</option><option value="MS">MS</option>
+                <option value="MG">MG</option><option value="PA">PA</option>
+                <option value="PB">PB</option><option value="PR">PR</option>
+                <option value="PE">PE</option><option value="PI">PI</option>
+                <option value="RJ">RJ</option><option value="RN">RN</option>
+                <option value="RS">RS</option><option value="RO">RO</option>
+                <option value="RR">RR</option><option value="SC">SC</option>
+                <option value="SP" selected>SP</option><option value="SE">SE</option>
+                <option value="TO">TO</option>
+              </select>
+            </div>
+          </div>
+        </fieldset>
+
+        <fieldset class="form-section">
+          <legend>2. Forma de Pagamento</legend>
+
+          <div class="payment-methods">
+            <label class="payment-option active">
+              <input type="radio" name="metodo_pagamento" value="PIX" checked> PIX
+            </label>
+            <label class="payment-option">
+              <input type="radio" name="metodo_pagamento" value="Cartao"> Cartão de Crédito
+            </label>
+            <label class="payment-option">
+              <input type="radio" name="metodo_pagamento" value="Boleto"> Boleto Bancário
+            </label>
+          </div>
+
+          <div id="details-PIX" class="payment-details">
+            <p>O QR Code PIX será gerado imediatamente após a confirmação do pedido.</p>
+          </div>
+
+          <div id="details-Cartao" class="payment-details form-grid hidden">
+            <div class="form-group full-width">
+              <label for="nome_cartao">Nome Impresso no Cartão *</label>
+              <input type="text" id="nome_cartao" name="nome_cartao"
+                     placeholder="COMO GRAVADO NO CARTÃO" required data-validate="nome">
+            </div>
+
+            <div class="form-group full-width">
+              <label for="numero_cartao">Número do Cartão *</label>
+              <input type="text" id="numero_cartao" name="numero_cartao"
+                     maxlength="19" inputmode="numeric" placeholder="0000 0000 0000 0000"
+                     required data-mask="cartao" data-validate="cartao">
+            </div>
+
+            <div class="form-group">
+              <label for="validade_cartao">Validade *</label>
+              <input type="text" id="validade_cartao" name="validade_cartao"
+                     maxlength="5" inputmode="numeric" placeholder="MM/AA"
+                     required data-mask="validade" data-validate="validade">
+            </div>
+
+            <div class="form-group">
+              <label for="cvv">CVV *</label>
+              <input type="text" id="cvv" name="cvv"
+                     maxlength="4" inputmode="numeric" placeholder="123"
+                     required data-mask="cvv" data-validate="cvv">
+            </div>
+          </div>
+
+          <div id="details-Boleto" class="payment-details hidden">
+            <p>O boleto bancário vence em 3 dias úteis e será enviado para o e-mail informado.</p>
+          </div>
+        </fieldset>
+
+        <button type="submit" id="btn-finalizar" class="btn-submit">Confirmar Pedido e Emitir NF-e</button>
+      </form>
+    </section>
+
+    <aside class="card">
+      <h2>Resumo do Pedido</h2>
+      <div id="resumo-itens" class="summary-items"></div>
+      <div class="summary-totals">
+        <div class="summary-row">
+          <span>Subtotal</span>
+          <strong id="resumo-subtotal">R$ 0,00</strong>
+        </div>
+        <div class="summary-row">
+          <span>Frete</span>
+          <strong id="resumo-frete">R$ 0,00</strong>
+        </div>
+        <div class="summary-row total">
+          <span>Total</span>
+          <strong id="resumo-total">R$ 0,00</strong>
+        </div>
+      </div>
+    </aside>
+  </main>
+
+  <script type="module" src="../js/checkout.js"></script>
 </body>
 </html>

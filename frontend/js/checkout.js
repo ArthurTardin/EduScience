@@ -1,4 +1,4 @@
-import { primeiroCampoInvalido } from './validacao.js';
+import { iniciarValidacao, primeiroCampoInvalido } from './validacoes.js';
 
 const API_BASE_URL = 'http://localhost:3000/api';
 const TOKEN_KEY = '@EduScience:token';
@@ -193,6 +193,7 @@ form.addEventListener('submit', async (event) => {
 });
 
 document.addEventListener('DOMContentLoaded', () => {
+    iniciarValidacao(form);
     configurarInteracoesFormulario();
     carregarResumoCarrinho();
 });
