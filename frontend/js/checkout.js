@@ -1,3 +1,14 @@
+import { iniciarValidacoesEmTempoReal } from './validacoes.js'; // <- ADICIONAR ISTO AQUI
+
+document.addEventListener('DOMContentLoaded', () => {
+    
+    iniciarValidacoesEmTempoReal(); // <- ADICIONAR ESTA CHAMADA AQUI
+    
+    // O SEU CÓDIGO ATUAL DE INTERAÇÕES E SUBMISSÃO FICA INTACTO DAQUI PARA BAIXO
+    configurarInteracoesFormulario();
+    carregarResumoCarrinho();
+});
+
 import { primeiroCampoInvalido } from './validacao.js';
 
 const API_BASE_URL = 'http://localhost:3000/api';

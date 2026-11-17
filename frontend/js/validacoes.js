@@ -1,126 +1,100 @@
 export const somenteDigitos = (valor) => String(valor ?? '').replace(/\D/g, '');
 
+// 1. MÁSCARAS (Aplicadas em tempo real durante a digitação)
 export const mascaras = {
+  cnpj_cpf(valor) {
+    const d = somenteDigitos(valor);
+    if (d.length <= 11) return mascaras.cpf(valor); // É CPF
+    // Máscara de CNPJ
+    return valor
+      .replace(/\D/g, '')
+      .replace(/^(\d{2})(\d)/, '$1.$2')
+      .replace(/^(\d{2})\.(\d{3})(\d)/, '$1.$2.$3')
+      .replace(/\.(\d{3})(\d)/, '.$1/$2')
+      .replace(/(\d{4})(\d)/, '$1-$2')
+      .substring(0, 18);
+  },
   cpf(valor) {
-    const d = somenteDigitos(valor).slice(0, 11);
-    let saida = d.slice(0, 3);
-    if (d.length > 3) saida += `.${d.slice(3, 6)}`;
-    if (d.length > 6) saida += `.${d.slice(6, 9)}`;
-    if (d.length > 9) saida += `-${d.slice(9, 11)}`;
-    return saida;
+    return valor
+      .replace(/\D/g, '') // Remove letras
+      .replace(/(\d{3})(\d)/, '$1.$2')
+      .replace(/(\d{3})(\d)/, '$1.$2')
+      .replace(/(\d{3})(\d{1,2})/, '$1-$2')
+      .replace(/(-\d{2})\d+?$/, '$1'); // Bloqueia após 11 dígitos
   },
-
   cep(valor) {
-    const d = somenteDigitos(valor).slice(0, 8);
-    return d.length > 5 ? `${d.slice(0, 5)}-${d.slice(5)}` : d;
+    return valor
+      .replace(/\D/g, '')
+      .replace(/(\d{5})(\d)/, '$1-$2')
+      .replace(/(-\d{3})\d+?$/, '$1'); // Bloqueia após 8 dígitos
   },
-
   cartao(valor) {
-    return somenteDigitos(valor).slice(0, 19).replace(/(\d{4})(?=\d)/g, '$1 ');
+    return valor
+      .replace(/\D/g, '')
+      .replace(/(\d{4})(?=\d)/g, '$1 ') // Espaço a cada 4 dígitos
+      .substring(0, 19); // Limita a 16 dígitos + 3 espaços
   },
-
-  validade(valor) {
-    const d = somenteDigitos(valor).slice(0, 4);
-    return d.length > 2 ? `${d.slice(0, 2)}/${d.slice(2)}` : d;
-  },
-
-  cvv(valor) {
-    return somenteDigitos(valor).slice(0, 4);
+  telefone(valor) {
+    return valor
+      .replace(/\D/g, '')
+      .replace(/(\d{2})(\d)/, '($1) $2')
+      .replace(/(\d{4,5})(\d)/, '$1-$2')
+      .replace(/(-\d{4})\d+?$/, '$1'); // Bloqueia após o limite
   }
 };
 
-function algoritmoLuhn(digitos) {
-  let soma = 0;
-  let dobrar = false;
-  for (let i = digitos.length - 1; i >= 0; i--) {
-    let n = Number(digitos[i]);
-    if (dobrar) {
-      n *= 2;
-      if (n > 9) n -= 9;
-    }
-    soma += n;
-    dobrar = !dobrar;
-  }
-  return soma % 10 === 0;
-}
-
+// 2. VALIDAÇÕES COM REGEX (Aplicadas no evento de saída do campo - blur)
 export const validadores = {
-  cpf(valor) {
-    const d = somenteDigitos(valor);
-    if (d.length !== 11) return 'CPF incompleto: informe os 11 dígitos.';
-    if (/^(\d)\1{10}$/.test(d)) return 'CPF inválido.';
-
-    const digitoVerificador = (qtd) => {
-      let soma = 0;
-      for (let i = 0; i < qtd; i++) soma += Number(d[i]) * (qtd + 1 - i);
-      const resto = (soma * 10) % 11;
-      return resto === 10 ? 0 : resto;
-    };
-
-    if (digitoVerificador(9) !== Number(d[9]) || digitoVerificador(10) !== Number(d[10])) {
-      return 'CPF inválido.';
-    }
-    return '';
-  },
-
-  cep(valor) {
-    return /^\d{5}-\d{3}$/.test(valor) ? '' : 'Informe um CEP válido (00000-000).';
-  },
-
   email(valor) {
-    const valido = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+(\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,}$/.test(valor)
-      && !valor.includes('..');
-    return valido ? '' : 'Informe um e-mail válido (ex.: nome@dominio.com).';
+    // Regex rigorosa para formato de e-mail (usuario@dominio.com)
+    const regexEmail = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    return regexEmail.test(valor) ? '' : 'Informe um e-mail válido (ex: nome@escola.com.br).';
   },
-
-  cartao(valor) {
+  
+  cpf(valor) {
+    // Validação de formato via Regex
+    const regexFormatoCPF = /^\d{3}\.\d{3}\.\d{3}-\d{2}$/;
+    if (!regexFormatoCPF.test(valor)) return 'Formato inválido. Use 000.000.000-00.';
+    
+    // Validação matemática do CPF (Dígitos Verificadores)
     const d = somenteDigitos(valor);
-    if (d.length < 13) return 'Número do cartão incompleto.';
-    if (!algoritmoLuhn(d)) return 'Número de cartão inválido.';
+    if (/^(\d)\1{10}$/.test(d)) return 'CPF inválido.'; // Evita "111.111.111-11"
+    
+    let soma = 0, resto;
+    for (let i = 1; i <= 9; i++) soma += parseInt(d.substring(i-1, i)) * (11 - i);
+    resto = (soma * 10) % 11;
+    if (resto === 10 || resto === 11) resto = 0;
+    if (resto !== parseInt(d.substring(9, 10))) return 'CPF inválido.';
+    
+    soma = 0;
+    for (let i = 1; i <= 10; i++) soma += parseInt(d.substring(i-1, i)) * (12 - i);
+    resto = (soma * 10) % 11;
+    if (resto === 10 || resto === 11) resto = 0;
+    if (resto !== parseInt(d.substring(10, 11))) return 'CPF inválido.';
+    
+    return ''; // Válido
+  },
+  
+  cnpj_cpf(valor) {
+    const d = somenteDigitos(valor);
+    if (d.length <= 11) return this.cpf(valor);
+    
+    const regexFormatoCNPJ = /^\d{2}\.\d{3}\.\d{3}\/\d{4}-\d{2}$/;
+    if (!regexFormatoCNPJ.test(valor)) return 'Formato inválido. Use 00.000.000/0000-00.';
     return '';
   },
-
-  validade(valor) {
-    const m = /^(\d{2})\/(\d{2})$/.exec(valor);
-    if (!m) return 'Use o formato MM/AA.';
-
-    const mes = Number(m[1]);
-    const ano = 2000 + Number(m[2]);
-    if (mes < 1 || mes > 12) return 'Mês inválido (01 a 12).';
-
-    const hoje = new Date();
-    const vencido = ano < hoje.getFullYear()
-      || (ano === hoje.getFullYear() && mes < hoje.getMonth() + 1);
-    return vencido ? 'Cartão vencido.' : '';
+  
+  cep(valor) {
+    // Regex exata para 5 dígitos, hífen, 3 dígitos
+    const regexCep = /^\d{5}-\d{3}$/;
+    return regexCep.test(valor) ? '' : 'Informe um CEP válido (00000-000).';
   },
-
-  cvv(valor) {
-    return /^\d{3,4}$/.test(valor) ? '' : 'CVV inválido (3 ou 4 dígitos).';
-  },
-
-  nome(valor) {
-    return /^\p{L}[\p{L}\s.'-]{2,}$/u.test(valor) ? '' : 'Informe o nome completo.';
+  
+  cartao(valor) {
+    const regexCartao = /^(\d{4}\s){3}\d{4}$/;
+    return regexCartao.test(valor) ? '' : 'Informe um número de cartão válido (16 dígitos).';
   }
 };
-
-const SELETOR_CAMPOS =
-  'input[required], select[required], textarea[required], [data-mask], [data-validate]';
-
-function campoOculto(el) {
-  return el.disabled || Boolean(el.closest('.hidden, [hidden]'));
-}
-
-export function obterMensagemErro(el) {
-  if (campoOculto(el)) return '';
-
-  const valor = el.value.trim();
-  if (!valor) {
-    return el.required ? (el.dataset.msgObrigatorio || 'Campo obrigatório.') : '';
-  }
-
-  const validador = validadores[el.dataset.validate];
-  return validador ? validador(valor) : '';
-}
 
 function obterCaixaErro(el) {
   const id = `${el.id || el.name}-erro`;
@@ -129,122 +103,63 @@ function obterCaixaErro(el) {
   if (!caixa) {
     caixa = document.createElement('small');
     caixa.id = id;
-    caixa.className = 'field-error';
+    caixa.className = 'field-error'; 
     caixa.setAttribute('aria-live', 'polite');
     caixa.hidden = true;
-    const alvo = el.closest('.password-wrapper') || el;
-    alvo.insertAdjacentElement('afterend', caixa);
+    el.insertAdjacentElement('afterend', caixa);
   }
   return caixa;
 }
 
-function exibirErroInline(el, mensagem) {
+export function exibirErroInline(el, mensagem) {
   const caixa = obterCaixaErro(el);
   caixa.textContent = mensagem;
-  caixa.hidden = !mensagem;
+  caixa.hidden = !mensagem; 
 
-  const preenchido = el.value.trim() !== '';
-  el.classList.toggle('is-invalid', Boolean(mensagem));
-  el.classList.toggle('is-valid', !mensagem && preenchido && !campoOculto(el));
-  el.setAttribute('aria-invalid', mensagem ? 'true' : 'false');
-
-  if (mensagem) el.setAttribute('aria-describedby', caixa.id);
-  else el.removeAttribute('aria-describedby');
+  el.classList.toggle('invalid', Boolean(mensagem));
+  el.classList.toggle('is-valid', !mensagem && el.value.trim() !== '');
 }
 
 export function validarCampo(el) {
-  const mensagem = obterMensagemErro(el);
+  const valor = el.value.trim();
+  const validador = validadores[el.dataset.validate]; 
+  
+  let mensagem = '';
+  
+  if (!valor && el.required) {
+    mensagem = 'Este campo é obrigatório.';
+  } else if (valor && validador) {
+    mensagem = validador(valor);
+  }
+
   exibirErroInline(el, mensagem);
   return !mensagem;
 }
 
-export function primeiroCampoInvalido(form) {
-  let primeiro = null;
-  form.querySelectorAll(SELETOR_CAMPOS).forEach((el) => {
-    el.dataset.tocado = 'true';
-    if (!validarCampo(el) && !primeiro) primeiro = el;
-  });
-  return primeiro;
-}
 
-function aplicarMascara(el) {
-  const mascara = mascaras[el.dataset.mask];
-  if (!mascara) return;
-
-  const emFoco = document.activeElement === el;
-  const posicao = el.selectionStart;
-  const digitosAntesCursor = somenteDigitos(el.value.slice(0, posicao ?? 0)).length;
-
-  el.value = mascara(el.value);
-
-  if (!emFoco || posicao === null) return;
-  let novaPosicao = el.value.length;
-  if (digitosAntesCursor === 0) {
-    novaPosicao = 0;
-  } else {
-    let contados = 0;
-    for (let i = 0; i < el.value.length; i++) {
-      if (/\d/.test(el.value[i])) contados++;
-      if (contados === digitosAntesCursor) {
-        novaPosicao = i + 1;
-        break;
+export function iniciarValidacao() {
+  const campos = document.querySelectorAll('input[data-mask], input[data-validate]');
+  
+  campos.forEach(el => {
+    
+    el.addEventListener('input', (e) => {
+      const mascara = mascaras[el.dataset.mask];
+      if (mascara) {
+        const cursor = el.selectionStart;
+        e.target.value = mascara(e.target.value);
+        if (cursor) el.setSelectionRange(cursor, cursor);
       }
-    }
-  }
-  try {
-    el.setSelectionRange(novaPosicao, novaPosicao);
-  } catch (err) {
-  }
-}
+      exibirErroInline(el, ''); 
+    });
 
-function configurarCampo(el) {
-  if (el.dataset.validacaoIniciada) return;
-  el.dataset.validacaoIniciada = 'true';
-
-  el.addEventListener('input', () => {
-    aplicarMascara(el);
-
-    const completo = el.maxLength > 0 && el.value.length >= el.maxLength;
-    if (el.dataset.tocado === 'true' || completo) {
-      el.dataset.tocado = 'true';
-      validarCampo(el);
-    }
-  });
-
-  el.addEventListener('blur', () => {
-    el.dataset.tocado = 'true';
-    validarCampo(el);
-  });
-
-  if (el.tagName === 'SELECT') {
-    el.addEventListener('change', () => {
-      el.dataset.tocado = 'true';
+    
+    el.addEventListener('blur', () => {
       validarCampo(el);
     });
-  }
-}
-
-export function iniciarValidacao(raiz = document) {
-  raiz.querySelectorAll(SELETOR_CAMPOS).forEach(configurarCampo);
-
-  raiz.querySelectorAll('form[data-validar-submit]').forEach((form) => {
-    if (form.dataset.validacaoSubmit) return;
-    form.dataset.validacaoSubmit = 'true';
-    form.addEventListener('submit', (evento) => {
-      const invalido = primeiroCampoInvalido(form);
-      if (invalido) {
-        evento.preventDefault();
-        evento.stopImmediatePropagation();
-        invalido.focus();
-      }
-    });
   });
 }
+
 
 if (typeof document !== 'undefined') {
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => iniciarValidacao());
-  } else {
-    iniciarValidacao();
-  }
+  document.addEventListener('DOMContentLoaded', iniciarValidacao);
 }
