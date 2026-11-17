@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pedido Confirmado - EduScience</title>
+  <link rel="stylesheet" href="../css/sucesso.css">
+</head>
+<body>
+  <header class="navbar">
+    <div class="logo">
+      <h1>EduScience</h1>
+    </div>
+    <nav>
+      <a href="landing.html">Início</a>
+      <a href="carrinho.html">Carrinho <span class="nav-cart-count" id="nav-cart-count">0</span></a>
+      <a href="login.html" class="btn-login">Entrar</a>
+    </nav>
+  </header>
+
+  <main class="success-page">
+    <section id="estado-carregando" class="state-card" aria-live="polite">
+      <p>Carregando o resumo da sua compra...</p>
+    </section>
+
+    <section id="estado-erro" class="state-card state-error" role="alert" aria-live="assertive" hidden>
+      <h2>Não foi possível exibir o comprovante</h2>
+      <p id="erro-mensagem"></p>
+      <div class="actions">
+        <button type="button" id="btn-tentar-novamente" class="btn btn-primary">Tentar novamente</button>
+        <a href="landing.html" class="btn btn-secondary">Voltar à loja</a>
+      </div>
+    </section>
+
+    <section id="comprovante" hidden>
+      <div class="success-banner">
+        <span class="success-icon" aria-hidden="true">&#10003;</span>
+        <h2>Pedido confirmado!</h2>
+        <p>Obrigado pela compra. Guarde este comprovante para os seus registros.</p>
+      </div>
+
+      <article class="receipt" aria-labelledby="receipt-title">
+        <h3 id="receipt-title">Comprovante / Nota Fiscal (DANFE Simplificado)</h3>
+
+        <dl class="receipt-meta">
+          <div class="meta-row">
+            <dt>Emitente</dt>
+            <dd id="emitente-info">EduScience Equipamentos Educacionais LTDA</dd>
+          </div>
+          <div class="meta-row">
+            <dt>Destinatário</dt>
+            <dd id="destinatario-info">-</dd>
+          </div>
+          <div class="meta-row">
+            <dt>Pedido</dt>
+            <dd id="pedido-numero">-</dd>
+          </div>
+          <div class="meta-row">
+            <dt>Nota Fiscal (NF-e)</dt>
+            <dd id="nf-numero">-</dd>
+          </div>
+          <div class="meta-row">
+            <dt>Data de emissão</dt>
+            <dd id="nf-data">-</dd>
+          </div>
+          <div class="meta-row">
+            <dt>Forma de pagamento</dt>
+            <dd id="pagamento">-</dd>
+          </div>
+          <div class="meta-row" id="linha-chave" hidden>
+            <dt>Chave de acesso</dt>
+            <dd id="nf-chave" class="chave"></dd>
+          </div>
+        </dl>
+
+        <table class="receipt-table">
+          <thead>
+            <tr>
+              <th>Item</th>
+              <th class="num">Qtd.</th>
+              <th class="num">Preço un.</th>
+              <th class="num">Subtotal</th>
+            </tr>
+          </thead>
+          <tbody id="itens-body"></tbody>
+        </table>
+
+        <dl class="receipt-totals">
+          <div class="summary-row">
+            <dt>Subtotal dos kits</dt>
+            <dd id="resumo-subtotal">R$ 0,00</dd>
+          </div>
+          <div class="summary-row">
+            <dt>Frete</dt>
+            <dd id="resumo-frete">R$ 0,00</dd>
+          </div>
+          <div class="summary-row">
+            <dt id="label-icms">ICMS (18,00%)</dt>
+            <dd id="resumo-icms">R$ 0,00</dd>
+          </div>
+          <div class="summary-row">
+            <dt id="label-pis">PIS (1,65%)</dt>
+            <dd id="resumo-pis">R$ 0,00</dd>
+          </div>
+          <div class="summary-row">
+            <dt id="label-cofins">COFINS (7,60%)</dt>
+            <dd id="resumo-cofins">R$ 0,00</dd>
+          </div>
+          <div class="summary-row">
+            <dt>Total aproximado de tributos</dt>
+            <dd id="resumo-tributos">R$ 0,00</dd>
+          </div>
+          <div class="summary-row summary-total">
+            <dt>Total pago</dt>
+            <dd id="resumo-total">R$ 0,00</dd>
+          </div>
+        </dl>
+      </article>
+
+      <div class="actions no-print">
+        <button type="button" id="btn-imprimir" class="btn btn-primary">Imprimir comprovante</button>
+        <a id="link-nf" class="btn btn-secondary" href="#" target="_blank" rel="noopener" hidden>Baixar NF-e</a>
+        <a href="landing.html" class="btn-link">Continuar comprando</a>
+      </div>
+    </section>
+  </main>
+
+  <script type="module" src="../js/sucesso.js"></script>
+</body>
+</html>

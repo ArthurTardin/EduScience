@@ -1,3 +1,5 @@
+import { primeiroCampoInvalido } from './validacao.js';
+
 const API_BASE_URL = 'http://localhost:3000/api';
 const TOKEN_KEY = '@EduScience:token';
 
@@ -9,7 +11,6 @@ const form = document.getElementById('checkout-form');
 const alertBox = document.getElementById('feedback-alert');
 const btnFinalizar = document.getElementById('btn-finalizar');
 const estadoSelect = document.getElementById('estado');
-const cepInput = document.getElementById('cep');
 
 function formatarMoeda(valor) {
     return Number(valor).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
@@ -70,29 +71,36 @@ async function carregarResumoCarrinho() {
         itensCarrinho = data.itens || data || [];
 
         const containerItens = document.getElementById('resumo-itens');
+        containerItens.replaceChildren();
 
         if (!Array.isArray(itensCarrinho) || itensCarrinho.length === 0) {
-            containerItens.innerHTML = '<p style="color: #dc2626;">Seu carrinho está vazio.</p>';
+            const emptyMsg = document.createElement('p');
+            emptyMsg.className = 'field-error';
+            emptyMsg.textContent = 'Seu carrinho está vazio.';
+            containerItens.appendChild(emptyMsg);
             btnFinalizar.disabled = true;
             return;
         }
 
         subtotalProdutos = 0;
-        containerItens.innerHTML = itensCarrinho
-            .map((item) => {
-                const preco = Number(item.preco || item.preco_unitario || 0);
-                const qtd = Number(item.quantidade || 1);
-                const sub = preco * qtd;
-                subtotalProdutos += sub;
+        itensCarrinho.forEach((item) => {
+            const preco = Number(item.preco || item.preco_unitario || 0);
+            const qtd = Number(item.quantidade || 1);
+            const sub = preco * qtd;
+            subtotalProdutos += sub;
 
-                return `
-                    <div class="summary-item">
-                        <span>${qtd}x ${item.nome_kit}</span>
-                        <strong>${formatarMoeda(sub)}</strong>
-                    </div>
-                `;
-            })
-            .join('');
+            const row = document.createElement('div');
+            row.className = 'summary-item';
+
+            const nomeSpan = document.createElement('span');
+            nomeSpan.textContent = `${qtd}x ${item.nome_kit}`;
+
+            const precoStrong = document.createElement('strong');
+            precoStrong.textContent = formatarMoeda(sub);
+
+            row.append(nomeSpan, precoStrong);
+            containerItens.appendChild(row);
+        });
 
         document.getElementById('resumo-subtotal').textContent = formatarMoeda(subtotalProdutos);
         calcularFrete();
@@ -104,100 +112,30 @@ async function carregarResumoCarrinho() {
 }
 
 function configurarInteracoesFormulario() {
-    cepInput.addEventListener('input', (e) => {
-        let v = e.target.value.replace(/\D/g, '').slice(0, 8);
-        if (v.length > 5) v = `${v.slice(0, 5)}-${v.slice(5)}`;
-        e.target.value = v;
-    });
-
-    const cardNum = document.getElementById('cartao-numero');
-    cardNum.addEventListener('input', (e) => {
-        const v = e.target.value.replace(/\D/g, '').slice(0, 16);
-        e.target.value = v.replace(/(\d{4})(?=\d)/g, '$1 ');
-    });
-
-    const cardVal = document.getElementById('cartao-validade');
-    cardVal.addEventListener('input', (e) => {
-        let v = e.target.value.replace(/\D/g, '').slice(0, 4);
-        if (v.length > 2) v = `${v.slice(0, 2)}/${v.slice(2)}`;
-        e.target.value = v;
-    });
-
     estadoSelect.addEventListener('change', calcularFrete);
 
-    const options = document.querySelectorAll('.payment-option');
-    options.forEach((opt) => {
-        opt.addEventListener('click', () => {
-            options.forEach((o) => o.classList.remove('active'));
-            opt.classList.add('active');
-            const radio = opt.querySelector('input[type="radio"]');
-            radio.checked = true;
+    document.querySelectorAll('input[name="metodo_pagamento"]').forEach((radio) => {
+        radio.addEventListener('change', () => {
+            document.querySelectorAll('.payment-option').forEach((opt) => {
+                opt.classList.toggle('active', opt.contains(radio));
+            });
 
-            const metodo = radio.value;
             ['PIX', 'Cartao', 'Boleto'].forEach((m) => {
-                document.getElementById(`details-${m}`).classList.toggle('hidden', m !== metodo);
+                document.getElementById(`details-${m}`).classList.toggle('hidden', m !== radio.value);
             });
         });
     });
 }
 
-function validarFormulario(metodoPagamento) {
+function validarFormulario() {
     limparAlerta();
-    document.querySelectorAll('.invalid').forEach((el) => el.classList.remove('invalid'));
 
-    const obrigatoriosEntrega = ['cep', 'logradouro', 'numero', 'bairro', 'cidade'];
-    for (const id of obrigatoriosEntrega) {
-        const campo = document.getElementById(id);
-        if (!campo.value.trim()) {
-            campo.classList.add('invalid');
-            campo.focus();
-            exibirAlerta('Preencha todos os campos obrigatórios do endereço de entrega.');
-            return false;
-        }
-    }
-
-    if (!/^\d{5}-\d{3}$/.test(cepInput.value.trim())) {
-        cepInput.classList.add('invalid');
-        cepInput.focus();
-        exibirAlerta('Informe um CEP válido no formato 00000-000.');
+    const invalido = primeiroCampoInvalido(form);
+    if (invalido) {
+        exibirAlerta('Corrija os campos destacados antes de continuar.');
+        invalido.focus();
         return false;
     }
-
-    if (metodoPagamento === 'Cartao') {
-        const numero = document.getElementById('cartao-numero');
-        const titular = document.getElementById('cartao-titular');
-        const validade = document.getElementById('cartao-validade');
-        const cvv = document.getElementById('cartao-cvv');
-
-        if (numero.value.replace(/\D/g, '').length < 13) {
-            numero.classList.add('invalid');
-            numero.focus();
-            exibirAlerta('Número do cartão inválido.');
-            return false;
-        }
-
-        if (titular.value.trim().length < 3) {
-            titular.classList.add('invalid');
-            titular.focus();
-            exibirAlerta('Informe o nome completo impresso no cartão.');
-            return false;
-        }
-
-        if (!/^(0[1-9]|1[0-2])\/\d{2}$/.test(validade.value.trim())) {
-            validade.classList.add('invalid');
-            validade.focus();
-            exibirAlerta('Validade do cartão inválida (use MM/AA).');
-            return false;
-        }
-
-        if (!/^\d{3,4}$/.test(cvv.value.trim())) {
-            cvv.classList.add('invalid');
-            cvv.focus();
-            exibirAlerta('CVV inválido (3 ou 4 dígitos).');
-            return false;
-        }
-    }
-
     return true;
 }
 
@@ -209,7 +147,7 @@ form.addEventListener('submit', async (event) => {
 
     const metodoPagamento = document.querySelector('input[name="metodo_pagamento"]:checked').value;
 
-    if (!validarFormulario(metodoPagamento)) {
+    if (!validarFormulario()) {
         return;
     }
 
@@ -244,7 +182,7 @@ form.addEventListener('submit', async (event) => {
         );
 
         setTimeout(() => {
-            window.location.href = `confirmacao.html?pedido=${data.pedido.id_compra}`;
+            window.location.href = `sucesso.html?pedido=${data.pedido.id_compra}`;
         }, 1500);
     } catch (error) {
         console.error('Erro no checkout:', error);

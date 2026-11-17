@@ -1,84 +1,41 @@
 @import url('global.css');
 
-.navbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  max-width: 1100px;
-  margin: 0 auto 24px;
-  padding: 16px 24px;
-  background-color: var(--color-surface, #ffffff);
-  border-radius: 10px;
-}
-
-.navbar nav {
-  display: flex;
-  align-items: center;
-}
-
-.navbar nav a {
-  margin-left: 20px;
-  color: var(--color-text, #1f2937);
-  font-weight: 600;
-  text-decoration: none;
-}
-
-.navbar nav a:hover,
-.navbar nav a.active {
-  color: var(--color-primary, #4f46e5);
-}
-
-.nav-cart-count {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 20px;
-  height: 20px;
-  padding: 0 6px;
-  margin-left: 4px;
-  background-color: var(--color-primary, #4f46e5);
-  color: #ffffff;
-  font-size: 0.75rem;
-  font-weight: 700;
-  border-radius: 9999px;
-}
-
 .btn-login {
-  padding: 8px 16px;
-  background-color: var(--color-background, #f4f6fb);
-  border-radius: 6px;
+  padding: var(--space-2) var(--space-4);
+  background-color: var(--color-background);
+  border-radius: var(--radius-sm);
 }
 
 .hero {
   text-align: center;
   max-width: 800px;
-  margin: 0 auto 40px;
-  padding: 32px 16px;
+  margin: 0 auto var(--space-8);
+  padding: var(--space-8) var(--space-4);
 }
 
 .hero h2 {
-  font-size: 2.2rem;
-  font-weight: 800;
-  color: var(--color-text, #1f2937);
-  margin-bottom: 12px;
-  line-height: 1.2;
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-extrabold);
+  color: var(--color-text);
+  margin-bottom: var(--space-3);
+  line-height: var(--line-height-tight);
 }
 
 .hero p {
-  font-size: 1.1rem;
-  color: var(--color-text-muted, #6b7280);
+  font-size: var(--font-size-lg);
+  color: var(--color-text-muted);
 }
 
 .carousel-container {
-  max-width: 1100px;
+  max-width: var(--container-max);
   margin: 0 auto;
-  padding: 0 16px 48px;
+  padding: 0 var(--space-4) var(--space-12);
 }
 
 .carousel-container h2 {
   text-align: center;
-  font-size: 1.5rem;
-  margin-bottom: 24px;
+  font-size: var(--font-size-2xl);
+  margin-bottom: var(--space-6);
 }
 
 .carousel {
@@ -92,7 +49,7 @@
   overflow: hidden;
   width: 100%;
   max-width: 380px;
-  border-radius: 12px;
+  border-radius: var(--radius-xl);
 }
 
 .carousel-track {
@@ -112,42 +69,41 @@
 .kit-card {
   display: flex;
   flex-direction: column;
-  background-color: var(--color-surface, #ffffff);
-  border-radius: 12px;
-  padding: 24px;
-  border: 1px solid var(--color-border, #e5e7eb);
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+  height: 100%;
+  background-color: var(--color-surface);
+  border-radius: var(--radius-xl);
+  padding: var(--space-6);
+  border: 1px solid var(--color-border-light);
+  box-shadow: var(--shadow-sm);
 }
 
 .kit-image {
+  display: block;
   width: 100%;
   height: 180px;
-  border-radius: 8px;
-  margin-bottom: 16px;
+  object-fit: cover;
+  border-radius: var(--radius-md);
+  margin-bottom: var(--space-4);
 }
 
-.placeholder-chem   { background: linear-gradient(135deg, #c7d2fe, #818cf8); }
-.placeholder-phys   { background: linear-gradient(135deg, #bfdbfe, #60a5fa); }
-.placeholder-optics { background: linear-gradient(135deg, #ddd6fe, #a78bfa); }
-
 .kit-card h3 {
-  font-size: 1.2rem;
-  margin-bottom: 8px;
-  color: var(--color-text, #1f2937);
+  font-size: var(--font-size-xl);
+  margin-bottom: var(--space-2);
+  color: var(--color-text);
 }
 
 .kit-card p {
-  font-size: 0.9rem;
-  color: var(--color-text-muted, #6b7280);
-  margin-bottom: 16px;
+  font-size: var(--font-size-md);
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-4);
   flex-grow: 1;
 }
 
 .kit-card .price {
   font-size: 1.3rem;
-  font-weight: 700;
-  color: var(--color-primary, #4f46e5);
-  margin-bottom: 16px;
+  font-weight: var(--font-weight-bold);
+  color: var(--color-primary);
+  margin-bottom: var(--space-4);
 }
 
 .carousel-btn {
@@ -157,21 +113,21 @@
   width: 44px;
   height: 44px;
   border-radius: 50%;
-  background-color: var(--color-surface, #ffffff);
-  border: 1px solid var(--color-border, #d1d5db);
-  color: var(--color-text, #1f2937);
-  font-size: 1.2rem;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
+  font-size: var(--font-size-xl);
   cursor: pointer;
   z-index: 10;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  transition: background-color 0.2s, transform 0.2s;
+  box-shadow: var(--shadow-md);
+  transition: background-color var(--transition-fast), transform var(--transition-fast);
 }
 
 .carousel-btn:hover {
-  background-color: var(--color-background, #f4f6fb);
+  background-color: var(--color-background);
 }
 
 .carousel-btn.prev {
@@ -185,8 +141,8 @@
 .carousel-nav {
   display: flex;
   justify-content: center;
-  gap: 8px;
-  margin-top: 20px;
+  gap: var(--space-2);
+  margin-top: var(--space-5);
 }
 
 .indicator {
@@ -194,45 +150,52 @@
   height: 10px;
   border-radius: 50%;
   border: none;
-  background-color: var(--color-border, #d1d5db);
+  background-color: var(--color-border);
   cursor: pointer;
   padding: 0;
-  transition: background-color 0.3s, transform 0.2s;
+  transition: background-color var(--transition-base), transform var(--transition-fast);
 }
 
 .indicator.current-slide {
-  background-color: var(--color-primary, #4f46e5);
+  background-color: var(--color-primary);
   transform: scale(1.2);
 }
 
 .btn-add {
   width: 100%;
-  padding: 12px;
-  background-color: var(--color-primary, #4f46e5);
-  color: #ffffff;
+  padding: var(--space-3);
+  background-color: var(--color-primary);
+  color: var(--color-on-primary);
   border: none;
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   font-size: 0.95rem;
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: background-color var(--transition-fast);
 }
 
 .btn-add:hover {
-  background-color: #4338ca;
+  background-color: var(--color-primary-hover);
+}
+
+.carousel-btn:focus-visible,
+.indicator:focus-visible,
+.btn-add:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 3px;
 }
 
 @media (max-width: 640px) {
   .hero h2 {
     font-size: 1.6rem;
   }
-  
+
   .carousel-btn.prev {
-    left: 4px;
+    left: var(--space-1);
   }
 
   .carousel-btn.next {
-    right: 4px;
+    right: var(--space-1);
   }
 
   .carousel-track-container {

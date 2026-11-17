@@ -1,17 +1,10 @@
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: var(--font-family, Arial, sans-serif);
-}
+@import url('global.css');
 
 body {
   min-height: 100vh;
   display: grid;
   place-items: center;
-  padding: 16px;
-  background-color: var(--color-background, #f4f6fb);
-  color: var(--color-text, #1f2937);
+  padding: var(--space-4);
   text-align: center;
 }
 
@@ -21,29 +14,33 @@ body {
 }
 
 h1 {
-  margin-bottom: 8px;
+  margin-bottom: var(--space-2);
 }
 
 .subtitle {
-  margin-bottom: 20px;
+  margin-bottom: var(--space-5);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-md);
 }
 
 form {
-  background-color: var(--color-surface, #ffffff);
+  background-color: var(--color-surface);
   width: 100%;
-  padding: 24px;
-  border-radius: 10px;
+  padding: var(--space-6);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
   text-align: left;
 }
 
 .field {
-  margin-bottom: 16px;
+  margin-bottom: var(--space-4);
 }
 
 label {
   display: block;
-  margin-bottom: 6px;
-  font-weight: 600;
+  margin-bottom: var(--space-1-5);
+  font-weight: var(--font-weight-semibold);
 }
 
 .password-wrapper {
@@ -58,38 +55,38 @@ label {
 
 .btn-toggle-password {
   position: absolute;
-  right: 8px;
+  right: var(--space-2);
   width: auto;
-  padding: 6px 10px;
+  padding: var(--space-1-5) var(--space-2-5);
   background: transparent;
-  color: var(--color-primary, #4f46e5);
-  font-size: 0.85rem;
-  font-weight: 600;
+  color: var(--color-primary);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
   border: none;
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   cursor: pointer;
 }
 
 .btn-toggle-password:hover {
-  background-color: var(--color-background, #f4f6fb);
+  background-color: var(--color-background);
 }
 
 input {
   width: 100%;
-  padding: 10px;
-  border: 1px solid var(--color-border, #d1d5db);
-  border-radius: 8px;
-  font-size: 1rem;
+  padding: var(--space-2-5);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-base);
 }
 
 input:focus {
   outline: none;
-  border-color: var(--color-primary, #4f46e5);
-  box-shadow: 0 0 0 3px rgb(79 70 229 / 20%);
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px var(--color-primary-focus);
 }
 
 a {
-  color: var(--color-primary, #4f46e5);
+  color: var(--color-primary);
   text-decoration: none;
 }
 
@@ -99,33 +96,33 @@ a:focus-visible {
 }
 
 .forgot {
-  margin-bottom: 16px;
-  font-size: 0.9rem;
+  margin-bottom: var(--space-4);
+  font-size: var(--font-size-md);
   text-align: right;
 }
 
 .signup {
-  margin-top: 20px;
+  margin-top: var(--space-5);
 }
 
 button[type="submit"] {
   width: 100%;
-  padding: 12px;
-  background-color: var(--color-primary, #4f46e5);
-  color: #ffffff;
+  padding: var(--space-3);
+  background-color: var(--color-primary);
+  color: var(--color-on-primary);
   border: none;
-  border-radius: 8px;
-  font-size: 1rem;
-  font-weight: 600;
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
   cursor: pointer;
 }
 
-button:hover:not(:disabled) {
+button[type="submit"]:hover:not(:disabled) {
   filter: brightness(0.92);
 }
 
 button:focus-visible {
-  outline: 2px solid var(--color-primary, #4f46e5);
+  outline: 2px solid var(--color-primary);
   outline-offset: 3px;
 }
 
@@ -135,23 +132,19 @@ button:disabled {
 }
 
 .status-message {
-  margin-bottom: 12px;
+  margin-bottom: var(--space-3);
   font-size: 0.875rem;
-  color: var(--color-text-muted, #6b7280);
+  color: var(--color-text-muted);
   text-align: center;
 }
 
 .mensagem-erro {
-  margin-bottom: 16px;
-  padding: 12px 16px;
-  color: var(--color-error, #dc2626);
-  background-color: var(--color-error-bg, #fef2f2);
-  border: 1px solid var(--color-error-border, #fecaca);
-  border-radius: 10px;
-  font-size: 0.9rem;
-  font-weight: 600;
-}
-
-[hidden] {
-  display: none !important;
+  margin-bottom: var(--space-4);
+  padding: var(--space-3) var(--space-4);
+  color: var(--color-error);
+  background-color: var(--color-error-bg);
+  border: 1px solid var(--color-error-border);
+  border-radius: var(--radius-lg);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-semibold);
 }
