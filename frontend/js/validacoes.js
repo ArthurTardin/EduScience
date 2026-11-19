@@ -144,6 +144,13 @@ export function exibirErroInline(el, mensagem) {
   el.classList.toggle('invalid', Boolean(mensagem));
   el.classList.toggle('is-valid', valido);
   el.classList.toggle('valid', valido);
+
+  el.setAttribute('aria-invalid', mensagem ? 'true' : 'false');
+  if (mensagem) {
+    el.setAttribute('aria-describedby', caixa.id);
+  } else {
+    el.removeAttribute('aria-describedby');
+  }
 }
 
 export function validarCampo(el) {

@@ -8,11 +8,13 @@
     <link rel="stylesheet" href="../css/login.css" />
   </head>
   <body>
-    <main class="login-container">
-      <h1>Login</h1>
+    <a href="#main-content" class="skip-link">Pular para o conteúdo principal</a>
+
+    <main id="main-content" class="login-container">
+      <h1 id="login-title">Login</h1>
       <p class="subtitle">Entre em sua conta</p>
 
-      <form id="form-login">
+      <form id="form-login" aria-labelledby="login-title" novalidate>
         <div class="field">
           <label for="usuario">Usuário</label>
           <input
@@ -22,6 +24,7 @@
             placeholder="Digite seu usuário"
             autocomplete="username"
             required
+            aria-required="true"
           />
         </div>
 
@@ -35,12 +38,13 @@
               placeholder="Digite sua senha"
               autocomplete="current-password"
               required
+              aria-required="true"
               minlength="6"
             />
-            <button 
-              type="button" 
-              id="password-toggle" 
-              aria-label="Mostrar senha" 
+            <button
+              type="button"
+              id="password-toggle"
+              aria-label="Mostrar senha"
               aria-pressed="false"
               class="btn-toggle-password"
             >Mostrar</button>
@@ -48,7 +52,7 @@
         </div>
 
         <p class="forgot">
-          <a href="#">Esqueci a senha</a>
+          <a href="cadastro.html" aria-label="Recuperar acesso ou criar novo cadastro">Esqueci a senha</a>
         </p>
 
         <div id="status-message" class="status-message" aria-live="polite"></div>

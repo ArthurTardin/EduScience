@@ -8,50 +8,59 @@
     <link rel="stylesheet" href="../css/carrinho.css" />
   </head>
   <body>
+    <a href="#main-content" class="skip-link">Pular para o conteúdo principal</a>
+
     <header class="navbar">
       <div class="logo">
         <h1>EduScience</h1>
       </div>
-      <nav>
+      <nav aria-label="Navegação principal">
         <a href="landing.html">Início</a>
-        <a href="carrinho.html" class="active">Carrinho</a>
-        <a href="login.html">Entrar</a>
+        <a href="carrinho.html" class="active" aria-current="page">Carrinho <span class="nav-cart-count" aria-label="itens no carrinho">0</span></a>
+        <a href="login.html" class="btn-login">Entrar</a>
       </nav>
     </header>
+
     <div id="toast-container" class="toast-container" aria-live="polite"></div>
 
-    <main class="cart-page">
+    <main id="main-content" class="cart-page">
       <div class="cart-header">
-        <h2>Seu Carrinho</h2>
-        <span class="cart-count">(0 itens)</span>
+        <h2 id="cart-heading">Seu Carrinho</h2>
+        <span class="cart-count" aria-live="polite">(0 itens)</span>
       </div>
 
       <div class="cart-layout">
-        <section class="cart-items">
+        <section class="cart-items" aria-labelledby="cart-heading">
+          <div class="cart-empty-container" hidden>
+            <p>Seu carrinho está vazio no momento.</p>
+            <a href="landing.html" class="btn btn-primary">Explorar Kits Didáticos</a>
+          </div>
+
           <table class="cart-table">
+            <caption class="visually-hidden">Itens adicionados ao carrinho de compras</caption>
             <thead>
               <tr>
-                <th>Produto</th>
-                <th>Preço</th>
-                <th>Quantidade</th>
-                <th>Subtotal</th>
-                <th><span class="visually-hidden">Ações</span></th>
+                <th scope="col">Produto</th>
+                <th scope="col">Preço</th>
+                <th scope="col">Quantidade</th>
+                <th scope="col">Subtotal</th>
+                <th scope="col"><span class="visually-hidden">Ações</span></th>
               </tr>
             </thead>
-            <tbody></tbody>
+            <tbody id="cart-items-body"></tbody>
           </table>
         </section>
 
-        <aside class="cart-summary">
-          <h3>Resumo do Pedido</h3>
+        <aside class="cart-summary" aria-labelledby="summary-heading">
+          <h3 id="summary-heading">Resumo do Pedido</h3>
           <dl class="summary-list">
             <div class="summary-row">
               <dt>Subtotal</dt>
-              <dd id="cart-subtotal">R$ 0,00</dd>
+              <dd id="summary-subtotal">R$ 0,00</dd>
             </div>
             <div class="summary-row summary-total">
               <dt>Total</dt>
-              <dd id="cart-total">R$ 0,00</dd>
+              <dd id="summary-total">R$ 0,00</dd>
             </div>
           </dl>
 
