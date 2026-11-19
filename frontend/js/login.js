@@ -1,67 +1,89 @@
-document.addEventListener("DOMContentLoaded", () => {
-  const formLogin = document.querySelector("#form-login");
-  const mensagemErro = document.querySelector("#mensagem-erro");
-  const btnSubmit = formLogin?.querySelector("button[type='submit']");
+const API_BASE_URL = 'http://localhost:3000/api';
+const LOGIN_ENDPOINT = `${API_BASE_URL}/auth/login`;
+const TOKEN_KEY = '@EduScience:token';
 
-  if (formLogin) {
-    formLogin.removeAttribute("action");
-    formLogin.removeAttribute("method");
+document.addEventListener('DOMContentLoaded', () => {
+  const formLogin = document.querySelector('#form-login');
+  const usuarioInput = document.querySelector('#usuario');
+  const senhaInput = document.querySelector('#senha');
+  const toggleBtn = document.querySelector('#password-toggle');
+  const mensagemErro = document.querySelector('#mensagem-erro');
+  const btnSubmit = document.querySelector('#submit-button');
 
-    formLogin.addEventListener("submit", (evento) => {
-      evento.preventDefault();
-      evento.stopPropagation();
+  if (toggleBtn && senhaInput) {
+    toggleBtn.addEventListener('click', () => {
+      const oculta = senhaInput.type === 'password';
+      senhaInput.type = oculta ? 'text' : 'password';
+      toggleBtn.textContent = oculta ? 'Ocultar' : 'Mostrar';
+      toggleBtn.setAttribute('aria-pressed', String(oculta));
+      toggleBtn.setAttribute('aria-label', oculta ? 'Ocultar senha' : 'Mostrar senha');
+    });
+  }
 
-      const usuarioInput = document.querySelector("#usuario");
-      const senhaInput = document.querySelector("#senha");
+  if (!formLogin) return;
 
-      const usuario = usuarioInput ? usuarioInput.value.trim() : "";
-      const senha = senhaInput ? senhaInput.value.trim() : "";
+  formLogin.addEventListener('submit', async (evento) => {
+    evento.preventDefault();
+    evento.stopPropagation();
 
-      if (mensagemErro) mensagemErro.textContent = "";
+    const usuario = usuarioInput ? usuarioInput.value.trim() : '';
+    const senha = senhaInput ? senhaInput.value : '';
 
-      if (btnSubmit) {
-        btnSubmit.disabled = true;
-        btnSubmit.textContent = "Entrando...";
+    if (mensagemErro) {
+      mensagemErro.textContent = '';
+      mensagemErro.hidden = true;
+    }
+
+    if (!usuario || !senha) {
+      exibirErro('Preencha o usuário (ou e-mail) e a senha.');
+      return;
+    }
+
+    if (btnSubmit) {
+      btnSubmit.disabled = true;
+      btnSubmit.textContent = 'Entrando...';
+    }
+
+    try {
+      const response = await fetch(LOGIN_ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ usuario, senha })
+      });
+
+      const data = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        throw new Error(data.erro || data.error || data.message || 'Usuário ou senha inválidos.');
       }
 
-      setTimeout(() => {
-        if (usuario && senha) {
-          const header = btoa(JSON.stringify({ alg: "HS256", typ: "JWT" }));
-          const payload = btoa(JSON.stringify({ 
-            exp: Math.floor(Date.now() / 1000) + 3600, 
-            user: usuario 
-          }));
-          const tokenMock = `${header}.${payload}.signature_mock`;
+      if (!data.token) {
+        throw new Error('Token de autenticação não recebido do servidor.');
+      }
 
-          localStorage.setItem("token", tokenMock);
+      localStorage.setItem(TOKEN_KEY, data.token);
 
-          console.log("Login mock aprovado com sucesso!");
+      const params = new URLSearchParams(window.location.search);
+      const rotaDeRetorno = params.get('next');
+      const eRotaSegura =
+        rotaDeRetorno &&
+        !rotaDeRetorno.includes('://') &&
+        !rotaDeRetorno.startsWith('//');
 
-          const params = new URLSearchParams(window.location.search);
-          const rotaDeRetorno = params.get("next");
-          
-          const eRotaSegura = rotaDeRetorno && 
-                              !rotaDeRetorno.includes("://") && 
-                              !rotaDeRetorno.startsWith("//");
+      window.location.href = eRotaSegura ? rotaDeRetorno : 'landing.html';
+    } catch (error) {
+      exibirErro(error.message || 'Erro de conexão com o servidor.');
+      if (btnSubmit) {
+        btnSubmit.disabled = false;
+        btnSubmit.textContent = 'Entrar';
+      }
+    }
+  });
 
-          if (eRotaSegura) {
-            window.location.href = rotaDeRetorno;
-          } else {
-            window.location.href = "landing.html";
-          }
-        } else {
-          if (mensagemErro) {
-            mensagemErro.textContent = "Preencha o usuário e a senha.";
-          } else {
-            alert("Preencha o usuário e a senha.");
-          }
-
-          if (btnSubmit) {
-            btnSubmit.disabled = false;
-            btnSubmit.textContent = "Entrar";
-          }
-        }
-      }, 400);
-    });
+  function exibirErro(texto) {
+    if (mensagemErro) {
+      mensagemErro.textContent = texto;
+      mensagemErro.hidden = false;
+    }
   }
 });

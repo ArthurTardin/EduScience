@@ -1,0 +1,32 @@
+info:
+  name: 11 - Criar Pedido
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/pedidos"
+  body:
+    type: json
+    data: |-
+      {
+        "metodo_pagamento": "PIX",
+        "valor_frete": 25.50
+      }
+  auth:
+    type: bearer
+    token: "{{token}}"
+
+runtime:
+  scripts:
+    - type: after-response
+      code: |-
+        if (res.getStatus() === 201) {
+          bru.setEnvVar("idCompra", res.getBody().pedido.id_compra);
+        }
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

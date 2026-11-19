@@ -1,0 +1,10 @@
+name: Local
+variables:
+  - name: baseUrl
+    value: http://localhost:3000
+  - name: token
+    value: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZF9jbGllbnRlIjoyLCJ1c3VhcmlvIjoiZGlyZXRvcmlhdGVzdGUiLCJlbWFpbCI6ImVtYWlsdGVzdGVAZ21haWwuY29tIiwiaWF0IjoxNzk1MDg5MjIzLCJleHAiOjE3OTUxMTgwMjN9.KkrWCbhflc4dPK3mZPode9_0z2KKu-qx3a7elKJl6MM
+  - name: idCompra
+    value:
+      type: number
+      data: "7"

@@ -1,10 +1,16 @@
 import jwt from 'jsonwebtoken';
-import jwtSecret from '../config/jwt.js';
+import { JWT_SECRET } from '../config/auth.js';
 
 export function autenticarToken(req, res, next) {
     const authHeader = req.headers['authorization'];
-    const token = authHeader && authHeader.split(' ')[1];
 
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        return res.status(401).json({
+            error: 'Acesso negado. Token não fornecido ou malformado.'
+        });
+    }
+
+    const token = authHeader.slice(7).trim();
     if (!token) {
         return res.status(401).json({
             error: 'Acesso negado. Token não fornecido.'
@@ -12,14 +18,14 @@ export function autenticarToken(req, res, next) {
     }
 
     try {
-        const usuarioDecodificado = jwt.verify(token, jwtSecret);
+        const usuarioDecodificado = jwt.verify(token, JWT_SECRET);
 
         req.usuario = usuarioDecodificado;
         req.user = usuarioDecodificado;
 
         return next();
     } catch (error) {
-        return res.status(403).json({
+        return res.status(401).json({
             error: 'Token inválido ou expirado.'
         });
     }

@@ -1,14 +1,16 @@
+const API_BASE_URL = 'http://localhost:3000/api';
 const CART_STORAGE_KEY = 'eduscience_cart';
+const TOKEN_KEY = '@EduScience:token';
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener('DOMContentLoaded', () => {
   configurarBotoesAdicionar();
   atualizarContadorHeader();
   inicializarCarrossel();
 });
 
 function configurarBotoesAdicionar() {
-  document.addEventListener("click", (e) => {
-    const btn = e.target.closest(".btn-add-cart");
+  document.addEventListener('click', async (e) => {
+    const btn = e.target.closest('.btn-add-cart');
     if (!btn) return;
 
     const produto = {
@@ -20,19 +22,19 @@ function configurarBotoesAdicionar() {
       categoriaClass: btn.dataset.categoria || 'placeholder-chem'
     };
 
-    adicionarAoCarrinho(produto);
+    await adicionarAoCarrinho(produto, btn);
   });
 }
 
-function adicionarAoCarrinho(novoProduto) {
+async function adicionarAoCarrinho(novoProduto, btn) {
   let produtos = [];
   try {
     produtos = JSON.parse(localStorage.getItem(CART_STORAGE_KEY)) || [];
-  } catch (err) {
+  } catch {
     produtos = [];
   }
 
-  const itemExistente = produtos.find(p => p.id === novoProduto.id);
+  const itemExistente = produtos.find((p) => Number(p.id) === novoProduto.id);
   if (itemExistente) {
     itemExistente.quantidade += 1;
   } else {
@@ -41,16 +43,44 @@ function adicionarAoCarrinho(novoProduto) {
 
   localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(produtos));
   atualizarContadorHeader();
+
+  const token = localStorage.getItem(TOKEN_KEY);
+  if (token) {
+    try {
+      await fetch(`${API_BASE_URL}/carrinho/adicionar`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          idProduto: novoProduto.id,
+          quantidade: 1
+        })
+      });
+    } catch {
+    }
+  }
+
+  if (btn) {
+    const textoOriginal = btn.textContent;
+    btn.textContent = 'Adicionado ao carrinho ✓';
+    btn.disabled = true;
+    setTimeout(() => {
+      btn.textContent = textoOriginal;
+      btn.disabled = false;
+    }, 1000);
+  }
 }
 
 function atualizarContadorHeader() {
-  const cartCountEl = document.querySelector(".nav-cart-count");
+  const cartCountEl = document.querySelector('.nav-cart-count');
   if (!cartCountEl) return;
 
   let produtos = [];
   try {
     produtos = JSON.parse(localStorage.getItem(CART_STORAGE_KEY)) || [];
-  } catch (err) {
+  } catch {
     produtos = [];
   }
 
@@ -59,10 +89,10 @@ function atualizarContadorHeader() {
 }
 
 function inicializarCarrossel() {
-  const track = document.getElementById("carouselTrack");
-  const prevBtn = document.getElementById("prevBtn");
-  const nextBtn = document.getElementById("nextBtn");
-  const navDots = document.getElementById("carouselNav");
+  const track = document.getElementById('carouselTrack');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  const navDots = document.getElementById('carouselNav');
 
   if (!track || !prevBtn || !nextBtn) return;
 
@@ -75,22 +105,21 @@ function inicializarCarrossel() {
     if (index >= slides.length) index = 0;
 
     currentIndex = index;
-
     track.style.transform = `translateX(-${currentIndex * 100}%)`;
 
     slides.forEach((slide, i) => {
-      slide.classList.toggle("current-slide", i === currentIndex);
+      slide.classList.toggle('current-slide', i === currentIndex);
     });
 
     dots.forEach((dot, i) => {
-      dot.classList.toggle("current-slide", i === currentIndex);
+      dot.classList.toggle('current-slide', i === currentIndex);
     });
   }
 
-  nextBtn.addEventListener("click", () => moveToSlide(currentIndex + 1));
-  prevBtn.addEventListener("click", () => moveToSlide(currentIndex - 1));
+  nextBtn.addEventListener('click', () => moveToSlide(currentIndex + 1));
+  prevBtn.addEventListener('click', () => moveToSlide(currentIndex - 1));
 
   dots.forEach((dot, index) => {
-    dot.addEventListener("click", () => moveToSlide(index));
+    dot.addEventListener('click', () => moveToSlide(index));
   });
 }

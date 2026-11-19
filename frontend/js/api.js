@@ -59,7 +59,7 @@ export async function fetchAutenticado(endpoint, options = {}) {
 
     if (response.status === 401 || response.status === 403) {
         logout();
-        window.location.href = "/login.html";
+        window.location.href = "login.html";
         throw new Error("Sessão expirada.");
     }
 

@@ -3,6 +3,10 @@ dotenv.config();
 
 import mysql from 'mysql2/promise';
 
+if (!process.env.DB_NAME && !process.env.DB_PASSWORD) {
+  throw new Error('DB_NAME AND DB_PASSWORD environment variables is required.');
+}
+
 const pool = mysql.createPool({
   host: process.env.DB_HOST || 'localhost',
   user: process.env.DB_USER || 'root',

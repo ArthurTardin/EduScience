@@ -1,4 +1,4 @@
-import express from 'express';
+import { Router } from 'express';
 import { 
     listarItens, 
     adicionarItem, 
@@ -7,12 +7,11 @@ import {
 } from '../controllers/carrinhoController.js';
 import { autenticarToken } from '../middlewares/authMiddleware.js';
 
-const router = express.Router();
+const router = Router();
 
 router.use(autenticarToken);
 
-router.get(['/', '/:idCliente'], listarItens);
-
+router.get('/', listarItens);
 router.post('/adicionar', adicionarItem);
 router.put('/atualizar/:idCarrinho', atualizarQuantidade);
 router.delete('/remover/:idCarrinho', removerItem);

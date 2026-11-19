@@ -1,5 +1,3 @@
-@import url('global.css');
-
 body {
   min-height: 100vh;
   display: grid;
@@ -115,10 +113,11 @@ button[type="submit"] {
   font-size: var(--font-size-base);
   font-weight: var(--font-weight-semibold);
   cursor: pointer;
+  transition: background-color var(--transition-fast);
 }
 
 button[type="submit"]:hover:not(:disabled) {
-  filter: brightness(0.92);
+  background-color: var(--color-primary-hover);
 }
 
 button:focus-visible {

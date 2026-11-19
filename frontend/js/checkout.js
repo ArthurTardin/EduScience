@@ -114,19 +114,29 @@ async function carregarResumoCarrinho() {
 function configurarInteracoesFormulario() {
     estadoSelect.addEventListener('change', calcularFrete);
 
-    document.querySelectorAll('input[name="metodo_pagamento"]').forEach((radio) => {
-        radio.addEventListener('change', () => {
-            document.querySelectorAll('.payment-option').forEach((opt) => {
-                opt.classList.toggle('active', opt.contains(radio));
-            });
+    const atualizarMetodoPagamento = (valorSelecionado) => {
+        document.querySelectorAll('.payment-option').forEach((opt) => {
+            const radio = opt.querySelector('input[type="radio"]');
+            opt.classList.toggle('active', radio && radio.value === valorSelecionado);
+        });
 
-            ['PIX', 'Cartao', 'Boleto'].forEach((m) => {
-                document.getElementById(`details-${m}`).classList.toggle('hidden', m !== radio.value);
+        ['PIX', 'Cartao', 'Boleto'].forEach((m) => {
+            const container = document.getElementById(`details-${m}`);
+            const ativo = m === valorSelecionado;
+            container.classList.toggle('hidden', !ativo);
+            container.querySelectorAll('input, select').forEach((campo) => {
+                campo.disabled = !ativo;
             });
         });
-    });
-}
+    };
 
+    document.querySelectorAll('input[name="metodo_pagamento"]').forEach((radio) => {
+        radio.addEventListener('change', () => atualizarMetodoPagamento(radio.value));
+    });
+
+    const inicial = document.querySelector('input[name="metodo_pagamento"]:checked')?.value || 'PIX';
+    atualizarMetodoPagamento(inicial);
+}
 function validarFormulario() {
     limparAlerta();
 

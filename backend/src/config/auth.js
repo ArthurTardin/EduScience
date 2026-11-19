@@ -8,3 +8,4 @@ if (!jwtSecret) {
 }
 
 export const JWT_SECRET = jwtSecret;
+export default jwtSecret;

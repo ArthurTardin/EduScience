@@ -25,8 +25,8 @@ export async function adicionarOuAtualizar(idCliente, idProduto, quantidade) {
 
     if (existente.length > 0) {
         const novaQtd = existente[0].quantidade + quantidade;
-        const queryUpdate = `UPDATE carrinho_de_compra SET quantidade = ? WHERE id_carrinho = ?`;
-        await pool.execute(queryUpdate, [novaQtd, existente[0].id_carrinho]);
+        const queryUpdate = `UPDATE carrinho_de_compra SET quantidade = ? WHERE id_carrinho = ? AND id_cliente = ?`;
+        await pool.execute(queryUpdate, [novaQtd, existente[0].id_carrinho, idCliente]);
         return { id: existente[0].id_carrinho, id_carrinho: existente[0].id_carrinho, idCliente, idProduto, quantidade: novaQtd };
     }
 
@@ -35,14 +35,14 @@ export async function adicionarOuAtualizar(idCliente, idProduto, quantidade) {
     return { id: resultado.insertId, id_carrinho: resultado.insertId, idCliente, idProduto, quantidade };
 }
 
-export async function atualizarQuantidade(idCarrinho, quantidade) {
-    const query = `UPDATE carrinho_de_compra SET quantidade = ? WHERE id_carrinho = ?`;
-    const [resultado] = await pool.execute(query, [quantidade, idCarrinho]);
+export async function atualizarQuantidade(idCarrinho, quantidade, idCliente) {
+    const query = `UPDATE carrinho_de_compra SET quantidade = ? WHERE id_carrinho = ? AND id_cliente = ?`;
+    const [resultado] = await pool.execute(query, [quantidade, idCarrinho, idCliente]);
     return resultado.affectedRows > 0;
 }
 
-export async function removerItem(idCarrinho) {
-    const query = `DELETE FROM carrinho_de_compra WHERE id_carrinho = ?`;
-    const [resultado] = await pool.execute(query, [idCarrinho]);
+export async function removerItem(idCarrinho, idCliente) {
+    const query = `DELETE FROM carrinho_de_compra WHERE id_carrinho = ? AND id_cliente = ?`;
+    const [resultado] = await pool.execute(query, [idCarrinho, idCliente]);
     return resultado.affectedRows > 0;
 }
