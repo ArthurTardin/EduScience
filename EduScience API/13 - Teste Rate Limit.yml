@@ -1,0 +1,18 @@
+info:
+  name: 13 - Teste Rate Limit
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/auth/login"
+  body:
+    type: json
+    data: '{ "usuario": "teste", "senha": "errada" }'
+  auth: inherit
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

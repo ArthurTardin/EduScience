@@ -1,0 +1,24 @@
+info:
+  name: 07 - Adicionar ao Carrinho
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{baseUrl}}/api/carrinho/adicionar"
+  body:
+    type: json
+    data: |-
+      {
+        "idProduto": 3,
+        "quantidade": 2
+      }
+  auth:
+    type: bearer
+    token: "{{token}}"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
