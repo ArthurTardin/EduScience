@@ -1,89 +1,121 @@
-const API_BASE_URL = 'http://localhost:3000/api';
-const LOGIN_ENDPOINT = `${API_BASE_URL}/auth/login`;
-const TOKEN_KEY = '@EduScience:token';
+import { apiFetch } from "./api.js";
+import { primeiroCampoInvalido, exibirErroInline } from "./validacao.js";
 
-document.addEventListener('DOMContentLoaded', () => {
-  const formLogin = document.querySelector('#form-login');
-  const usuarioInput = document.querySelector('#usuario');
-  const senhaInput = document.querySelector('#senha');
-  const toggleBtn = document.querySelector('#password-toggle');
-  const mensagemErro = document.querySelector('#mensagem-erro');
-  const btnSubmit = document.querySelector('#submit-button');
+const TOKEN_KEY = "@EduScience:token";
+const USER_KEY = "@EduScience:user";
 
-  if (toggleBtn && senhaInput) {
-    toggleBtn.addEventListener('click', () => {
-      const oculta = senhaInput.type === 'password';
-      senhaInput.type = oculta ? 'text' : 'password';
-      toggleBtn.textContent = oculta ? 'Ocultar' : 'Mostrar';
-      toggleBtn.setAttribute('aria-pressed', String(oculta));
-      toggleBtn.setAttribute('aria-label', oculta ? 'Ocultar senha' : 'Mostrar senha');
-    });
+const form = document.querySelector("#login-form");
+const loginInput = document.querySelector("#email");
+const passwordInput = document.querySelector("#password");
+const passwordToggle = document.querySelector("#password-toggle");
+const rememberInput = document.querySelector("#remember");
+const submitButton = document.querySelector("#submit-button");
+const errorBox = document.querySelector("#mensagem-erro");
+const statusMessage = document.querySelector("#status-message");
+
+function showError(message) {
+  if (!errorBox) return;
+  errorBox.textContent = message;
+  errorBox.hidden = false;
+}
+
+function clearError() {
+  if (!errorBox) return;
+  errorBox.textContent = "";
+  errorBox.hidden = true;
+}
+
+function getRedirectUrl() {
+  const params = new URLSearchParams(window.location.search);
+  const next = params.get("next");
+  if (!next) return "landing.html";
+
+  const safePages = ["landing.html", "carrinho.html", "checkout.html", "cadastro.html", "sucesso.html"];
+  return safePages.includes(next) ? next : "landing.html";
+}
+
+passwordToggle?.addEventListener("click", () => {
+  if (!passwordInput || !passwordToggle) return;
+  const shouldShow = passwordInput.type === "password";
+
+  passwordInput.type = shouldShow ? "text" : "password";
+  passwordToggle.classList.toggle("password-visible", shouldShow);
+  passwordToggle.setAttribute("aria-pressed", String(shouldShow));
+  passwordToggle.setAttribute("aria-label", shouldShow ? "Ocultar senha" : "Mostrar senha");
+});
+
+loginInput?.addEventListener("input", clearError);
+passwordInput?.addEventListener("input", () => {
+  clearError();
+  if (passwordInput.value.length >= 6) {
+    exibirErroInline(passwordInput, "");
+  }
+});
+
+form?.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  clearError();
+
+  const invalido = primeiroCampoInvalido(form);
+  if (invalido) {
+    invalido.focus();
+    return;
   }
 
-  if (!formLogin) return;
+  const identifier = loginInput?.value.trim() || "";
+  const senha = passwordInput?.value || "";
 
-  formLogin.addEventListener('submit', async (evento) => {
-    evento.preventDefault();
-    evento.stopPropagation();
+  if (senha.length < 6) {
+    exibirErroInline(passwordInput, "A senha deve ter pelo menos 6 caracteres.");
+    showError("A senha deve ter pelo menos 6 caracteres.");
+    passwordInput?.focus();
+    return;
+  }
+  exibirErroInline(passwordInput, "");
 
-    const usuario = usuarioInput ? usuarioInput.value.trim() : '';
-    const senha = senhaInput ? senhaInput.value : '';
+  submitButton.disabled = true;
+  submitButton.classList.remove("is-success");
+  submitButton.classList.add("is-loading");
+  if (statusMessage) statusMessage.textContent = "Validando acesso...";
 
-    if (mensagemErro) {
-      mensagemErro.textContent = '';
-      mensagemErro.hidden = true;
+  try {
+    const data = await apiFetch("/auth/login", {
+      method: "POST",
+      auth: false,
+      body: JSON.stringify({
+        usuario: identifier,
+        email: identifier,
+        senha
+      })
+    });
+
+    const token = data?.token || data?.data?.token;
+    if (!token) {
+      throw new Error("Token de autenticação não retornado pela API.");
     }
 
-    if (!usuario || !senha) {
-      exibirErro('Preencha o usuário (ou e-mail) e a senha.');
-      return;
+    localStorage.setItem(TOKEN_KEY, token);
+
+    const userData = data?.usuario || data?.user || data?.data?.usuario || { login: identifier };
+    if (rememberInput?.checked) {
+      localStorage.setItem(USER_KEY, JSON.stringify(userData));
+    } else {
+      sessionStorage.setItem(USER_KEY, JSON.stringify(userData));
     }
 
-    if (btnSubmit) {
-      btnSubmit.disabled = true;
-      btnSubmit.textContent = 'Entrando...';
-    }
+    submitButton.classList.remove("is-loading");
+    submitButton.classList.add("is-success");
+    if (statusMessage) statusMessage.textContent = "Acesso confirmado. Redirecionando...";
 
-    try {
-      const response = await fetch(LOGIN_ENDPOINT, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ usuario, senha })
-      });
-
-      const data = await response.json().catch(() => ({}));
-
-      if (!response.ok) {
-        throw new Error(data.erro || data.error || data.message || 'Usuário ou senha inválidos.');
-      }
-
-      if (!data.token) {
-        throw new Error('Token de autenticação não recebido do servidor.');
-      }
-
-      localStorage.setItem(TOKEN_KEY, data.token);
-
-      const params = new URLSearchParams(window.location.search);
-      const rotaDeRetorno = params.get('next');
-      const eRotaSegura =
-        rotaDeRetorno &&
-        !rotaDeRetorno.includes('://') &&
-        !rotaDeRetorno.startsWith('//');
-
-      window.location.href = eRotaSegura ? rotaDeRetorno : 'landing.html';
-    } catch (error) {
-      exibirErro(error.message || 'Erro de conexão com o servidor.');
-      if (btnSubmit) {
-        btnSubmit.disabled = false;
-        btnSubmit.textContent = 'Entrar';
-      }
-    }
-  });
-
-  function exibirErro(texto) {
-    if (mensagemErro) {
-      mensagemErro.textContent = texto;
-      mensagemErro.hidden = false;
-    }
+    window.setTimeout(() => {
+      window.location.href = getRedirectUrl();
+    }, 500);
+  } catch (error) {
+    submitButton.classList.remove("is-loading");
+    submitButton.classList.remove("is-success");
+    submitButton.disabled = false;
+    const msg = error?.message || "Não foi possível entrar. Verifique suas credenciais.";
+    showError(msg);
+    if (statusMessage) statusMessage.textContent = msg;
   }
 });

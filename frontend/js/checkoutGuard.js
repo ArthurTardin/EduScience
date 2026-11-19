@@ -1,7 +1,9 @@
 import { logout } from "./api.js";
 
+const TOKEN_KEY = "@EduScience:token";
+
 function obterToken() {
-  return localStorage.getItem("@EduScience:token") || localStorage.getItem("token");
+  return localStorage.getItem(TOKEN_KEY);
 }
 
 function tokenExpirado(token) {
@@ -24,7 +26,7 @@ function tokenExpirado(token) {
       return payload.exp * 1000 <= Date.now();
     }
 
-    return true;
+    return false;
   } catch (err) {
     console.error("Erro ao validar token JWT:", err);
     return true;
@@ -37,22 +39,20 @@ export function sessaoValida() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-  const botaoFinalizar = document.querySelector("#btn-finalizar");
+  const botaoFinalizar = document.querySelector("#btn-finalizar, #checkout-button");
 
-  if (botaoFinalizar) {
-    botaoFinalizar.addEventListener("click", (e) => {
-      e.preventDefault();
+  if (!botaoFinalizar) return;
 
-      if (!sessaoValida()) {
-        try { logout(); } catch {}
-        localStorage.removeItem("token");
-        localStorage.removeItem("@EduScience:token");
+  botaoFinalizar.addEventListener("click", (e) => {
+    e.preventDefault();
+    e.stopImmediatePropagation();
 
-        window.location.href = "login.html?next=checkout.html";
-        return;
-      }
+    if (!sessaoValida()) {
+      logout();
+      window.location.href = "login.html?next=checkout.html";
+      return;
+    }
 
-      window.location.href = "checkout.html";
-    });
-  }
+    window.location.href = "checkout.html";
+  }, true);
 });

@@ -3,68 +3,289 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Login - EduScience</title>
+    <meta
+      name="description"
+      content="Acesse a EduScience, plataforma de kits práticos de Química e Física para escolas."
+    />
+    <title>Login | EduScience</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
     <link rel="stylesheet" href="../css/global.css" />
     <link rel="stylesheet" href="../css/login.css" />
+    <link rel="stylesheet" href="../css/validacoes.css" />
+    <link rel="icon" type="image/svg+xml" href="../assets/favicon.svg" />
   </head>
   <body>
     <a href="#main-content" class="skip-link">Pular para o conteúdo principal</a>
 
-    <main id="main-content" class="login-container">
-      <h1 id="login-title">Login</h1>
-      <p class="subtitle">Entre em sua conta</p>
+    <main id="main-content" class="login-layout">
+      <section class="visual-panel" aria-labelledby="visual-title">
+        <div class="ambient-circle ambient-circle--left"></div>
+        <div class="ambient-circle ambient-circle--right"></div>
 
-      <form id="form-login" aria-labelledby="login-title" novalidate>
-        <div class="field">
-          <label for="usuario">Usuário</label>
-          <input
-            type="text"
-            id="usuario"
-            name="usuario"
-            placeholder="Digite seu usuário"
-            autocomplete="username"
-            required
-            aria-required="true"
-          />
-        </div>
+        <a href="landing.html" class="brand brand--inverse" aria-label="EduScience — início">
+          <span class="brand-mark" aria-hidden="true">
+            <svg viewBox="0 0 32 32" fill="none">
+              <path
+                d="M11 6v7.2L6.8 21a3.3 3.3 0 0 0 2.9 5h12.6a3.3 3.3 0 0 0 2.9-5L21 13.2V6"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <path d="M9.2 19.4h13.6" stroke="#f47b5f" stroke-width="2" stroke-linecap="round" />
+              <path d="M9 6h14" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+            </svg>
+          </span>
+          <span>eduscience</span>
+        </a>
 
-        <div class="field field-password">
-          <label for="senha">Senha</label>
-          <div class="password-wrapper">
-            <input
-              type="password"
-              id="senha"
-              name="senha"
-              placeholder="Digite sua senha"
-              autocomplete="current-password"
-              required
-              aria-required="true"
-              minlength="6"
+        <div class="illustration-wrap">
+          <svg
+            class="science-illustration"
+            viewBox="0 0 560 470"
+            role="img"
+            aria-label="Ilustração de um kit de experiências com frasco de laboratório e órbitas"
+          >
+            <path
+              d="M52 387c82 41 163 25 228-8 72-36 139-69 229-27"
+              fill="none"
+              stroke="#2b5a57"
+              stroke-width="2"
             />
-            <button
-              type="button"
-              id="password-toggle"
-              aria-label="Mostrar senha"
-              aria-pressed="false"
-              class="btn-toggle-password"
-            >Mostrar</button>
-          </div>
+            <ellipse
+              cx="300"
+              cy="218"
+              rx="185"
+              ry="69"
+              fill="none"
+              stroke="#5f817e"
+              stroke-width="2"
+            />
+            <ellipse
+              cx="300"
+              cy="218"
+              rx="185"
+              ry="69"
+              fill="none"
+              stroke="#5f817e"
+              stroke-width="2"
+              transform="rotate(58 300 218)"
+            />
+            <circle cx="461" cy="249" r="11" fill="#f47b5f" />
+            <circle cx="172" cy="330" r="8" fill="#efc058" />
+            <circle cx="288" cy="218" r="22" fill="#f8f6ee" />
+
+            <g transform="translate(156 124)">
+              <path
+                d="M70 15h83M85 16v79L35 211c-10 23 7 49 32 49h151c25 0 42-26 32-49L200 95V16"
+                fill="#174b47"
+                stroke="#f8f6ee"
+                stroke-width="4"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <path
+                d="M53 194c49-22 83 21 132-3 17-8 30-5 51 6l8 18c8 18-5 39-26 39H67c-20 0-34-21-26-40l12-20Z"
+                fill="#f47b5f"
+              />
+              <path d="M84 74h117" stroke="#f8f6ee" stroke-width="4" stroke-linecap="round" />
+              <circle cx="101" cy="218" r="9" fill="#efc058" />
+              <circle cx="132" cy="233" r="6" fill="#f8f6ee" />
+              <circle cx="189" cy="216" r="7" fill="#efc058" />
+            </g>
+
+            <g transform="translate(405 88)">
+              <rect width="72" height="86" rx="16" fill="#f8f6ee" />
+              <path
+                d="M22 25h29M22 41h20M22 57h25"
+                stroke="#174b47"
+                stroke-width="5"
+                stroke-linecap="round"
+              />
+            </g>
+            <g transform="translate(69 120)">
+              <rect width="82" height="70" rx="18" fill="#efc058" />
+              <path
+                d="M24 49V28h34v21M31 28v-8m20 8v-8"
+                fill="none"
+                stroke="#174b47"
+                stroke-width="5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </g>
+          </svg>
         </div>
 
-        <p class="forgot">
-          <a href="cadastro.html" aria-label="Recuperar acesso ou criar novo cadastro">Esqueci a senha</a>
-        </p>
+        <div class="visual-copy">
+          <p class="eyebrow eyebrow--yellow">Ciência que acontece</p>
+          <h1 id="visual-title">Da teoria para a descoberta.</h1>
+          <p class="visual-description">
+            Kits práticos, seguros e alinhados ao currículo para transformar cada aula em uma
+            experiência.
+          </p>
+        </div>
+      </section>
 
-        <div id="status-message" class="status-message" aria-live="polite"></div>
-        <div id="mensagem-erro" class="mensagem-erro" role="alert" hidden></div>
+      <section class="form-panel" aria-labelledby="login-title">
+        <header class="topbar">
+          <a href="landing.html" class="brand brand--mobile" aria-label="EduScience — início">
+            <span class="brand-mark" aria-hidden="true">
+              <svg viewBox="0 0 32 32" fill="none">
+                <path
+                  d="M11 6v7.2L6.8 21a3.3 3.3 0 0 0 2.9 5h12.6a3.3 3.3 0 0 0 2.9-5L21 13.2V6"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+                <path
+                  d="M9.2 19.4h13.6"
+                  stroke="#f47b5f"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                />
+                <path d="M9 6h14" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+              </svg>
+            </span>
+            <span>eduscience</span>
+          </a>
+          <p class="signup-prompt">
+            Ainda não tem uma conta? <a href="cadastro.html">Criar conta</a>
+          </p>
+        </header>
 
-        <button id="submit-button" type="submit">Entrar</button>
-      </form>
+        <div class="form-container">
+          <div class="form-intro">
+            <p class="eyebrow">Área do educador</p>
+            <h2 id="login-title">Bem-vindo de volta.</h2>
+            <p>Acesse sua conta para acompanhar pedidos e explorar novos experimentos.</p>
+          </div>
 
-      <p class="signup">
-        Não tem conta?
-        <a href="cadastro.html">Cadastre-se</a>
-      </p>
+          <form id="login-form" novalidate>
+            <div class="field">
+              <label for="email">E-mail ou Usuário</label>
+              <input
+                id="email"
+                name="email"
+                type="text"
+                autocomplete="username"
+                required
+                aria-required="true"
+                placeholder="voce@escola.com.br ou usuario"
+              />
+            </div>
+
+            <div class="field">
+              <div class="field-heading">
+                <label for="password">Senha</label>
+                <a href="cadastro.html">Criar acesso</a>
+              </div>
+              <div class="password-control">
+                <input
+                  id="password"
+                  name="password"
+                  type="password"
+                  autocomplete="current-password"
+                  required
+                  aria-required="true"
+                  minlength="6"
+                  placeholder="Digite sua senha"
+                />
+                <button
+                  id="password-toggle"
+                  class="icon-button"
+                  type="button"
+                  aria-label="Mostrar senha"
+                  aria-pressed="false"
+                >
+                  <svg class="eye-open" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path
+                      d="M3 12c0-1.5 3.5-7 9-7s9 5.5 9 7-3.5 7-9 7-9-5.5-9-7Z M12 9a3 3 0 1 1 0 6 3 3 0 0 1 0-6Z"
+                      stroke="currentColor"
+                      stroke-width="1.8"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                  </svg>
+                  <svg class="eye-closed" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path
+                      d="M3 3l18 18M10.6 10.7a2 2 0 0 0 2.7 2.7M9.9 5.2A10.9 10.9 0 0 1 12 5c5.5 0 9 5.5 9 7 0 .7-.8 2.2-2.2 3.6M6.6 6.6C4.3 8.1 3 10.8 3 12c0 1.5 3.5 7 9 7 1.2 0 2.3-.3 3.3-.7"
+                      stroke="currentColor"
+                      stroke-width="1.8"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                    />
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <label class="checkbox-control">
+              <input type="checkbox" id="remember" name="remember" checked />
+              <span class="custom-checkbox" aria-hidden="true">
+                <svg viewBox="0 0 16 16">
+                  <path
+                    d="m3 8 3 3 7-7"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+              </span>
+              <span>Manter-me conectado</span>
+            </label>
+
+            <div id="mensagem-erro" class="form-error" role="alert" aria-live="assertive" hidden></div>
+
+            <button id="submit-button" class="submit-button" type="submit">
+              <span class="button-default">
+                Entrar na plataforma
+                <svg viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                  <path
+                    d="M4 10h12m-4-4 4 4-4 4"
+                    stroke="currentColor"
+                    stroke-width="1.8"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+              </span>
+              <span class="button-loading">
+                <span class="spinner"></span>
+                Entrando...
+              </span>
+              <span class="button-success">
+                <svg viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                  <path
+                    d="m4 10 4 4 8-8"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                  />
+                </svg>
+                Acesso confirmado
+              </span>
+            </button>
+          </form>
+
+          <p class="mobile-signup">Ainda não tem uma conta? <a href="cadastro.html">Criar conta</a></p>
+          <p id="status-message" class="sr-only" aria-live="polite"></p>
+        </div>
+
+        <footer>
+          <span>© 2026 EduScience</span>
+          <a href="landing.html">Início</a>
+          <a href="carrinho.html">Carrinho</a>
+        </footer>
+      </section>
     </main>
 
     <script type="module" src="../js/login.js"></script>
