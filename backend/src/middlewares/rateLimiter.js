@@ -1,6 +1,6 @@
 const rateLimitStore = new Map();
 
-setInterval(() => {
+const janitor = setInterval(() => {
     const agora = Date.now();
     for (const [chave, dados] of rateLimitStore.entries()) {
         if (agora > dados.expiraEm) {
@@ -9,11 +9,13 @@ setInterval(() => {
     }
 }, 60 * 1000);
 
+janitor.unref();
+
 export function rateLimitAuthRoutes(req, res, next) {
     const chave = req.ip || req.socket?.remoteAddress || 'desconhecido';
     const agora = Date.now();
     const janelaMs = 60 * 1000;
-    const limite = 60;
+    const limite = 15;
 
     const atual = rateLimitStore.get(chave);
 
@@ -23,8 +25,10 @@ export function rateLimitAuthRoutes(req, res, next) {
     }
 
     if (atual.contador >= limite) {
+        const segundosRestantes = Math.ceil((atual.expiraEm - agora) / 1000);
+        res.setHeader('Retry-After', String(segundosRestantes));
         return res.status(429).json({
-            error: 'Muitas requisições. Tente novamente em instantes.'
+            error: `Muitas requisições. Tente novamente em ${segundosRestantes}s.`
         });
     }
 

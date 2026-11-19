@@ -22,7 +22,7 @@ function gerarChaveAcesso44Digitos(idCompra, cnpjEmitente = '12345678000199') {
 
     let peso = 2;
     let soma = 0;
-    for (let i = base43.length - 1; i>= 0; i--) {
+    for (let i = base43.length - 1; i >= 0; i--) {
         soma += Number(base43[i]) * peso;
         peso = peso === 9 ? 2 : peso + 1;
     }
@@ -34,7 +34,7 @@ function gerarChaveAcesso44Digitos(idCompra, cnpjEmitente = '12345678000199') {
 }
 
 function calcularImpostos(valorProdutos) {
-    const base = Number(valorProdutos);
+    const base = Number(Number(valorProdutos).toFixed(2));
     const icms = Number((base * ALIQUOTAS.ICMS).toFixed(2));
     const pis = Number((base * ALIQUOTAS.PIS).toFixed(2));
     const cofins = Number((base * ALIQUOTAS.COFINS).toFixed(2));
@@ -134,7 +134,9 @@ export async function buscarNotaFiscalPorPedido(idCompra, idCliente) {
         [idCompra]
     );
 
-    const subtotalProdutos = itens.reduce((acc, item) => acc + Number(item.subtotal), 0);
+    const subtotalProdutos = Number(
+        itens.reduce((acc, item) => acc + Number(item.subtotal), 0).toFixed(2)
+    );
     const impostos = calcularImpostos(subtotalProdutos);
 
     return {
@@ -143,7 +145,7 @@ export async function buscarNotaFiscalPorPedido(idCompra, idCliente) {
             numero_nf: dados.numero_nf,
             serie: dados.serie,
             chave_acesso: dados.chave_acesso,
-            chave_acesso_formatada: dados.chave_acesso.replace(/(\d{4})(?=\d)/g, '$1 '),
+            chave_acesso_formatada: (dados.chave_acesso || '').replace(/(\d{4})(?=\d)/g, '$1 '),
             data_emissao: dados.data_emissao,
             xml_url: dados.xml_url
         },
@@ -174,7 +176,7 @@ export async function buscarNotaFiscalPorPedido(idCompra, idCliente) {
             data_compra: dados.data_compra,
             status_pedido: dados.status_pedido,
             metodo_pagamento: dados.metodo_pagamento,
-            subtotal_produtos: Number(subtotalProdutos.toFixed(2)),
+            subtotal_produtos: subtotalProdutos,
             valor_frete: Number(dados.valor_frete),
             valor_total: Number(dados.valor_total)
         },

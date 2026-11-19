@@ -12,7 +12,11 @@ export async function listarTodos(req, res) {
 
 export async function buscarPorId(req, res) {
     try {
-        const { id } = req.params;
+        const id = Number(req.params.id);
+        if (!Number.isInteger(id) || id <= 0) {
+            return res.status(400).json({ error: 'ID do produto inválido.' });
+        }
+
         const produto = await produtoModel.buscarPorId(id);
         if (!produto) {
             return res.status(404).json({ error: 'Produto não encontrado.' });
