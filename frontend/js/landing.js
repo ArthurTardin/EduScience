@@ -59,6 +59,7 @@ async function adicionarAoCarrinho(novoProduto, btn) {
         })
       });
     } catch {
+      // Mantém no localStorage como fallback se offline
     }
   }
 
@@ -89,6 +90,7 @@ function atualizarContadorHeader() {
 }
 
 function inicializarCarrossel() {
+  const carousel = document.getElementById('kitsCarousel');
   const track = document.getElementById('carouselTrack');
   const prevBtn = document.getElementById('prevBtn');
   const nextBtn = document.getElementById('nextBtn');
@@ -108,11 +110,18 @@ function inicializarCarrossel() {
     track.style.transform = `translateX(-${currentIndex * 100}%)`;
 
     slides.forEach((slide, i) => {
-      slide.classList.toggle('current-slide', i === currentIndex);
+      const ativo = i === currentIndex;
+      slide.classList.toggle('current-slide', ativo);
+      slide.setAttribute('aria-hidden', String(!ativo));
+      slide.querySelectorAll('button, a').forEach((el) => {
+        el.tabIndex = ativo ? 0 : -1;
+      });
     });
 
     dots.forEach((dot, i) => {
-      dot.classList.toggle('current-slide', i === currentIndex);
+      const ativo = i === currentIndex;
+      dot.classList.toggle('current-slide', ativo);
+      dot.setAttribute('aria-current', String(ativo));
     });
   }
 
@@ -122,4 +131,18 @@ function inicializarCarrossel() {
   dots.forEach((dot, index) => {
     dot.addEventListener('click', () => moveToSlide(index));
   });
+
+  if (carousel) {
+    carousel.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowRight') {
+        e.preventDefault();
+        moveToSlide(currentIndex + 1);
+      } else if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        moveToSlide(currentIndex - 1);
+      }
+    });
+  }
+
+  moveToSlide(0);
 }

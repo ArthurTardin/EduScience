@@ -2,225 +2,212 @@ const API_BASE_URL = 'http://localhost:3000/api';
 const CART_STORAGE_KEY = 'eduscience_cart';
 const TOKEN_KEY = '@EduScience:token';
 
-function escaparHtml(str) {
-  return String(str ?? '')
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#39;');
+const formatarMoeda = (valor) =>
+  Number(valor || 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+
+function obterCarrinhoLocal() {
+  try {
+    return JSON.parse(localStorage.getItem(CART_STORAGE_KEY)) || [];
+  } catch {
+    return [];
+  }
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-  carregarCarrinho();
-});
+function salvarCarrinhoLocal(itens) {
+  localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(itens));
+  atualizarContadores(itens);
+}
 
-document.addEventListener('click', async (e) => {
-  const btn = e.target.closest('button');
-  if (!btn || !btn.dataset.action) return;
+function atualizarContadores(itens) {
+  const totalQtd = itens.reduce((acc, item) => acc + (Number(item.quantidade) || 1), 0);
+  const navCount = document.querySelector('.nav-cart-count');
+  const headerCount = document.querySelector('.cart-count');
 
-  const idProduto = Number(btn.dataset.id);
-  const idCarrinho = btn.dataset.carrinhoId ? Number(btn.dataset.carrinhoId) : null;
-  const action = btn.dataset.action;
-
-  if (action === 'increase') {
-    await processarAlteracao(idProduto, idCarrinho, 1);
-  } else if (action === 'decrease') {
-    await processarAlteracao(idProduto, idCarrinho, -1);
-  } else if (action === 'remove') {
-    await processarRemocao(idProduto, idCarrinho);
+  if (navCount) navCount.textContent = String(totalQtd);
+  if (headerCount) {
+    headerCount.textContent = totalQtd === 1 ? '(1 item)' : `(${totalQtd} itens)`;
   }
-});
+}
 
-async function carregarCarrinho() {
-  const cartTableBody = document.querySelector('.cart-table tbody');
-  if (!cartTableBody) return;
+function exibirToast(mensagem, tipo = 'success') {
+  let container = document.querySelector('.toast-container');
+  if (!container) {
+    container = document.createElement('div');
+    container.className = 'toast-container';
+    container.setAttribute('aria-live', 'polite');
+    document.body.appendChild(container);
+  }
 
+  const toast = document.createElement('div');
+  toast.className = `toast toast-${tipo}`;
+  toast.setAttribute('role', 'status');
+  toast.textContent = mensagem;
+  container.appendChild(toast);
+
+  setTimeout(() => toast.remove(), 2500);
+}
+
+async function sincronizarApi(endpoint, method, body = null) {
   const token = localStorage.getItem(TOKEN_KEY);
-  let produtos = [];
+  if (!token) return;
 
-  if (token) {
-    try {
-      const res = await fetch(`${API_BASE_URL}/carrinho`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-
-      if (res.status === 401) {
-        localStorage.removeItem(TOKEN_KEY);
-      } else if (res.ok) {
-        const dadosApi = await res.json();
-        const lista = Array.isArray(dadosApi) ? dadosApi : (dadosApi.itens || []);
-        produtos = lista.map((item) => ({
-          id: Number(item.id_produto),
-          idCarrinho: Number(item.id_carrinho),
-          nome: item.nome_kit || item.nome || 'Produto',
-          descricao: item.descricao || '',
-          preco: Number(item.preco_unitario ?? item.preco ?? 0),
-          quantidade: Number(item.quantidade) || 1,
-          categoriaClass: item.categoriaClass || 'placeholder-chem'
-        }));
-        localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(produtos));
-      }
-    } catch {
-    }
+  try {
+    await fetch(`${API_BASE_URL}${endpoint}`, {
+      method,
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`
+      },
+      body: body ? JSON.stringify(body) : null
+    });
+  } catch {
   }
+}
 
-  if (produtos.length === 0) {
-    try {
-      produtos = JSON.parse(localStorage.getItem(CART_STORAGE_KEY)) || [];
-    } catch {
-      localStorage.removeItem(CART_STORAGE_KEY);
-      produtos = [];
-    }
-  }
+function renderizarCarrinho() {
+  const tbody = document.getElementById('cart-items-body') || document.querySelector('.cart-table tbody');
+  const tableWrapper = document.querySelector('.cart-table');
+  const emptyContainer = document.querySelector('.cart-empty-container');
+  const btnFinalizar = document.getElementById('btn-finalizar');
+  const subtotalEl = document.getElementById('summary-subtotal');
+  const totalEl = document.getElementById('summary-total');
 
-  if (produtos.length === 0) {
-    cartTableBody.innerHTML = `
-      <tr>
-        <td colspan="5">
-          <div class="cart-empty-container">
-            <p>Seu carrinho está vazio no momento.</p>
-            <a href="landing.html" class="btn btn-primary">Explorar Kits de Ciência</a>
-          </div>
-        </td>
-      </tr>
-    `;
-    atualizarTotais(0, 0);
+  const itens = obterCarrinhoLocal();
+  atualizarContadores(itens);
+
+  if (!tbody) return;
+  tbody.replaceChildren();
+
+  if (itens.length === 0) {
+    if (tableWrapper) tableWrapper.hidden = true;
+    if (emptyContainer) emptyContainer.hidden = false;
+    if (btnFinalizar) btnFinalizar.disabled = true;
+    if (subtotalEl) subtotalEl.textContent = formatarMoeda(0);
+    if (totalEl) totalEl.textContent = formatarMoeda(0);
     return;
   }
 
-  cartTableBody.innerHTML = '';
-  let valorTotalGeral = 0;
-  let totalItens = 0;
+  if (tableWrapper) tableWrapper.hidden = false;
+  if (emptyContainer) emptyContainer.hidden = true;
+  if (btnFinalizar) btnFinalizar.disabled = false;
 
-  produtos.forEach((produto) => {
-    const preco = Number(produto.preco) || 0;
-    const qtd = Number(produto.quantidade) || 1;
+  let totalGeral = 0;
+
+  itens.forEach((item) => {
+    const qtd = Number(item.quantidade) || 1;
+    const preco = Number(item.preco) || 0;
     const subtotal = preco * qtd;
-
-    valorTotalGeral += subtotal;
-    totalItens += qtd;
+    totalGeral += subtotal;
 
     const tr = document.createElement('tr');
-    tr.classList.add('cart-row');
-    tr.innerHTML = `
-      <td data-label="Produto">
-        <div class="product-info">
-          <div class="product-thumb ${escaparHtml(produto.categoriaClass || 'placeholder-chem')}"></div>
-          <div>
-            <p class="product-name">${escaparHtml(produto.nome || 'Produto')}</p>
-            <p class="product-desc">${escaparHtml(produto.descricao || '')}</p>
-          </div>
-        </div>
-      </td>
-      <td data-label="Preço">R$ ${preco.toFixed(2).replace('.', ',')}</td>
-      <td data-label="Quantidade">
-        <div class="qty-control">
-          <button type="button" class="qty-btn" data-action="decrease" data-id="${produto.id}" data-carrinho-id="${produto.idCarrinho || ''}">-</button>
-          <input type="number" class="qty-input" value="${qtd}" readonly />
-          <button type="button" class="qty-btn" data-action="increase" data-id="${produto.id}" data-carrinho-id="${produto.idCarrinho || ''}">+</button>
-        </div>
-      </td>
-      <td data-label="Subtotal" class="item-subtotal">R$ ${subtotal.toFixed(2).replace('.', ',')}</td>
-      <td class="cell-remove">
-        <button type="button" class="btn-remove" data-action="remove" data-id="${produto.id}" data-carrinho-id="${produto.idCarrinho || ''}">Remover</button>
-      </td>
-    `;
-    cartTableBody.appendChild(tr);
+    tr.className = 'cart-row';
+
+    const tdProduto = document.createElement('td');
+    tdProduto.dataset.label = 'Produto';
+    const info = document.createElement('div');
+    info.className = 'product-info';
+
+    const thumb = document.createElement('div');
+    thumb.className = `product-thumb ${item.categoriaClass || 'placeholder-chem'}`;
+    thumb.setAttribute('aria-hidden', 'true');
+
+    const textos = document.createElement('div');
+    const nome = document.createElement('div');
+    nome.className = 'product-name';
+    nome.textContent = item.nome;
+
+    const desc = document.createElement('div');
+    desc.className = 'product-desc';
+    desc.textContent = item.descricao || '';
+
+    textos.append(nome, desc);
+    info.append(thumb, textos);
+    tdProduto.appendChild(info);
+
+    const tdPreco = document.createElement('td');
+    tdPreco.dataset.label = 'Preço';
+    tdPreco.textContent = formatarMoeda(preco);
+
+    const tdQtd = document.createElement('td');
+    tdQtd.dataset.label = 'Quantidade';
+    const controle = document.createElement('div');
+    controle.className = 'qty-control';
+    controle.setAttribute('role', 'group');
+    controle.setAttribute('aria-label', `Quantidade de ${item.nome}`);
+
+    const btnMenos = document.createElement('button');
+    btnMenos.type = 'button';
+    btnMenos.className = 'qty-btn';
+    btnMenos.textContent = '−';
+    btnMenos.setAttribute('aria-label', `Diminuir quantidade de ${item.nome}`);
+    btnMenos.addEventListener('click', () => alterarQuantidade(item.id, qtd - 1));
+
+    const inputQtd = document.createElement('input');
+    inputQtd.type = 'number';
+    inputQtd.className = 'qty-input';
+    inputQtd.min = '1';
+    inputQtd.value = String(qtd);
+    inputQtd.setAttribute('aria-label', `Quantidade atual de ${item.nome}`);
+    inputQtd.addEventListener('change', (e) => {
+      const novaQtd = Math.max(1, parseInt(e.target.value, 10) || 1);
+      alterarQuantidade(item.id, novaQtd);
+    });
+
+    const btnMais = document.createElement('button');
+    btnMais.type = 'button';
+    btnMais.className = 'qty-btn';
+    btnMais.textContent = '+';
+    btnMais.setAttribute('aria-label', `Aumentar quantidade de ${item.nome}`);
+    btnMais.addEventListener('click', () => alterarQuantidade(item.id, qtd + 1));
+
+    controle.append(btnMenos, inputQtd, btnMais);
+    tdQtd.appendChild(controle);
+
+    const tdSub = document.createElement('td');
+    tdSub.dataset.label = 'Subtotal';
+    tdSub.className = 'item-subtotal';
+    tdSub.textContent = formatarMoeda(subtotal);
+
+    const tdRemover = document.createElement('td');
+    tdRemover.className = 'cell-remove';
+    const btnRemover = document.createElement('button');
+    btnRemover.type = 'button';
+    btnRemover.className = 'btn-remove';
+    btnRemover.textContent = 'Remover';
+    btnRemover.setAttribute('aria-label', `Remover ${item.nome} do carrinho`);
+    btnRemover.addEventListener('click', () => removerItem(item.id, item.nome));
+    tdRemover.appendChild(btnRemover);
+
+    tr.append(tdProduto, tdPreco, tdQtd, tdSub, tdRemover);
+    tbody.appendChild(tr);
   });
 
-  atualizarTotais(valorTotalGeral, totalItens);
+  if (subtotalEl) subtotalEl.textContent = formatarMoeda(totalGeral);
+  if (totalEl) totalEl.textContent = formatarMoeda(totalGeral);
 }
 
-function atualizarTotais(totalValor, totalItens) {
-  const cartCountEl = document.querySelector('.cart-count');
-  const subtotalEl = document.getElementById('cart-subtotal');
-  const totalEl = document.getElementById('cart-total');
-
-  if (cartCountEl) cartCountEl.textContent = `(${totalItens} ${totalItens === 1 ? 'item' : 'itens'})`;
-  if (subtotalEl) subtotalEl.textContent = `R$ ${totalValor.toFixed(2).replace('.', ',')}`;
-  if (totalEl) totalEl.textContent = `R$ ${totalValor.toFixed(2).replace('.', ',')}`;
-}
-
-async function processarAlteracao(idProduto, idCarrinho, delta) {
-  let produtos = JSON.parse(localStorage.getItem(CART_STORAGE_KEY)) || [];
-  const item = produtos.find((p) => Number(p.id) === idProduto);
-  if (!item) return;
-
-  const novaQuantidade = item.quantidade + delta;
-  const token = localStorage.getItem(TOKEN_KEY);
-  const alvoId = idCarrinho || item.idCarrinho;
-
-  if (token && alvoId) {
-    try {
-      const endpoint = novaQuantidade <= 0
-        ? `${API_BASE_URL}/carrinho/remover/${alvoId}`
-        : `${API_BASE_URL}/carrinho/atualizar/${alvoId}`;
-
-      const response = await fetch(endpoint, {
-        method: novaQuantidade <= 0 ? 'DELETE' : 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`
-        },
-        body: novaQuantidade <= 0 ? undefined : JSON.stringify({ quantidade: novaQuantidade })
-      });
-
-      if (!response.ok) {
-        exibirToast('Não foi possível sincronizar as alterações com o servidor.', 'error');
-      }
-    } catch {
-      exibirToast('Servidor offline. Suas alterações foram salvas apenas localmente.', 'error');
-    }
+async function alterarQuantidade(id, novaQtd) {
+  if (novaQtd <= 0) {
+    const item = obterCarrinhoLocal().find((p) => Number(p.id) === Number(id));
+    await removerItem(id, item?.nome || 'Item');
+    return;
   }
 
-  if (novaQuantidade <= 0) {
-    produtos = produtos.filter((p) => Number(p.id) !== idProduto);
-  } else {
-    item.quantidade = novaQuantidade;
-  }
+  const itens = obterCarrinhoLocal().map((item) =>
+    Number(item.id) === Number(id) ? { ...item, quantidade: novaQtd } : item
+  );
 
-  localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(produtos));
-  await carregarCarrinho();
+  salvarCarrinhoLocal(itens);
+  renderizarCarrinho();
+  await sincronizarApi(`/carrinho/${id}`, 'PUT', { quantidade: novaQtd });
 }
 
-async function processarRemocao(idProduto, idCarrinho) {
-  let produtos = JSON.parse(localStorage.getItem(CART_STORAGE_KEY)) || [];
-  const item = produtos.find((p) => Number(p.id) === idProduto);
-  const token = localStorage.getItem(TOKEN_KEY);
-  const alvoId = idCarrinho || item?.idCarrinho;
-
-  if (token && alvoId) {
-    try {
-      const response = await fetch(`${API_BASE_URL}/carrinho/remover/${alvoId}`, {
-        method: 'DELETE',
-        headers: { Authorization: `Bearer ${token}` }
-      });
-
-      if (!response.ok) {
-        exibirToast('Erro ao remover o item no servidor.', 'error');
-      }
-    } catch {
-      exibirToast('Servidor offline. Item removido apenas localmente.', 'error');
-    }
-  }
-
-  produtos = produtos.filter((p) => Number(p.id) !== idProduto);
-  localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(produtos));
-  await carregarCarrinho();
+async function removerItem(id, nome) {
+  const itens = obterCarrinhoLocal().filter((item) => Number(item.id) !== Number(id));
+  salvarCarrinhoLocal(itens);
+  renderizarCarrinho();
+  exibirToast(`${nome} removido do carrinho.`);
+  await sincronizarApi(`/carrinho/${id}`, 'DELETE');
 }
 
-function exibirToast(mensagem, tipo = 'error') {
-  const container = document.getElementById('toast-container');
-  if (!container) return;
-
-  const toast = document.createElement('div');
-  toast.classList.add('toast', `toast-${tipo}`);
-  toast.textContent = mensagem;
-
-  container.appendChild(toast);
-
-  setTimeout(() => {
-    toast.remove();
-  }, 4000);
-}
+document.addEventListener('DOMContentLoaded', renderizarCarrinho);

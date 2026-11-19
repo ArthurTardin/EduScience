@@ -8,18 +8,20 @@
   <link rel="stylesheet" href="../css/sucesso.css">
 </head>
 <body>
+  <a href="#main-content" class="skip-link">Pular para o conteúdo principal</a>
+
   <header class="navbar">
     <div class="logo">
       <h1>EduScience</h1>
     </div>
-    <nav>
+    <nav aria-label="Navegação principal">
       <a href="landing.html">Início</a>
-      <a href="carrinho.html">Carrinho <span class="nav-cart-count" id="nav-cart-count">0</span></a>
+      <a href="carrinho.html">Carrinho <span class="nav-cart-count" id="nav-cart-count" aria-label="itens no carrinho">0</span></a>
       <a href="login.html" class="btn-login">Entrar</a>
     </nav>
   </header>
 
-  <main class="success-page">
+  <main id="main-content" class="success-page">
     <section id="estado-carregando" class="state-card" aria-live="polite">
       <p>Carregando o resumo da sua compra...</p>
     </section>
@@ -33,10 +35,10 @@
       </div>
     </section>
 
-    <section id="comprovante" hidden>
+    <section id="comprovante" aria-labelledby="success-heading" hidden>
       <div class="success-banner">
         <span class="success-icon" aria-hidden="true">&#10003;</span>
-        <h2>Pedido confirmado!</h2>
+        <h2 id="success-heading">Pedido confirmado!</h2>
         <p>Obrigado pela compra. Guarde este comprovante para os seus registros.</p>
       </div>
 
@@ -75,12 +77,13 @@
         </dl>
 
         <table class="receipt-table">
+          <caption class="visually-hidden">Itens incluídos na Nota Fiscal do pedido</caption>
           <thead>
             <tr>
-              <th>Item</th>
-              <th class="num">Qtd.</th>
-              <th class="num">Preço un.</th>
-              <th class="num">Subtotal</th>
+              <th scope="col">Item</th>
+              <th scope="col" class="num">Qtd.</th>
+              <th scope="col" class="num">Preço un.</th>
+              <th scope="col" class="num">Subtotal</th>
             </tr>
           </thead>
           <tbody id="itens-body"></tbody>
@@ -120,7 +123,7 @@
 
       <div class="actions no-print">
         <button type="button" id="btn-imprimir" class="btn btn-primary">Imprimir comprovante</button>
-        <a id="link-nf" class="btn btn-secondary" href="#" target="_blank" rel="noopener" hidden>Baixar NF-e</a>
+        <a id="link-nf" class="btn btn-secondary" href="#" target="_blank" rel="noopener noreferrer" aria-label="Baixar Nota Fiscal Eletrônica em nova aba" hidden>Baixar NF-e</a>
         <a href="landing.html" class="btn-link">Continuar comprando</a>
       </div>
     </section>

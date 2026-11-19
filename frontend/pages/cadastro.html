@@ -9,20 +9,22 @@
   <link rel="stylesheet" href="../css/cadastro.css">
 </head>
 <body>
+  <a href="#main-content" class="skip-link">Pular para o conteúdo principal</a>
+
   <header class="navbar">
     <div class="logo">
       <h1>EduScience</h1>
     </div>
-    <nav>
+    <nav aria-label="Navegação principal">
       <a href="landing.html">Início</a>
       <a href="carrinho.html">Carrinho</a>
       <a href="login.html" class="btn-login">Entrar</a>
     </nav>
   </header>
 
-  <main class="auth-page">
-    <section class="auth-card">
-      <h2>Cadastro Institucional</h2>
+  <main id="main-content" class="auth-page">
+    <section class="auth-card" aria-labelledby="cadastro-title">
+      <h2 id="cadastro-title">Cadastro Institucional</h2>
       <p class="auth-subtitle">Registre sua escola para adquirir kits didáticos e emitir NF-e.</p>
 
       <div id="feedback-alert" class="alert" role="alert" aria-live="polite"></div>
@@ -34,8 +36,8 @@
           <div class="form-group">
             <label for="nome_escola">Nome da Escola / Instituição *</label>
             <input type="text" id="nome_escola" name="nome_escola" maxlength="150"
-                   placeholder="Ex: Colégio Estadual Machado de Assis"
-                   required data-validate="nome">
+                   placeholder="Ex: Colégio Estadual Machado de Assis" autocomplete="organization"
+                   required aria-required="true" data-validate="nome">
           </div>
 
           <div class="form-row">
@@ -43,14 +45,14 @@
               <label for="cnpj_cpf">CNPJ ou CPF *</label>
               <input type="text" id="cnpj_cpf" name="cnpj_cpf" maxlength="18"
                      inputmode="numeric" placeholder="00.000.000/0000-00"
-                     required data-mask="cnpj_cpf" data-validate="cnpj_cpf">
+                     required aria-required="true" data-mask="cnpj_cpf" data-validate="cnpj_cpf">
             </div>
 
             <div class="form-group">
               <label for="telefone">Telefone *</label>
               <input type="tel" id="telefone" name="telefone" maxlength="20"
-                     inputmode="tel" placeholder="(11) 99999-9999"
-                     required data-mask="telefone" data-validate="telefone">
+                     inputmode="tel" placeholder="(11) 99999-9999" autocomplete="tel"
+                     required aria-required="true" data-mask="telefone" data-validate="telefone">
             </div>
           </div>
 
@@ -58,7 +60,7 @@
             <label for="email">E-mail Institucional *</label>
             <input type="email" id="email" name="email" maxlength="100"
                    placeholder="contato@escola.edu.br" autocomplete="email"
-                   required data-validate="email">
+                   required aria-required="true" data-validate="email">
           </div>
         </fieldset>
 
@@ -69,13 +71,13 @@
             <div class="form-group">
               <label for="cep">CEP *</label>
               <input type="text" id="cep" name="cep" maxlength="9"
-                     inputmode="numeric" placeholder="00000-000"
-                     required data-mask="cep" data-validate="cep">
+                     inputmode="numeric" placeholder="00000-000" autocomplete="postal-code"
+                     required aria-required="true" data-mask="cep" data-validate="cep">
             </div>
 
             <div class="form-group">
               <label for="estado">Estado (UF) *</label>
-              <select id="estado" name="estado" required>
+              <select id="estado" name="estado" autocomplete="address-level1" required aria-required="true">
                 <option value="">Selecione...</option>
                 <option value="AC">AC</option><option value="AL">AL</option>
                 <option value="AP">AP</option><option value="AM">AM</option>
@@ -99,13 +101,14 @@
             <div class="form-group">
               <label for="logradouro">Logradouro *</label>
               <input type="text" id="logradouro" name="logradouro" maxlength="255"
-                     placeholder="Rua, Avenida, Praça..." required>
+                     placeholder="Rua, Avenida, Praça..." autocomplete="street-address"
+                     required aria-required="true">
             </div>
 
             <div class="form-group">
               <label for="numero">Número *</label>
               <input type="text" id="numero" name="numero" maxlength="10"
-                     placeholder="123" required>
+                     placeholder="123" required aria-required="true">
             </div>
           </div>
 
@@ -113,13 +116,15 @@
             <div class="form-group">
               <label for="bairro">Bairro *</label>
               <input type="text" id="bairro" name="bairro" maxlength="100"
-                     placeholder="Centro" required>
+                     placeholder="Centro" autocomplete="address-level3"
+                     required aria-required="true">
             </div>
 
             <div class="form-group">
               <label for="cidade">Cidade *</label>
               <input type="text" id="cidade" name="cidade" maxlength="100"
-                     placeholder="São Paulo" required>
+                     placeholder="São Paulo" autocomplete="address-level2"
+                     required aria-required="true">
             </div>
           </div>
 
@@ -137,7 +142,7 @@
             <label for="usuario">Usuário *</label>
             <input type="text" id="usuario" name="usuario" maxlength="50"
                    placeholder="Ex: escola.machado" autocomplete="username"
-                   required data-validate="usuario">
+                   required aria-required="true" data-validate="usuario">
           </div>
 
           <div class="form-row">
@@ -145,14 +150,14 @@
               <label for="senha">Senha *</label>
               <input type="password" id="senha" name="senha" minlength="6"
                      placeholder="Mínimo 6 caracteres" autocomplete="new-password"
-                     required data-validate="senha">
+                     required aria-required="true" data-validate="senha">
             </div>
 
             <div class="form-group">
               <label for="confirmar-senha">Confirmar Senha *</label>
               <input type="password" id="confirmar-senha" name="confirmar-senha" minlength="6"
                      placeholder="Repita a senha" autocomplete="new-password"
-                     required data-validate="confirmarSenha">
+                     required aria-required="true" data-validate="confirmarSenha">
             </div>
           </div>
         </fieldset>

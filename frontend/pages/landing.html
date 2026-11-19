@@ -8,33 +8,35 @@
   <link rel="stylesheet" href="../css/landing.css">
 </head>
 <body>
+  <a href="#main-content" class="skip-link">Pular para o conteúdo principal</a>
+
   <header class="navbar">
     <div class="logo">
       <h1>EduScience</h1>
     </div>
-    <nav>
-      <a href="landing.html" class="active">Início</a>
-      <a href="carrinho.html">Carrinho <span class="nav-cart-count">0</span></a>
+    <nav aria-label="Navegação principal">
+      <a href="landing.html" class="active" aria-current="page">Início</a>
+      <a href="carrinho.html">Carrinho <span class="nav-cart-count" aria-label="itens no carrinho">0</span></a>
       <a href="login.html" class="btn-login">Entrar</a>
     </nav>
   </header>
 
-  <main>
-    <section class="hero">
-      <h2>Experimentos Científicos Práticos para a sua Escola</h2>
+  <main id="main-content">
+    <section class="hero" aria-labelledby="hero-title">
+      <h2 id="hero-title">Experimentos Científicos Práticos para a sua Escola</h2>
       <p>Kits completos de Química e Física desenvolvidos para potencializar o aprendizado.</p>
     </section>
 
-    <section class="carousel-container">
+    <section class="carousel-container" aria-roledescription="carrossel" aria-label="Kits em destaque">
       <h2>Kits em Destaque</h2>
-      <div class="carousel">
-        <button class="carousel-btn prev" id="prevBtn">&#10094;</button>
+      <div class="carousel" id="kitsCarousel">
+        <button type="button" class="carousel-btn prev" id="prevBtn" aria-label="Kit anterior">&#10094;</button>
         
         <div class="carousel-track-container">
           <ul class="carousel-track" id="carouselTrack">
-            <li class="carousel-slide current-slide">
+            <li class="carousel-slide current-slide" aria-hidden="false">
               <div class="kit-card">
-                <div class="kit-image placeholder-chem"></div>
+                <div class="kit-image placeholder-chem" role="img" aria-label="Ilustração do Kit Reações Químicas Base"></div>
                 <h3>Kit Reações Químicas Base</h3>
                 <p>Experimentos de ácido-base com indicadores visuais para ensino médio.</p>
                 <span class="price">R$ 189,90</span>
@@ -44,14 +46,15 @@
                   data-nome="Kit Reações Químicas Base" 
                   data-descricao="Experimentos de ácido-base com indicadores visuais para ensino médio." 
                   data-preco="189.90" 
-                  data-categoria="placeholder-chem">
+                  data-categoria="placeholder-chem"
+                  aria-label="Adicionar Kit Reações Químicas Base ao carrinho">
                   Adicionar ao Carrinho
                 </button>
               </div>
             </li>
-            <li class="carousel-slide">
+            <li class="carousel-slide" aria-hidden="true">
               <div class="kit-card">
-                <div class="kit-image placeholder-phys"></div>
+                <div class="kit-image placeholder-phys" role="img" aria-label="Ilustração do Kit Circuitos Elétricos"></div>
                 <h3>Kit Circuitos Elétricos</h3>
                 <p>Montagem de circuitos em série e paralelo com LEDs e resistores.</p>
                 <span class="price">R$ 210,00</span>
@@ -61,15 +64,16 @@
                   data-nome="Kit Circuitos Elétricos" 
                   data-descricao="Montagem de circuitos em série e paralelo com LEDs e resistores." 
                   data-preco="210.00" 
-                  data-categoria="placeholder-phys">
+                  data-categoria="placeholder-phys"
+                  aria-label="Adicionar Kit Circuitos Elétricos ao carrinho">
                   Adicionar ao Carrinho
                 </button>
               </div>
             </li>
-            <li class="carousel-slide">
+            <li class="carousel-slide" aria-hidden="true">
               <div class="kit-card">
-                <div class="kit-image placeholder-optics"></div>
-                <h3>Kit Óptica & Lentes</h3>
+                <div class="kit-image placeholder-optics" role="img" aria-label="Ilustração do Kit Óptica e Lentes"></div>
+                <h3>Kit Óptica &amp; Lentes</h3>
                 <p>Estudo de refração, reflexão e prisma para laboratórios escolares.</p>
                 <span class="price">R$ 155,50</span>
                 <button type="button" 
@@ -78,7 +82,8 @@
                   data-nome="Kit Óptica & Lentes" 
                   data-descricao="Estudo de refração, reflexão e prisma para laboratórios escolares." 
                   data-preco="155.50" 
-                  data-categoria="placeholder-optics">
+                  data-categoria="placeholder-optics"
+                  aria-label="Adicionar Kit Óptica e Lentes ao carrinho">
                   Adicionar ao Carrinho
                 </button>
               </div>
@@ -86,13 +91,13 @@
           </ul>
         </div>
 
-        <button class="carousel-btn next" id="nextBtn">&#10095;</button>
+        <button type="button" class="carousel-btn next" id="nextBtn" aria-label="Próximo kit">&#10095;</button>
       </div>
 
-      <div class="carousel-nav" id="carouselNav">
-        <button class="indicator current-slide"></button>
-        <button class="indicator"></button>
-        <button class="indicator"></button>
+      <div class="carousel-nav" id="carouselNav" aria-label="Selecionar kit em destaque">
+        <button type="button" class="indicator current-slide" aria-label="Ir para o kit 1: Kit Reações Químicas Base" aria-current="true"></button>
+        <button type="button" class="indicator" aria-label="Ir para o kit 2: Kit Circuitos Elétricos" aria-current="false"></button>
+        <button type="button" class="indicator" aria-label="Ir para o kit 3: Kit Óptica e Lentes" aria-current="false"></button>
       </div>
     </section>
   </main>
