@@ -135,12 +135,15 @@ function obterCaixaErro(el) {
 
 export function exibirErroInline(el, mensagem) {
   const caixa = obterCaixaErro(el);
+  const valido = !mensagem && el.value.trim() !== '' && !campoOculto(el);
+
   caixa.textContent = mensagem;
   caixa.hidden = !mensagem;
 
   el.classList.toggle('is-invalid', Boolean(mensagem));
   el.classList.toggle('invalid', Boolean(mensagem));
-  el.classList.toggle('is-valid', !mensagem && el.value.trim() !== '' && !campoOculto(el));
+  el.classList.toggle('is-valid', valido);
+  el.classList.toggle('valid', valido);
 }
 
 export function validarCampo(el) {
