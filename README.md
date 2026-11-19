@@ -9,7 +9,7 @@
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Status-Em%20Desenvolvimento-yellow" alt="Status do projeto">
+  <img src="https://img.shields.io/badge/Status-MVP%20Conclu%C3%ADdo-brightgreen" alt="Status do projeto">
   <img src="https://img.shields.io/badge/Node.js-Backend-green?logo=nodedotjs" alt="Node.js">
   <img src="https://img.shields.io/badge/Frontend-HTML%20%7C%20CSS%20%7C%20JavaScript-orange" alt="Front-end">
   <img src="https://img.shields.io/badge/MariaDB-Database-blue?logo=mariadb" alt="MariaDB">
@@ -19,6 +19,7 @@
   <a href="#sobre-o-projeto">Sobre</a> •
   <a href="#funcionalidades">Funcionalidades</a> •
   <a href="#tecnologias">Tecnologias</a> •
+  <a href="#rotas-da-api">Rotas da API</a> •
   <a href="#como-executar">Instalação</a> •
   <a href="#contribuição">Contribuição</a> •
   <a href="#versionamento">Versionamento</a>
@@ -30,39 +31,41 @@
 
 O **EduScience** é uma plataforma de comércio eletrônico voltada à comercialização e à gestão de kits práticos de experimentos de Química e Física.
 
-O sistema tem como público-alvo professores e instituições de ensino que desejam incorporar atividades experimentais ao processo de aprendizagem, aproximando os conceitos teóricos da prática científica.
+O sistema atende professores e instituições de ensino que desejam incorporar atividades experimentais ao processo de aprendizagem, conectando conceitos teóricos à prática científica.
 
-A proposta contempla uma jornada integrada de compra, desde a apresentação dos produtos até o gerenciamento do carrinho, registro das operações comerciais, acompanhamento de suporte pedagógico e organização de informações fiscais e financeiras.
+A aplicação contempla a jornada completa de compra: navegação inicial e catálogo de kits, cadastro institucional e autenticação via JWT, gerenciamento de carrinho sincronizado entre `localStorage` e API, checkout com cálculo de frete e validação de campos, processamento transacional de pedidos no banco e geração/consulta de comprovante com dados de NF-e (DANFE simplificado).
 
-O projeto é desenvolvido com front-end web (Vanilla JS em ES Modules), API REST (Node.js/Express) e banco de dados relacional (MariaDB), aplicando arquitetura MVC, Clean Code e integração segura via JWT.
+O projeto é desenvolvido com front-end web (HTML5, CSS3 com Design System e Vanilla JS em ES Modules), API REST (Node.js/Express) e banco de dados relacional (MariaDB), aplicando arquitetura MVC, validação de entradas e integração segura via JWT.
+
+---
 
 ## Funcionalidades
 
 ### Catálogo e interface
 
-- [ ] Landing page institucional.
-- [ ] Catálogo de kits experimentais.
-- [ ] Carrossel dinâmico de produtos.
-- [x] Interface responsiva.
-- [x] Padronização visual com variáveis CSS.
+- [x] Landing page institucional.
+- [x] Catálogo de kits experimentais.
+- [x] Carrossel dinâmico de produtos (com suporte a navegação por teclado e `aria-*`).
+- [x] Interface responsiva e acessível (WCAG AA / skip links / landmarks).
+- [x] Padronização visual com variáveis CSS (`:root`).
 - [x] Animações e interações visuais.
 
 ### Usuários e autenticação
 
-- [ ] Cadastro de usuários.
+- [x] Cadastro institucional de escolas/usuários.
 - [x] Login integrado à API (com persistência JWT).
-- [ ] Validação dos dados cadastrais.
-- [ ] Gerenciamento de usuários.
-- [ ] Proteção de operações restritas.
+- [x] Validação dos dados cadastrais (máscaras e validação inline).
+- [x] Gerenciamento de usuários.
+- [x] Proteção de operações restritas (`checkoutGuard` e middleware JWT).
 
 ### Carrinho e compras
 
-- [ ] Adição de produtos ao carrinho.
-- [ ] Alteração da quantidade de itens.
-- [ ] Remoção de produtos.
-- [ ] Atualização dinâmica dos valores.
-- [ ] Registro e consulta de compras.
-- [ ] Registro das operações de venda.
+- [x] Adição de produtos ao carrinho.
+- [x] Alteração da quantidade de itens.
+- [x] Remoção de produtos.
+- [x] Atualização dinâmica dos valores e cálculo de frete.
+- [x] Registro e consulta de compras (transação SQL).
+- [x] Registro das operações de venda e limpeza automática do carrinho após compra.
 
 ### Suporte pedagógico
 
@@ -72,13 +75,13 @@ O projeto é desenvolvido com front-end web (Vanilla JS em ES Modules), API REST
 
 ### Gestão fiscal e financeira
 
-- [ ] Armazenamento de informações de vendas.
-- [ ] Registro de informações fiscais.
-- [ ] Geração ou integração para emissão de notas fiscais, conforme os requisitos definidos.
+- [x] Armazenamento de informações de vendas.
+- [x] Registro de informações fiscais.
+- [x] Geração e consulta de comprovante / NF-e (DANFE simplificado, tributos e chave de acesso) com suporte a impressão.
 
 ### API REST
 
-- [x] Endpoints CRUD.
+- [x] Endpoints CRUD e rotas de checkout/nota fiscal.
 - [x] Integração com MariaDB.
 - [x] Arquitetura MVC.
 - [x] Pool de conexões com o banco de dados.
@@ -91,7 +94,7 @@ O projeto é desenvolvido com front-end web (Vanilla JS em ES Modules), API REST
 | Tecnologia | Finalidade |
 |---|---|
 | HTML5 | Estrutura semântica e acessível das páginas |
-| CSS3 | Estilização, variáveis CSS (`:root`), flexbox e grid responsivo |
+| CSS3 | Estilização, variáveis CSS (`:root`), flexbox, grid responsivo e `@media print` |
 | JavaScript (ES6+) | Módulos (`type="module"`), Fetch API e manipulação assíncrona do DOM |
 | Node.js | Ambiente de execução do back-end |
 | Express | Framework para desenvolvimento da API REST |
@@ -105,68 +108,98 @@ O projeto é desenvolvido com front-end web (Vanilla JS em ES Modules), API REST
 
 ## Arquitetura e estrutura
 
-O EduScience é organizado em três componentes desacoplados:
+O EduScience é organizado em três camadas principais:
 
 ```text
 eduscience/
 ├── frontend/
 │   ├── pages/
 │   │   ├── landing.html
-│   │   └── login.html                # Formulário com suporte a a11y (aria-pressed)
+│   │   ├── cadastro.html
+│   │   ├── login.html
+│   │   ├── carrinho.html
+│   │   ├── checkout.html
+│   │   └── sucesso.html
 │   ├── css/
-│   │   ├── global.css                # Variáveis de cor, tipografia e reset
-│   │   └── login.css
+│   │   ├── global.css                # Tokens (:root), navbar, botões, alertas e a11y
+│   │   ├── validacoes.css            # Feedback visual de campos válidos/inválidos
+│   │   ├── landing.css
+│   │   ├── cadastro.css
+│   │   ├── login.css
+│   │   ├── carrinho.css
+│   │   ├── checkout.css
+│   │   └── sucesso.css
 │   └── js/
-│       ├── api.js                    # Wrapper de Fetch, interceptador de erros HTTP/JSON
-│       └── login.js                  # Manipulador de eventos de auth e localStorage (@EduScience)
+│       ├── api.js                    # Wrapper de Fetch e tratamento de erros HTTP/JWT
+│       ├── landing.js
+│       ├── cadastro.js
+│       ├── login.js
+│       ├── carrinho.js
+│       ├── checkoutGuard.js
+│       ├── checkout.js
+│       ├── sucesso.js
+│       └── validacoes.js             # Máscaras e validações de campos
 │
 ├── backend/
 │   ├── src/
 │   │   ├── config/
 │   │   │   └── database.js           # Pool de conexões MariaDB
 │   │   ├── controllers/
-│   │   │   └── authController.js     # Geração e validação de JWT / Login
+│   │   ├── middlewares/
 │   │   ├── routes/
-│   │   │   └── authRoutes.js
 │   │   └── app.js
 │   ├── .env.example
 │   └── package.json
 │
 ├── database/
 │   └── scripts/
-│       ├── schema.sql
-│       └── seeds.sql                 # Dados iniciais para validação e testes
+│       ├── schema.sql                # Criação das tabelas e relacionamentos
+│       └── seeds.sql                 # Dados iniciais de kits e registros de teste
 │
 └── README.md
 ```
 
 ### Banco de dados
 
-O banco de dados será denominado `projeto_integrador` e utilizará MariaDB.
+O banco de dados relacional é executado no **MariaDB** (`projeto_integrador`), utilizando chaves primárias (PK), chaves estrangeiras (FK), transações SQL para consistência de pedidos/estoque e consultas relacionais.
 
-A modelagem inicial contempla oito entidades principais:
+Os scripts de criação de estrutura e carga inicial encontram-se em:
 
-- `cliente`
-- `cadastro`
-- `login`
-- `consulta`
-- `carrinho_de_compra`
-- `compra`
-- `venda`
-- `nota_fiscal`
+- `database/scripts/schema.sql`
+- `database/scripts/seeds.sql`
 
-A estrutura deverá utilizar chaves primárias (PK), chaves estrangeiras (FK), restrições de integridade e consultas relacionais, incluindo `INNER JOIN`.
+---
+
+## Rotas da API
+
+Base URL local: `http://localhost:3000/api`
+
+| Método | Rota | Autenticação | Descrição |
+|---|---|---|---|
+| `GET` | `/produtos` | Pública | Lista os kits educacionais disponíveis |
+| `GET` | `/produtos/:id` | Pública | Retorna os detalhes de um kit específico |
+| `POST` | `/auth/cadastro` | Pública | Cadastra nova escola/usuário |
+| `POST` | `/auth/login` | Pública | Autentica o usuário e retorna o token JWT |
+| `GET` | `/carrinho` | JWT (`Bearer`) | Consulta os itens do carrinho do usuário autenticado |
+| `POST` | `/carrinho/adicionar` | JWT (`Bearer`) | Adiciona item ao carrinho |
+| `PUT` | `/carrinho/:id` | JWT (`Bearer`) | Atualiza a quantidade de um item no carrinho |
+| `DELETE` | `/carrinho/:id` | JWT (`Bearer`) | Remove um item do carrinho |
+| `POST` | `/pedidos` | JWT (`Bearer`) | Finaliza o pedido em transação SQL, atualiza estoque e gera NF-e |
+| `GET` | `/pedidos/:id/nota-fiscal` | JWT (`Bearer`) | Consulta os dados do pedido e da Nota Fiscal / DANFE |
+
+---
 
 ## Pré-requisitos
 
-Para executar o projeto, serão necessárias as seguintes ferramentas:
+Para executar o projeto localmente, instale e configure:
 
-- Node.js em versão compatível com as dependências.
-- npm.
-- MariaDB.
-- Git.
+- **Node.js** (versão LTS recomendada, compatível com ES Modules no front-end e dependências do back-end).
+- **npm** (instalado junto com o Node.js).
+- **MariaDB** (serviço em execução, padrão na porta `3306`).
+- **Git** (para clonar e versionar o repositório).
+- Servidor HTTP estático para o front-end (ex.: extensão **Live Server** no VS Code em `http://127.0.0.1:5500` ou `npx serve`).
 
-As versões e configurações definitivas serão documentadas após a preparação do ambiente de desenvolvimento.
+---
 
 ## Como executar
 
@@ -177,117 +210,128 @@ git clone https://github.com/ArthurTardin/EduScience.git
 cd eduscience
 ```
 
-### 2. Instale as dependências
+### 2. Instale as dependências do back-end
 
 ```bash
 cd backend
 npm install
 ```
 
-### 3. Configure o ambiente
+### 3. Configure as variáveis de ambiente (`.env`)
 
-Crie um arquivo `.env` no diretório do back-end, utilizando `.env.example` como referência.
+Na pasta `backend/`, copie o arquivo de exemplo e preencha suas credenciais:
 
-Exemplo ilustrativo:
-
-```env
-PORT=3000
-DB_HOST=localhost
-DB_PORT=3306
-DB_USER=seu_usuario
-DB_PASSWORD=sua_senha
-DB_NAME=projeto_integrador
+```bash
+cp .env.example .env
 ```
 
-Os nomes das variáveis deverão corresponder à implementação real da aplicação.
+*(No PowerShell: `Copy-Item .env.example .env`)*
 
-### 4. Configure o banco de dados
+Edite o `.env` conforme o seu ambiente local (ver tabela de variáveis na seção **Configuração**).
 
-Crie o banco `projeto_integrador` no MariaDB e execute os scripts SQL de criação das tabelas.
+### 4. Crie o banco e execute os scripts SQL no MariaDB
+
+Acesse o cliente do MariaDB e execute os scripts de estrutura e carga inicial a partir da raiz do projeto:
+
+```bash
+mariadb -u root -p -e "CREATE DATABASE IF NOT EXISTS projeto_integrador CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
+mariadb -u root -p projeto_integrador < database/scripts/schema.sql
+mariadb -u root -p projeto_integrador < database/scripts/seeds.sql
+```
 
 ### 5. Inicie o back-end
+
+Dentro de `backend/`:
 
 ```bash
 npm run dev
 ```
 
-O comando pressupõe que exista um script `dev` configurado no `package.json`. O comando definitivo dependerá da configuração adotada.
+A API ficará disponível em `http://localhost:3000`.
 
-### 6. Acesse o front-end
+### 6. Inicie e acesse o front-end
 
-Abra a página inicial do projeto conforme a configuração de execução definida pela equipe.
+Sirva a pasta `frontend/` via servidor HTTP local (não abra os arquivos diretamente via `file://`, para evitar bloqueios de CORS e ES Modules):
+
+- Usando **Live Server** no VS Code: abra `frontend/pages/landing.html` com o Live Server (`http://127.0.0.1:5500/frontend/pages/landing.html`).
+- Ou via terminal na pasta `frontend/`:
+
+```bash
+npx serve .
+```
+
+---
 
 ## Configuração
 
-As configurações do projeto serão realizadas por meio de variáveis de ambiente.
+As configurações do back-end são carregadas via `dotenv` a partir de `backend/.env`:
 
-| Variável | Descrição |
-|---|---|
-| `PORT` | Porta da API |
-| `DB_HOST` | Endereço do servidor MariaDB |
-| `DB_PORT` | Porta do banco de dados |
-| `DB_USER` | Usuário do banco |
-| `DB_PASSWORD` | Senha do banco |
-| `DB_NAME` | Nome do banco de dados |
+| Variável | Descrição | Exemplo |
+|---|---|---|
+| `PORT` | Porta em que o servidor Express será iniciado | `3000` |
+| `DB_HOST` | Host do servidor MariaDB | `localhost` |
+| `DB_PORT` | Porta do MariaDB | `3306` |
+| `DB_USER` | Usuário do banco de dados | `root` |
+| `DB_PASSWORD` | Senha do usuário do banco | `sua_senha` |
+| `DB_NAME` | Nome do banco de dados | `projeto_integrador` |
+| `JWT_SECRET` | Chave secreta para assinatura e verificação de tokens JWT | `sua_chave_secreta_forte` |
 
-Credenciais, tokens e outros dados sensíveis não devem ser enviados ao GitHub. O arquivo `.env` deverá ser ignorado pelo Git, enquanto o `.env.example` deverá conter apenas valores de exemplo.
+Nunca versione o arquivo `.env` nem exponha segredos reais no repositório; mantenha apenas valores fictícios em `backend/.env.example`.
+
+---
 
 ## Uso
 
-A plataforma deverá permitir que professores e instituições de ensino consultem os kits disponíveis e realizem o fluxo de compra pela interface web.
+Fluxo principal da plataforma:
 
-O fluxo principal previsto será:
+1. Acesse `frontend/pages/landing.html` para explorar os kits educacionais e o carrossel em destaque.
+2. Adicione os kits desejados ao carrinho diretamente pela landing page.
+3. Acesse `frontend/pages/cadastro.html` para registrar a escola ou `frontend/pages/login.html` para autenticar-se e obter o JWT.
+4. Na página `frontend/pages/carrinho.html`, ajuste quantidades, remova itens ou clique em **Finalizar Compra** (protegido pela guarda de sessão).
+5. Em `frontend/pages/checkout.html`, informe os dados do destinatário, CEP e UF (com cálculo dinâmico de frete), escolha a forma de pagamento (PIX, Cartão ou Boleto) e confirme o pedido.
+6. Na página `frontend/pages/sucesso.html`, visualize o comprovante e os dados da NF-e (itens, tributos e chave de acesso), com opção de impressão (`@media print`).
 
-1. Acessar a página inicial.
-2. Consultar o catálogo de kits educacionais.
-3. Selecionar os produtos desejados.
-4. Adicionar produtos ao carrinho.
-5. Ajustar quantidades ou remover itens.
-6. Autenticar-se para utilizar as operações que exigem identificação.
-7. Prosseguir com a compra conforme as regras implementadas.
-8. Consultar os registros comerciais e os recursos de suporte disponíveis.
-
-Os fluxos finais dependerão dos requisitos definidos para autenticação, pagamentos, vendas e emissão fiscal.
+---
 
 ## Testes
 
-A estratégia de testes deverá contemplar:
+- [x] Validação manual de endpoints da API REST e autenticação JWT.
+- [x] Validação da integração com MariaDB e transações de pedido/NF-e.
+- [x] Testes de validação de formulários, cálculo de frete, carrinho e fluxo End-to-End.
+- [x] Verificação de acessibilidade (navegação por teclado, atributos `aria-*`, contraste e Lighthouse).
+- [ ] Suíte automatizada de testes unitários e de integração.
 
-- [ ] Testes unitários dos componentes do back-end.
-- [ ] Testes dos endpoints da API REST.
-- [ ] Testes de integração com o MariaDB.
-- [ ] Testes de validação e autenticação.
-- [ ] Testes do fluxo do carrinho de compras.
-- [ ] Testes integrados do processo de compra.
-
-Os comandos de execução dos testes serão documentados após a configuração das ferramentas correspondentes.
+---
 
 ## Roadmap
 
 - [x] Finalizar os requisitos do sistema.
 - [x] Definir o catálogo inicial de kits.
-- [x] Finalizar o DER/MER e os scripts SQL.
-- [ ] Implementar a estrutura da API REST.
-- [ ] Desenvolver cadastro e autenticação.
-- [ ] Implementar o catálogo de produtos.
-- [ ] Desenvolver o carrinho de compras.
-- [ ] Integrar front-end, back-end e banco de dados.
-- [ ] Implementar os registros de compras e vendas.
-- [ ] Desenvolver o suporte pedagógico.
-- [ ] Implementar os recursos fiscais previstos.
-- [ ] Executar testes integrados.
-- [ ] Preparar a entrega final.
+- [x] Finalizar o DER/MER e os scripts SQL (`schema.sql` e `seeds.sql`).
+- [x] Implementar a estrutura da API REST (MVC + pool MariaDB).
+- [x] Desenvolver cadastro e autenticação JWT.
+- [x] Implementar o catálogo de produtos.
+- [x] Desenvolver o carrinho de compras e sincronização.
+- [x] Integrar front-end, back-end e banco de dados.
+- [x] Implementar os registros de compras, vendas e transação SQL.
+- [x] Implementar os recursos fiscais previstos (NF-e / DANFE simplificado).
+- [x] Padronizar Design System e acessibilidade (a11y).
+- [x] Executar e documentar testes integrados / E2E.
+- [ ] Desenvolver o módulo de suporte pedagógico.
+- [ ] Finalizar documentação e entrega final.
+
+---
 
 ## Contribuição
 
-O EduScience será desenvolvido em equipe, com responsabilidades distribuídas e acompanhamento das atividades por meio de um quadro Kanban.
+O EduScience é desenvolvido de forma colaborativa com organização em sprints e quadro Kanban.
 
 Para contribuir:
 
-1. Consulte as tarefas e prioridades definidas pela equipe.
-2. Crie uma branch específica para a alteração.
-3. Implemente e teste as mudanças.
-4. Abra um pull request para revisão, conforme o fluxo de trabalho adotado.
+1. Consulte as tarefas e prioridades definidas no board/issues da sprint.
+2. Crie uma branch específica a partir da branch de desenvolvimento (`feat/...`, `fix/...`, `docs/...`).
+3. Implemente, valide localmente e revise as alterações.
+4. Abra um Pull Request (PR) para revisão e integração conforme o fluxo acordado.
 
 ### Equipe
 
@@ -298,33 +342,29 @@ Para contribuir:
 | Desenvolvimento do back-end | Equipe EduScience |
 | Desenvolvimento do front-end | Equipe EduScience |
 
+---
+
 ## Versionamento
 
-O projeto utilizará Git para controle de versão e GitHub para hospedagem do repositório, revisão de alterações e organização das entregas.
+O repositório adota controle de versão com Git e GitHub:
 
-O repositório adota um fluxo de desenvolvimento rigoroso para garantir a estabilidade da branch main:
+- **Branches de trabalho:** alterações organizadas por feature/correção/documentação (`feat/...`, `fix/...`, `docs/...`).
+- **Pull Requests & Code Review:** revisão das alterações antes da integração na branch principal.
+- **Conventional Commits:** mensagens padronizadas (ex.: `feat(frontend): ...`, `fix(backend): ...`, `docs(readme): ...`).
 
-- Branch Protection: Commits diretos na branch main são estritamente bloqueados.
-
-- Branches de Feature: Todas as alterações devem ser desenvolvidas em branches separadas seguindo a convenção feat/nome-da-feature ou fix/nome-do-bug.
-
-- Pull Requests & Code Review: Toda alteração exige abertura de Pull Request (PR) com revisão de código obrigatória e aprovação do líder técnico/peer reviewer.
-
-- Conventional Commits: Títulos de PRs e commits seguem o padrão (ex: feat(frontend): integra tela de login).
-
-- Squash and Merge: Todo o histórico de branches é condensado em um único commit atômico e limpo ao integrar na main
+---
 
 ## Licença
 
-A licença do EduScience ainda será definida pela equipe.
+A licença do EduScience segue as definições da equipe e do projeto acadêmico/institucional. A distribuição e a reutilização do código devem respeitar os termos estabelecidos no repositório.
 
-A distribuição e a reutilização do código deverão respeitar os termos da licença escolhida.
+---
 
 ## Autor
 
 **Equipe EduScience**
 
-- GitHub: [Link do repositório](https://github.com/ArthurTardin/EduScience.git)
+- GitHub: [ArthurTardin/EduScience](https://github.com/ArthurTardin/EduScience.git)
 
 ---
 
