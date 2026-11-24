@@ -1,196 +1,405 @@
-import {
-  somenteDigitos,
-  mascaras,
-  validadores,
-  validarCampo,
-  primeiroCampoInvalido,
-  iniciarValidacao
-} from './validacoes.js';
+import { apiFetch } from "./api.js";
 
-const API_BASE_URL = 'http://localhost:3000/api';
-const REGISTER_ENDPOINT = `${API_BASE_URL}/auth/register`;
-const TOKEN_KEY = '@EduScience:token';
+const TOKEN_KEY = "@EduScience:token";
+const USER_KEY = "@EduScience:user";
 
-mascaras.cnpj_cpf = (valor) => {
-  const d = somenteDigitos(valor).slice(0, 14);
-  if (d.length <= 11) return mascaras.cpf(d);
-  let saida = d.slice(0, 2);
-  if (d.length > 2) saida += `.${d.slice(2, 5)}`;
-  if (d.length > 5) saida += `.${d.slice(5, 8)}`;
-  if (d.length > 8) saida += `/${d.slice(8, 12)}`;
-  if (d.length > 12) saida += `-${d.slice(12, 14)}`;
-  return saida;
-};
+const form = document.querySelector("#register-form");
+const accountTypeInputs = document.querySelectorAll('input[name="account-type"]');
+const docLabel = document.querySelector("#doc-label");
+const docInput = document.querySelector("#doc-number");
+const schoolField = document.querySelector("#school-field");
+const schoolNameInput = document.querySelector("#school-name");
+const emailInput = document.querySelector("#email");
+const phoneInput = document.querySelector("#phone");
+const fullNameInput = document.querySelector("#full-name");
+const postalCodeInput = document.querySelector("#postal-code");
+const postalButton = document.querySelector("#postal-button");
+const postalStatus = document.querySelector("#postal-status");
+const streetInput = document.querySelector("#street");
+const numberInput = document.querySelector("#number");
+const complementInput = document.querySelector("#complement");
+const districtInput = document.querySelector("#district");
+const cityInput = document.querySelector("#city");
+const stateInput = document.querySelector("#state");
+const passwordInput = document.querySelector("#password");
+const confirmPasswordInput = document.querySelector("#confirm-password");
+const termsInput = document.querySelector("#terms");
+const submitButton = document.querySelector("#submit-register");
+const statusElement = document.querySelector("#register-status");
 
-mascaras.telefone = (valor) => {
-  const d = somenteDigitos(valor).slice(0, 11);
-  if (!d) return '';
-  if (d.length <= 2) return `(${d}`;
-  if (d.length <= 6) return `(${d.slice(0, 2)}) ${d.slice(2)}`;
-  if (d.length <= 10) return `(${d.slice(0, 2)}) ${d.slice(2, 6)}-${d.slice(6)}`;
-  return `(${d.slice(0, 2)}) ${d.slice(2, 7)}-${d.slice(7, 11)}`;
-};
+const onlyDigits = (value, limit) => String(value || "").replace(/\D/g, "").slice(0, limit);
 
-validadores.cnpj_cpf = (valor) => {
-  const d = somenteDigitos(valor);
-  if (d.length <= 11) return validadores.cpf(valor);
-  if (d.length !== 14) return 'CNPJ incompleto: informe os 14 dígitos.';
-  if (/^(\d)\1{13}$/.test(d)) return 'CNPJ inválido.';
+let lastQueriedCep = "";
 
-  const calc = (base, pesos) => {
-    const soma = base.split('').reduce((acc, n, i) => acc + Number(n) * pesos[i], 0);
-    const resto = soma % 11;
-    return resto < 2 ? 0 : 11 - resto;
-  };
+function setFieldError(input, message) {
+  if (!input) return;
+  input.setAttribute("aria-invalid", message ? "true" : "false");
+  let errorEl =
+    input.parentElement?.querySelector(".field-error-msg") ||
+    input.closest(".field")?.querySelector(".field-error-msg");
 
-  const d1 = calc(d.slice(0, 12), [5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2]);
-  const d2 = calc(d.slice(0, 13), [6, 5, 4, 3, 2, 9, 8, 7, 6, 5, 4, 3, 2]);
-  return d1 === Number(d[12]) && d2 === Number(d[13]) ? '' : 'CNPJ inválido.';
-};
+  if (!errorEl && message) {
+    errorEl = document.createElement("small");
+    errorEl.className = "field-error-msg";
+    errorEl.style.color = "var(--error, #b34532)";
+    errorEl.style.fontWeight = "700";
+    errorEl.style.display = "block";
+    errorEl.style.marginTop = "4px";
+    const anchor = input.closest(".input-action") || input;
+    anchor.insertAdjacentElement("afterend", errorEl);
+  }
 
-validadores.telefone = (valor) => {
-  const d = somenteDigitos(valor);
-  return d.length === 10 || d.length === 11 ? '' : 'Informe um telefone válido com DDD.';
-};
+  if (errorEl) {
+    errorEl.textContent = message || "";
+    errorEl.hidden = !message;
+  }
+}
 
-validadores.usuario = (valor) => {
-  return /^[a-z0-9._-]{3,50}$/.test(valor)
-    ? ''
-    : 'Use 3 a 50 caracteres (letras minúsculas, números, ponto, _ ou -).';
-};
+function applyMask(input) {
+  const maskType = input?.dataset?.mask;
+  if (!maskType) return;
 
-validadores.senha = (valor) => {
-  return valor.length >= 6 ? '' : 'A senha deve ter pelo menos 6 caracteres.';
-};
-
-validadores.confirmarSenha = (valor) => {
-  const senha = document.getElementById('senha')?.value || '';
-  return valor === senha ? '' : 'As senhas não coincidem.';
-};
-
-document.addEventListener('DOMContentLoaded', () => {
-  const form = document.getElementById('cadastro-form');
-  if (!form) return;
-
-  iniciarValidacao(form);
-
-  const cepInput = document.getElementById('cep');
-  const usuarioInput = document.getElementById('usuario');
-  const senhaInput = document.getElementById('senha');
-  const confirmarInput = document.getElementById('confirmar-senha');
-
-  usuarioInput.addEventListener('input', () => {
-    usuarioInput.value = usuarioInput.value.replace(/\s+/g, '').toLowerCase();
-  });
-
-  senhaInput.addEventListener('input', () => {
-    if (confirmarInput.dataset.tocado === 'true') {
-      validarCampo(confirmarInput);
+  if (maskType === "telefone") {
+    const d = onlyDigits(input.value, 11);
+    if (d.length <= 2) input.value = d ? `(${d}` : "";
+    else if (d.length <= 6) input.value = `(${d.slice(0, 2)}) ${d.slice(2)}`;
+    else if (d.length <= 10) input.value = `(${d.slice(0, 2)}) ${d.slice(2, 6)}-${d.slice(6)}`;
+    else input.value = `(${d.slice(0, 2)}) ${d.slice(2, 7)}-${d.slice(7)}`;
+  } else if (maskType === "cnpj_cpf") {
+    const d = onlyDigits(input.value, 14);
+    if (d.length <= 11) {
+      input.value = d
+        .replace(/(\d{3})(\d)/, "$1.$2")
+        .replace(/(\d{3})(\d)/, "$1.$2")
+        .replace(/(\d{3})(\d{1,2})$/, "$1-$2");
+    } else {
+      input.value = d
+        .replace(/(\d{2})(\d)/, "$1.$2")
+        .replace(/(\d{3})(\d)/, "$1.$2")
+        .replace(/(\d{3})(\d)/, "$1/$2")
+        .replace(/(\d{4})(\d{1,2})$/, "$1-$2");
     }
-  });
+  } else if (maskType === "cep") {
+    const d = onlyDigits(input.value, 8);
+    input.value = d.length > 5 ? `${d.slice(0, 5)}-${d.slice(5)}` : d;
+  }
+}
 
-  cepInput.addEventListener('blur', () => buscarCep(cepInput));
+async function lookupCep({ focusNumber = true } = {}) {
+  const cleanCep = onlyDigits(postalCodeInput?.value, 8);
+  postalStatus?.classList.remove("is-success", "is-error");
 
-  form.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    ocultarAlerta();
+  if (cleanCep.length !== 8) {
+    if (postalStatus) {
+      postalStatus.textContent = "Digite um CEP com 8 números.";
+      postalStatus.classList.add("is-error");
+    }
+    postalCodeInput?.focus();
+    return;
+  }
 
-    const invalido = primeiroCampoInvalido(form);
-    if (invalido) {
-      invalido.focus();
-      exibirAlerta('Corrija os campos destacados antes de finalizar.', 'error');
+  lastQueriedCep = cleanCep;
+  if (postalStatus) postalStatus.textContent = "Buscando CEP...";
+  if (postalButton) postalButton.disabled = true;
+
+  try {
+    const res = await fetch(`https://viacep.com.br/ws/${cleanCep}/json/`);
+    const data = await res.json();
+
+    if (data?.erro) {
+      if (postalStatus) {
+        postalStatus.textContent = "CEP não encontrado. Preencha o endereço manualmente.";
+        postalStatus.classList.add("is-error");
+      }
       return;
     }
 
-    const complementoVal = document.getElementById('complemento').value.trim();
-
-    const payload = {
-      nome_escola: document.getElementById('nome_escola').value.trim(),
-      cnpj_cpf: document.getElementById('cnpj_cpf').value.trim(),
-      email: document.getElementById('email').value.trim().toLowerCase(),
-      telefone: document.getElementById('telefone').value.trim(),
-      logradouro: document.getElementById('logradouro').value.trim(),
-      numero: document.getElementById('numero').value.trim(),
-      complemento: complementoVal || null,
-      bairro: document.getElementById('bairro').value.trim(),
-      cidade: document.getElementById('cidade').value.trim(),
-      estado: document.getElementById('estado').value.trim().toUpperCase(),
-      cep: cepInput.value.trim(),
-      usuario: usuarioInput.value.trim(),
-      senha: senhaInput.value
-    };
-
-    const btnSubmit = document.getElementById('btn-cadastrar');
-    btnSubmit.disabled = true;
-    btnSubmit.textContent = 'Cadastrando...';
-
-    try {
-      const response = await fetch(REGISTER_ENDPOINT, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
-
-      const data = await response.json().catch(() => ({}));
-
-      if (!response.ok) {
-        throw new Error(data.erro || data.message || 'Não foi possível concluir o cadastro.');
+    if (streetInput && data.logradouro) {
+      streetInput.value = data.logradouro;
+      setFieldError(streetInput, "");
+    }
+    if (districtInput && data.bairro) {
+      districtInput.value = data.bairro;
+      setFieldError(districtInput, "");
+    }
+    if (cityInput && data.localidade) {
+      cityInput.value = data.localidade;
+      setFieldError(cityInput, "");
+    }
+    if (stateInput && data.uf) {
+      const optionExists = Array.from(stateInput.options).some((opt) => opt.value === data.uf);
+      if (!optionExists) {
+        stateInput.add(new Option(data.uf, data.uf));
       }
+      stateInput.value = data.uf;
+      setFieldError(stateInput, "");
+    }
 
-      if (data.token) {
-        localStorage.setItem(TOKEN_KEY, data.token);
-        exibirAlerta('Escola cadastrada com sucesso! Redirecionando...', 'success');
-        setTimeout(() => { window.location.href = 'landing.html'; }, 1200);
-      } else {
-        exibirAlerta('Cadastro realizado com sucesso! Redirecionando para o login...', 'success');
-        setTimeout(() => { window.location.href = 'login.html'; }, 1200);
+    setFieldError(postalCodeInput, "");
+    if (postalStatus) {
+      postalStatus.textContent = "Endereço preenchido. Informe o número.";
+      postalStatus.classList.add("is-success");
+    }
+    if (focusNumber) numberInput?.focus();
+  } catch {
+    if (postalStatus) {
+      postalStatus.textContent = "Não foi possível consultar o CEP. Preencha manualmente.";
+      postalStatus.classList.add("is-error");
+    }
+  } finally {
+    if (postalButton) postalButton.disabled = false;
+  }
+}
+
+function validateRegisterForm() {
+  const isSchool =
+    document.querySelector('input[name="account-type"]:checked')?.value !== "individual";
+  let firstInvalid = null;
+
+  const nomeVal = String(fullNameInput?.value || "").trim();
+  const nomeErr = nomeVal ? "" : "Informe seu nome completo.";
+  setFieldError(fullNameInput, nomeErr);
+  if (nomeErr && !firstInvalid) firstInvalid = fullNameInput;
+
+  const docDigits = onlyDigits(docInput?.value, isSchool ? 14 : 11);
+  const expectedDocLen = isSchool ? 14 : 11;
+  const docErr =
+    docDigits.length === expectedDocLen
+      ? ""
+      : isSchool
+        ? "CNPJ deve ter 14 dígitos."
+        : "CPF deve ter 11 dígitos.";
+  setFieldError(docInput, docErr);
+  if (docErr && !firstInvalid) firstInvalid = docInput;
+
+  if (isSchool) {
+    const schoolVal = String(schoolNameInput?.value || "").trim();
+    const schoolErr = schoolVal ? "" : "Informe o nome da escola.";
+    setFieldError(schoolNameInput, schoolErr);
+    if (schoolErr && !firstInvalid) firstInvalid = schoolNameInput;
+  } else {
+    setFieldError(schoolNameInput, "");
+  }
+
+  const emailVal = String(emailInput?.value || "").trim();
+  const emailErr = !emailVal
+    ? "Informe seu e-mail."
+    : !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(emailVal)
+      ? "Informe um e-mail válido."
+      : "";
+  setFieldError(emailInput, emailErr);
+  if (emailErr && !firstInvalid) firstInvalid = emailInput;
+
+  const phoneDigits = onlyDigits(phoneInput?.value, 11);
+  const phoneErr =
+    phoneDigits.length === 10 || phoneDigits.length === 11
+      ? ""
+      : "Informe um telefone com DDD (10 ou 11 dígitos).";
+  setFieldError(phoneInput, phoneErr);
+  if (phoneErr && !firstInvalid) firstInvalid = phoneInput;
+
+  const cepDigits = onlyDigits(postalCodeInput?.value, 8);
+  const cepErr = cepDigits.length === 8 ? "" : "CEP deve ter 8 dígitos.";
+  setFieldError(postalCodeInput, cepErr);
+  if (cepErr && !firstInvalid) firstInvalid = postalCodeInput;
+
+  const streetErr = String(streetInput?.value || "").trim() ? "" : "Informe a rua ou avenida.";
+  setFieldError(streetInput, streetErr);
+  if (streetErr && !firstInvalid) firstInvalid = streetInput;
+
+  const numberErr = String(numberInput?.value || "").trim() ? "" : "Informe o número.";
+  setFieldError(numberInput, numberErr);
+  if (numberErr && !firstInvalid) firstInvalid = numberInput;
+
+  const districtErr = String(districtInput?.value || "").trim() ? "" : "Informe o bairro.";
+  setFieldError(districtInput, districtErr);
+  if (districtErr && !firstInvalid) firstInvalid = districtInput;
+
+  const cityErr = String(cityInput?.value || "").trim() ? "" : "Informe a cidade.";
+  setFieldError(cityInput, cityErr);
+  if (cityErr && !firstInvalid) firstInvalid = cityInput;
+
+  const stateErr = String(stateInput?.value || "").trim() ? "" : "Selecione a UF.";
+  setFieldError(stateInput, stateErr);
+  if (stateErr && !firstInvalid) firstInvalid = stateInput;
+
+  const passVal = String(passwordInput?.value || "");
+  const passErr = passVal.length >= 6 ? "" : "A senha deve ter pelo menos 6 caracteres.";
+  setFieldError(passwordInput, passErr);
+  if (passErr && !firstInvalid) firstInvalid = passwordInput;
+
+  const confirmVal = String(confirmPasswordInput?.value || "");
+  const confirmErr = !confirmVal
+    ? "Confirme sua senha."
+    : confirmVal !== passVal
+      ? "As senhas informadas não coincidem."
+      : "";
+  setFieldError(confirmPasswordInput, confirmErr);
+  if (confirmErr && !firstInvalid) firstInvalid = confirmPasswordInput;
+
+  return firstInvalid;
+}
+
+postalButton?.addEventListener("click", () => lookupCep({ focusNumber: true }));
+
+postalCodeInput?.addEventListener("input", () => {
+  const digits = onlyDigits(postalCodeInput.value, 8);
+  if (digits.length === 8 && digits !== lastQueriedCep) {
+    lookupCep({ focusNumber: true });
+  }
+});
+
+accountTypeInputs.forEach((input) => {
+  input.addEventListener("change", () => {
+    const isSchool = input.value === "school";
+
+    if (docLabel) docLabel.textContent = isSchool ? "CNPJ da escola" : "CPF";
+    if (docInput) {
+      docInput.placeholder = isSchool ? "00.000.000/0000-00" : "000.000.000-00";
+      docInput.value = "";
+      setFieldError(docInput, "");
+    }
+
+    if (schoolField) schoolField.hidden = !isSchool;
+    if (schoolNameInput) {
+      schoolNameInput.required = isSchool;
+      if (!isSchool) {
+        schoolNameInput.value = "";
+        setFieldError(schoolNameInput, "");
       }
-    } catch (error) {
-      exibirAlerta(error.message || 'Erro de conexão com o servidor.', 'error');
-      btnSubmit.disabled = false;
-      btnSubmit.textContent = 'Finalizar Cadastro';
     }
   });
 });
 
-async function buscarCep(cepInput) {
-  const cep = somenteDigitos(cepInput.value);
-  if (cep.length !== 8) return;
+form?.addEventListener("input", (event) => {
+  const target = event.target;
+  if (!(target instanceof HTMLInputElement || target instanceof HTMLSelectElement)) return;
+  if (target instanceof HTMLInputElement) applyMask(target);
+  if (target.getAttribute("aria-invalid") === "true") {
+    validateRegisterForm();
+  }
+});
+
+form?.addEventListener("blur", (event) => {
+  const target = event.target;
+  if (!(target instanceof HTMLInputElement || target instanceof HTMLSelectElement)) return;
+  if (target.type === "radio" || target.type === "checkbox") return;
+  validateRegisterForm();
+}, true);
+
+form?.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  statusElement?.classList.remove("is-error");
+  if (statusElement) statusElement.textContent = "";
+
+  const invalido = validateRegisterForm();
+  if (invalido) {
+    if (statusElement) {
+      statusElement.textContent = "Revise os campos destacados antes de continuar.";
+      statusElement.classList.add("is-error");
+    }
+    invalido.focus();
+    return;
+  }
+
+  if (termsInput && !termsInput.checked) {
+    if (statusElement) {
+      statusElement.textContent = "Marque o aceite dos termos de uso para criar sua conta.";
+      statusElement.classList.add("is-error");
+    }
+    termsInput.focus();
+    return;
+  }
+
+  const formData = new FormData(form);
+  const accountType = String(formData.get("account-type") || "school");
+  const nome = String(formData.get("full-name") || "").trim();
+  const escola = accountType === "school" ? String(formData.get("school-name") || "").trim() : nome;
+  const documento = onlyDigits(formData.get("doc-number"), accountType === "school" ? 14 : 11);
+  const email = String(formData.get("email") || "").trim();
+  const telefone = onlyDigits(formData.get("phone"), 11);
+  const cep = String(formData.get("postal-code") || "").trim();
+  const logradouro = String(formData.get("street") || "").trim();
+  const numero = String(formData.get("number") || "").trim();
+  const complemento = String(formData.get("complement") || "").trim();
+  const bairro = String(formData.get("district") || "").trim();
+  const cidade = String(formData.get("city") || "").trim();
+  const estado = String(formData.get("state") || "").trim();
+
+  const payload = {
+    nome,
+    tipoPerfil: accountType,
+    nome_escola: escola,
+    escola,
+    cnpj_cpf: documento,
+    documento,
+    email,
+    telefone,
+    cep,
+    logradouro,
+    numero,
+    complemento,
+    bairro,
+    cidade,
+    estado,
+    senha: String(formData.get("password") || "")
+  };
+
+  if (submitButton) submitButton.disabled = true;
+  if (statusElement) statusElement.textContent = "Criando conta...";
 
   try {
-    const res = await fetch(`https://viacep.com.br/ws/${cep}/json/`);
-    const data = await res.json();
-    if (data.erro) return;
+    const data = await apiFetch("/auth/register", {
+      method: "POST",
+      auth: false,
+      body: JSON.stringify(payload)
+    });
 
-    const campos = {
-      logradouro: data.logradouro,
-      bairro: data.bairro,
-      cidade: data.localidade,
-      estado: data.uf
+    const token = data?.token || data?.accessToken || data?.data?.token;
+    const user = {
+      nome,
+      nome_escola: escola,
+      escola,
+      cnpj_cpf: documento,
+      documento,
+      email,
+      telefone,
+      endereco: {
+        cep,
+        logradouro,
+        numero,
+        complemento,
+        bairro,
+        cidade,
+        estado
+      },
+      ...(data?.usuario || data?.user || data?.data?.usuario || {})
     };
 
-    Object.entries(campos).forEach(([id, valor]) => {
-      const el = document.getElementById(id);
-      if (el && valor) {
-        el.value = valor;
-        el.dataset.tocado = 'true';
-        validarCampo(el);
+    window.localStorage.setItem(USER_KEY, JSON.stringify(user));
+
+    if (token) {
+      window.localStorage.setItem(TOKEN_KEY, token);
+      if (statusElement) {
+        statusElement.textContent = "Conta criada com sucesso! Redirecionando para os kits...";
       }
-    });
-  } catch {
+      window.setTimeout(() => {
+        window.location.href = "landing.html";
+      }, 600);
+    } else {
+      if (statusElement) {
+        statusElement.textContent = "Conta criada! Redirecionando para o login...";
+      }
+      window.setTimeout(() => {
+        window.location.href = "login.html";
+      }, 700);
+    }
+  } catch (error) {
+    if (statusElement) {
+      statusElement.textContent =
+        error?.message || "Não foi possível concluir o cadastro agora. Tente novamente.";
+      statusElement.classList.add("is-error");
+    }
+    if (submitButton) submitButton.disabled = false;
   }
-}
-
-function exibirAlerta(mensagem, tipo = 'error') {
-  const alertEl = document.getElementById('feedback-alert');
-  if (!alertEl) return;
-  alertEl.textContent = mensagem;
-  alertEl.className = `alert show alert-${tipo}`;
-}
-
-function ocultarAlerta() {
-  const alertEl = document.getElementById('feedback-alert');
-  if (!alertEl) return;
-  alertEl.className = 'alert';
-  alertEl.textContent = '';
-}
+});

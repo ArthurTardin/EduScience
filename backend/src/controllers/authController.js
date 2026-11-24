@@ -3,9 +3,16 @@ import jwt from 'jsonwebtoken';
 import pool from '../config/database.js';
 import { JWT_SECRET } from '../config/auth.js';
 
+function gerarUsuarioBase(email, nome) {
+  const origem = (email || nome || 'usuario').split('@')[0];
+  const limpo = origem.toLowerCase().replace(/[^a-z0-9._]/g, '').slice(0, 35) || 'usuario';
+  const sufixo = Math.floor(1000 + Math.random() * 9000);
+  return `${limpo}_${sufixo}`;
+}
+
 export async function login(req, res) {
   const { usuario, email, senha } = req.body;
-  const identificador = (usuario || email || '').trim();
+  const identificador = String(usuario || email || '').trim();
 
   if (!identificador || !senha) {
     return res.status(400).json({ erro: 'Usuário/e-mail e senha são obrigatórios.' });
@@ -68,16 +75,27 @@ export async function login(req, res) {
 }
 
 export async function register(req, res) {
-  const {
-    nome_escola, cnpj_cpf, email, telefone,
-    logradouro, numero, complemento, bairro, cidade, estado, cep,
-    usuario, senha
-  } = req.body;
+  const body = req.body || {};
 
-  if (!nome_escola || !cnpj_cpf || !email || !telefone ||
-      !logradouro || !numero || !bairro || !cidade || !estado || !cep ||
-      !usuario || !senha) {
-    return res.status(400).json({ erro: 'Todos os campos obrigatórios devem ser preenchidos.' });
+  const nomeResponsavel = String(body.nome || '').trim();
+  const nomeEscola = String(body.nome_escola || body.escola || nomeResponsavel).trim();
+  const cnpjCpf = String(body.cnpj_cpf || body.documento || '').trim();
+  const email = String(body.email || '').trim().toLowerCase();
+  const telefone = String(body.telefone || '').trim();
+
+  const logradouro = String(body.logradouro || 'A informar').trim();
+  const numero = String(body.numero || 'S/N').trim().slice(0, 10);
+  const complemento = body.complemento ? String(body.complemento).trim().slice(0, 100) : null;
+  const bairro = String(body.bairro || 'A informar').trim();
+  const cidade = String(body.cidade || 'São Paulo').trim();
+  const estado = String(body.estado || body.uf || 'SP').trim().toUpperCase().slice(0, 2);
+  const cep = String(body.cep || '00000-000').trim().slice(0, 9);
+
+  const usuario = String(body.usuario || '').trim() || gerarUsuarioBase(email, nomeResponsavel);
+  const senha = String(body.senha || '');
+
+  if (!nomeEscola || !cnpjCpf || !email || !telefone || !senha) {
+    return res.status(400).json({ erro: 'Nome/escola, documento, e-mail, telefone e senha são obrigatórios.' });
   }
 
   if (senha.length < 6) {
@@ -92,7 +110,7 @@ export async function register(req, res) {
     const [clienteResult] = await connection.execute(
       `INSERT INTO cliente (nome_escola, cnpj_cpf, email, telefone)
        VALUES (?, ?, ?, ?)`,
-      [nome_escola.trim(), cnpj_cpf.trim(), email.trim().toLowerCase(), telefone.trim()]
+      [nomeEscola, cnpjCpf, email, telefone]
     );
 
     const idCliente = clienteResult.insertId;
@@ -100,16 +118,7 @@ export async function register(req, res) {
     await connection.execute(
       `INSERT INTO cadastro (id_cliente, logradouro, numero, complemento, bairro, cidade, estado, cep)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-      [
-        idCliente,
-        logradouro.trim(),
-        numero.trim(),
-        complemento ? complemento.trim() : null,
-        bairro.trim(),
-        cidade.trim(),
-        estado.trim().toUpperCase(),
-        cep.trim()
-      ]
+      [idCliente, logradouro, numero, complemento, bairro, cidade, estado, cep]
     );
 
     const senhaHash = await bcrypt.hash(senha, 10);
@@ -117,13 +126,13 @@ export async function register(req, res) {
     await connection.execute(
       `INSERT INTO login (id_cliente, usuario, senha_hash, ativo)
        VALUES (?, ?, ?, TRUE)`,
-      [idCliente, usuario.trim(), senhaHash]
+      [idCliente, usuario, senhaHash]
     );
 
     await connection.commit();
 
     const token = jwt.sign(
-      { id_cliente: idCliente, usuario: usuario.trim(), email: email.trim().toLowerCase() },
+      { id_cliente: idCliente, usuario, email },
       JWT_SECRET,
       { expiresIn: '8h' }
     );
@@ -131,6 +140,7 @@ export async function register(req, res) {
     return res.status(201).json({
       mensagem: 'Cadastro realizado com sucesso.',
       id_cliente: idCliente,
+      usuario,
       token
     });
   } catch (error) {

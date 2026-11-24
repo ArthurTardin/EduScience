@@ -1,134 +1,294 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Pedido Confirmado - EduScience</title>
-  <link rel="stylesheet" href="../css/global.css">
-  <link rel="stylesheet" href="../css/sucesso.css">
-</head>
-<body>
-  <a href="#main-content" class="skip-link">Pular para o conteúdo principal</a>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Pedido confirmado — Comprovante e Nota Fiscal Eletrônica (NF-e) EduScience."
+    />
+    <title>Pedido confirmado — EduScience</title>
+    <link
+      rel="icon"
+      type="image/svg+xml"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 16 16' fill='none'%3E%3Cpath d='M0 2C0 0.895431 0.895431 0 2 0H14C15.1046 0 16 0.895431 16 2V14C16 15.1046 15.1046 16 14 16H2C0.895431 16 0 15.1046 0 14V2Z' fill='%232C2C2C'/%3E%3Cpath d='M9.50049 8.00043C9.77637 8.00071 10.0012 8.22457 9.99463 8.50043C9.96213 9.8546 9.7985 11.0857 9.54346 12.0209C9.40139 12.5418 9.22308 13.0001 9.00439 13.3393C8.80014 13.656 8.47201 14.0002 8.00049 14.0004C7.52881 14.0004 7.20092 13.6561 6.99658 13.3393C6.77785 13.0001 6.59961 12.5419 6.45752 12.0209C6.41638 11.8701 6.37825 11.7109 6.34229 11.5453C6.27454 11.2324 6.52935 10.9512 6.84912 10.9682C7.07892 10.9808 7.27644 11.1479 7.32666 11.3725C7.35676 11.5072 7.38904 11.6361 7.42236 11.7582C7.55165 12.2322 7.69634 12.58 7.83643 12.7973C7.91904 12.9251 8.08204 12.9253 8.16455 12.7973C8.3046 12.58 8.44937 12.2321 8.57861 11.7582C8.80619 10.9237 8.96224 9.78447 8.99463 8.50043C9.00164 8.22442 9.22438 8.00043 9.50049 8.00043ZM4.45361 6.34222C4.76614 6.27474 5.04808 6.52962 5.03174 6.84906C5.01983 7.07908 4.85213 7.27706 4.62744 7.32758C4.49318 7.35763 4.36448 7.39007 4.24268 7.42328C3.76898 7.5525 3.42095 7.69733 3.20361 7.83734C3.07577 7.91994 3.07564 8.08295 3.20361 8.16547C3.42098 8.30545 3.76908 8.45035 4.24268 8.57953C5.06635 8.8041 6.1872 8.95849 7.45068 8.99359H7.50732C7.78036 8.99773 8.00026 9.22052 8.00049 9.49359C8.00049 9.77226 7.77223 9.99805 7.49365 9.99457L7.42529 9.99359C6.10096 9.95695 4.89787 9.79462 3.97998 9.54437C3.45924 9.40235 3.00083 9.2239 2.66162 9.00531C2.3449 8.80105 1.99975 8.47295 1.99951 8.0014C1.99951 7.5297 2.34485 7.20184 2.66162 6.9975C3.00082 6.77886 3.45918 6.60048 3.97998 6.45844C4.13019 6.41748 4.28885 6.37812 4.45361 6.34222ZM8.50439 6.00726C9.85692 6.04001 11.0867 6.20364 12.021 6.45844C12.5418 6.60051 13.0002 6.77882 13.3394 6.9975C13.656 7.20186 14.0005 7.52988 14.0005 8.0014C14.0003 8.47278 13.656 8.80103 13.3394 9.00531C13.0002 9.22394 12.5417 9.40232 12.021 9.54437C11.8706 9.58539 11.7114 9.62294 11.5464 9.65863C11.2335 9.72604 10.9518 9.47149 10.9683 9.15179C10.9802 8.92168 11.1476 8.72417 11.3726 8.67426C11.5071 8.64445 11.6363 8.61279 11.7583 8.57953C12.2319 8.45031 12.5801 8.30547 12.7974 8.16547C12.9254 8.08263 12.9253 7.92026 12.7974 7.83734C12.5801 7.6973 12.232 7.55253 11.7583 7.42328C10.9347 7.19865 9.81387 7.04436 8.55029 7.00922L8.49658 7.00824C8.22144 7.00417 8.00049 6.77955 8.00049 6.50433C8.00059 6.22632 8.22643 6.00054 8.50439 6.00726ZM8.00049 2.00043C8.47201 2.00068 8.80014 2.34484 9.00439 2.66156C9.22308 3.0008 9.40139 3.45901 9.54346 3.97992C9.58443 4.13018 9.623 4.28869 9.65869 4.45355C9.72599 4.76622 9.47034 5.04793 9.15088 5.03168C8.92087 5.01966 8.72334 4.85222 8.67334 4.62738C8.64352 4.49302 8.61184 4.36445 8.57861 4.24261C8.44937 3.76878 8.3046 3.4209 8.16455 3.20355C8.08171 3.07508 7.91936 3.07524 7.83643 3.20355C7.69634 3.42086 7.55165 3.76869 7.42236 4.24261C7.19477 5.07713 7.03874 6.21632 7.00635 7.50043C6.99935 7.77627 6.77636 8.00015 6.50049 8.00043C6.22437 8.00043 5.99976 7.77646 6.00635 7.50043C6.03885 6.1462 6.20246 4.91521 6.45752 3.97992C6.59961 3.45895 6.77785 3.0008 6.99658 2.66156C7.20092 2.3448 7.52881 2.00044 8.00049 2.00043Z' fill='white'/%3E%3C/svg%3E"
+    />
+    <link rel="stylesheet" href="../css/global.css" />
+    <link rel="stylesheet" href="../css/sucesso.css" />
+  </head>
+  <body>
+    <a href="#main-content" class="skip-link no-print">Pular para o conteúdo principal</a>
 
-  <header class="navbar">
-    <div class="logo">
-      <h1>EduScience</h1>
-    </div>
-    <nav aria-label="Navegação principal">
-      <a href="landing.html">Início</a>
-      <a href="carrinho.html">Carrinho <span class="nav-cart-count" id="nav-cart-count" aria-label="itens no carrinho">0</span></a>
-      <a href="login.html" class="btn-login">Entrar</a>
-    </nav>
-  </header>
-
-  <main id="main-content" class="success-page">
-    <section id="estado-carregando" class="state-card" aria-live="polite">
-      <p>Carregando o resumo da sua compra...</p>
-    </section>
-
-    <section id="estado-erro" class="state-card state-error" role="alert" aria-live="assertive" hidden>
-      <h2>Não foi possível exibir o comprovante</h2>
-      <p id="erro-mensagem"></p>
-      <div class="actions">
-        <button type="button" id="btn-tentar-novamente" class="btn btn-primary">Tentar novamente</button>
-        <a href="landing.html" class="btn btn-secondary">Voltar à loja</a>
+    <header class="site-header no-print">
+      <div class="container header-inner">
+        <a class="brand" href="landing.html" aria-label="EduScience, página inicial">
+          <span class="brand-mark" aria-hidden="true">
+            <svg viewBox="0 0 32 32">
+              <path
+                d="M11 5v8L5.8 23a3 3 0 0 0 2.7 4.3h15a3 3 0 0 0 2.7-4.3L21 13V5M9 5h14M9 21h14"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <circle cx="13" cy="18" r="1.4" fill="currentColor" />
+              <circle cx="19" cy="23" r="1" fill="currentColor" />
+            </svg>
+          </span>
+          eduscience
+        </a>
+        <div class="secure-label">
+          <svg viewBox="0 0 20 20" aria-hidden="true">
+            <path
+              d="M5.5 9V6.5a4.5 4.5 0 0 1 9 0V9m-10 0h11v8h-11z"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.7"
+            />
+          </svg>
+          Pedido concluído
+        </div>
+        <a class="help-link" href="landing.html#kits">
+          <span aria-hidden="true">↗</span>
+          <span><small>Catálogo completo</small>Explorar novos kits</span>
+        </a>
       </div>
-    </section>
+    </header>
 
-    <section id="comprovante" aria-labelledby="success-heading" hidden>
-      <div class="success-banner">
-        <span class="success-icon" aria-hidden="true">&#10003;</span>
-        <h2 id="success-heading">Pedido confirmado!</h2>
-        <p>Obrigado pela compra. Guarde este comprovante para os seus registros.</p>
+    <main id="main-content" class="container">
+      <nav class="breadcrumb no-print" aria-label="Navegação estrutural">
+        <a href="landing.html">Início</a><span aria-hidden="true">›</span>
+        <a href="carrinho.html">Carrinho</a><span aria-hidden="true">›</span>
+        <a href="checkout.html">Checkout</a><span aria-hidden="true">›</span>
+        <strong>Confirmação e NF-e</strong>
+      </nav>
+
+      <div class="checkout-steps no-print" aria-label="Etapas da compra concluídas">
+        <div class="step is-complete">
+          <span>✓</span>
+          <p><strong>Carrinho</strong><small>Kits revisados</small></p>
+        </div>
+        <i class="is-complete"></i>
+        <div class="step is-complete">
+          <span>✓</span>
+          <p><strong>Entrega</strong><small>Dados confirmados</small></p>
+        </div>
+        <i class="is-complete"></i>
+        <div class="step is-complete">
+          <span>✓</span>
+          <p><strong>Pagamento</strong><small>Pedido registrado</small></p>
+        </div>
       </div>
 
-      <article class="receipt" aria-labelledby="receipt-title">
-        <h3 id="receipt-title">Comprovante / Nota Fiscal (DANFE Simplificado)</h3>
+      <section class="hero-confirmation no-print" aria-labelledby="success-title">
+        <div class="success-badge" aria-hidden="true">
+          <svg viewBox="0 0 24 24">
+            <path
+              d="m5 12.5 4.5 4.5L19 7.5"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.4"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </svg>
+        </div>
+        <p class="eyebrow"><span></span> Ciência a caminho da sala de aula</p>
+        <h1 id="success-title">Pedido confirmado!</h1>
+        <p class="hero-subtitle">
+          Pedido <strong id="order-number">#EDU-0001</strong> registrado com sucesso. A Nota Fiscal
+          Eletrônica (NF-e) já está disponível abaixo para consulta e impressão.
+        </p>
 
-        <dl class="receipt-meta">
-          <div class="meta-row">
-            <dt>Emitente</dt>
-            <dd id="emitente-info">EduScience Equipamentos Educacionais LTDA</dd>
-          </div>
-          <div class="meta-row">
-            <dt>Destinatário</dt>
-            <dd id="destinatario-info">-</dd>
-          </div>
-          <div class="meta-row">
-            <dt>Pedido</dt>
-            <dd id="pedido-numero">-</dd>
-          </div>
-          <div class="meta-row">
-            <dt>Nota Fiscal (NF-e)</dt>
-            <dd id="nf-numero">-</dd>
-          </div>
-          <div class="meta-row">
-            <dt>Data de emissão</dt>
-            <dd id="nf-data">-</dd>
-          </div>
-          <div class="meta-row">
-            <dt>Forma de pagamento</dt>
-            <dd id="pagamento">-</dd>
-          </div>
-          <div class="meta-row" id="linha-chave" hidden>
-            <dt>Chave de acesso</dt>
-            <dd id="nf-chave" class="chave"></dd>
-          </div>
-        </dl>
+        <div class="hero-actions">
+          <button id="print-nfe-button" class="primary-action" type="button">
+            <svg viewBox="0 0 20 20" aria-hidden="true">
+              <path
+                d="M6 7V3h8v4M5 14H3.5A1.5 1.5 0 0 1 2 12.5v-3A1.5 1.5 0 0 1 3.5 8h13A1.5 1.5 0 0 1 18 9.5v3a1.5 1.5 0 0 1-1.5 1.5H15m-9-2h8v5H6z"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.6"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+            <span>Imprimir / Salvar PDF da NF-e</span>
+          </button>
+          <a href="landing.html#kits" class="secondary-action">Continuar explorando kits</a>
+        </div>
+      </section>
 
-        <table class="receipt-table">
-          <caption class="visually-hidden">Itens incluídos na Nota Fiscal do pedido</caption>
-          <thead>
-            <tr>
-              <th scope="col">Item</th>
-              <th scope="col" class="num">Qtd.</th>
-              <th scope="col" class="num">Preço un.</th>
-              <th scope="col" class="num">Subtotal</th>
-            </tr>
-          </thead>
-          <tbody id="itens-body"></tbody>
-        </table>
+      <p id="nfe-status" class="nfe-status no-print" role="status"></p>
 
-        <dl class="receipt-totals">
-          <div class="summary-row">
-            <dt>Subtotal dos kits</dt>
-            <dd id="resumo-subtotal">R$ 0,00</dd>
+      <section class="nfe-sheet" aria-labelledby="nfe-heading">
+        <header class="nfe-header">
+          <div class="nfe-issuer">
+            <div class="nfe-brand">
+              <span class="nfe-logo" aria-hidden="true">
+                <svg viewBox="0 0 32 32">
+                  <path
+                    d="M11 5v8L5.8 23a3 3 0 0 0 2.7 4.3h15a3 3 0 0 0 2.7-4.3L21 13V5M9 5h14M9 21h14"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+              </span>
+              <div>
+                <strong>EDUSCIENCE MATERIAIS DIDÁTICOS LTDA</strong>
+                <span>CNPJ: 48.912.340/0001-72 • IE: 142.889.310.114</span>
+                <span>Av. Professor Lineu Prestes, 2242 — Butantã, São Paulo/SP • CEP 05508-000</span>
+              </div>
+            </div>
           </div>
-          <div class="summary-row">
-            <dt>Frete</dt>
-            <dd id="resumo-frete">R$ 0,00</dd>
-          </div>
-          <div class="summary-row">
-            <dt id="label-icms">ICMS (18,00%)</dt>
-            <dd id="resumo-icms">R$ 0,00</dd>
-          </div>
-          <div class="summary-row">
-            <dt id="label-pis">PIS (1,65%)</dt>
-            <dd id="resumo-pis">R$ 0,00</dd>
-          </div>
-          <div class="summary-row">
-            <dt id="label-cofins">COFINS (7,60%)</dt>
-            <dd id="resumo-cofins">R$ 0,00</dd>
-          </div>
-          <div class="summary-row">
-            <dt>Total aproximado de tributos</dt>
-            <dd id="resumo-tributos">R$ 0,00</dd>
-          </div>
-          <div class="summary-row summary-total">
-            <dt>Total pago</dt>
-            <dd id="resumo-total">R$ 0,00</dd>
-          </div>
-        </dl>
-      </article>
 
-      <div class="actions no-print">
-        <button type="button" id="btn-imprimir" class="btn btn-primary">Imprimir comprovante</button>
-        <a id="link-nf" class="btn btn-secondary" href="#" target="_blank" rel="noopener noreferrer" aria-label="Baixar Nota Fiscal Eletrônica em nova aba" hidden>Baixar NF-e</a>
-        <a href="landing.html" class="btn-link">Continuar comprando</a>
+          <div class="nfe-danfe-box">
+            <span class="danfe-tag">DANFE</span>
+            <h2 id="nfe-heading">Documento Auxiliar da NF-e</h2>
+            <p>0 — Entrada &nbsp;|&nbsp; <strong>1 — Saída</strong></p>
+            <div class="nfe-meta-numbers">
+              <span>Nº <strong id="nfe-number">000.000.001</strong></span>
+              <span>Série <strong id="nfe-series">001</strong></span>
+              <span>Emissão <strong id="nfe-date">--/--/----</strong></span>
+            </div>
+          </div>
+        </header>
+
+        <div class="nfe-access-key">
+          <div class="access-key-info">
+            <span class="field-caption">Chave de acesso da NF-e</span>
+            <code id="nfe-key">3526 1148 9123 4000 0172 5500 1000 0000 0110 4829 1034</code>
+          </div>
+          <div class="access-key-actions no-print">
+            <button id="copy-key-button" type="button" class="copy-button">Copiar chave</button>
+            <span id="copy-feedback" class="copy-feedback" role="status"></span>
+          </div>
+        </div>
+
+        <div class="nfe-protocol-bar">
+          <div>
+            <span class="field-caption">Natureza da operação</span>
+            <strong>Venda de mercadoria adquirida ou recebida de terceiros (CFOP 5.102)</strong>
+          </div>
+          <div>
+            <span class="field-caption">Protocolo de autorização de uso</span>
+            <strong id="nfe-protocol">135260094817263 — Autorizada pela SEFAZ-SP</strong>
+          </div>
+        </div>
+
+        <section class="nfe-block" aria-label="Destinatário e entrega">
+          <h3>Destinatário / Instituição de Ensino</h3>
+          <div class="nfe-grid">
+            <div>
+              <span class="field-caption">Nome / Razão Social</span>
+              <strong id="dest-name">—</strong>
+            </div>
+            <div>
+              <span class="field-caption">CNPJ / CPF</span>
+              <strong id="dest-doc">—</strong>
+            </div>
+            <div>
+              <span class="field-caption">E-mail para envio do XML</span>
+              <strong id="dest-email">—</strong>
+            </div>
+            <div>
+              <span class="field-caption">Telefone</span>
+              <strong id="dest-phone">—</strong>
+            </div>
+            <div class="nfe-grid--wide">
+              <span class="field-caption">Endereço de entrega</span>
+              <strong id="dest-address">—</strong>
+            </div>
+            <div>
+              <span class="field-caption">Forma de pagamento</span>
+              <strong id="dest-payment">—</strong>
+            </div>
+          </div>
+        </section>
+
+        <section class="nfe-block" aria-label="Produtos e serviços">
+          <h3>Dados dos produtos / kits educacionais</h3>
+          <div class="table-wrapper">
+            <table class="nfe-table">
+              <thead>
+                <tr>
+                  <th>Cód.</th>
+                  <th>Descrição do kit</th>
+                  <th>NCM</th>
+                  <th>CFOP</th>
+                  <th>Un.</th>
+                  <th class="num">Qtd.</th>
+                  <th class="num">V. Unit.</th>
+                  <th class="num">V. Total</th>
+                </tr>
+              </thead>
+              <tbody id="nfe-items-body"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="nfe-block" aria-label="Cálculo do imposto e totais">
+          <h3>Cálculo do imposto (Simples Nacional / Detalhamento Tributário)</h3>
+          <div class="tax-grid">
+            <div>
+              <span class="field-caption">Base de cálculo ICMS</span>
+              <strong id="tax-base">R$ 0,00</strong>
+            </div>
+            <div>
+              <span class="field-caption">Valor do ICMS (18%)</span>
+              <strong id="tax-icms">R$ 0,00</strong>
+            </div>
+            <div>
+              <span class="field-caption">Valor do PIS (1,65%)</span>
+              <strong id="tax-pis">R$ 0,00</strong>
+            </div>
+            <div>
+              <span class="field-caption">Valor da COFINS (7,60%)</span>
+              <strong id="tax-cofins">R$ 0,00</strong>
+            </div>
+            <div>
+              <span class="field-caption">Total aprox. tributos (Lei 12.741)</span>
+              <strong id="tax-total">R$ 0,00</strong>
+            </div>
+            <div>
+              <span class="field-caption">Desconto aplicado</span>
+              <strong id="nfe-discount">R$ 0,00</strong>
+            </div>
+            <div>
+              <span class="field-caption">Valor do frete</span>
+              <strong id="nfe-shipping">R$ 0,00</strong>
+            </div>
+            <div class="tax-total-highlight">
+              <span class="field-caption">Valor total da nota</span>
+              <strong id="nfe-grand-total">R$ 0,00</strong>
+            </div>
+          </div>
+        </section>
+
+        <footer class="nfe-footer-note">
+          <p>
+            <strong>Informações complementares:</strong> Material didático experimental destinado a
+            atividades laboratoriais escolares. Documento emitido eletronicamente pelo sistema
+            EduScience.
+          </p>
+        </footer>
+      </section>
+    </main>
+
+    <footer class="site-footer no-print">
+      <div class="container footer-inner">
+        <p>© 2026 EduScience. Ciência que acontece.</p>
+        <div>
+          <a href="landing.html">Início</a>
+          <a href="landing.html#kits">Kits</a>
+          <a href="login.html">Minha conta</a>
+        </div>
       </div>
-    </section>
-  </main>
+    </footer>
 
-  <script type="module" src="../js/sucesso.js"></script>
-</body>
+    <script type="module" src="../js/sucesso.js"></script>
+  </body>
 </html>

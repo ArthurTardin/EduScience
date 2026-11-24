@@ -1,148 +1,192 @@
-const API_BASE_URL = 'http://localhost:3000/api';
-const CART_STORAGE_KEY = 'eduscience_cart';
-const TOKEN_KEY = '@EduScience:token';
+import { apiFetch } from "./api.js";
 
-document.addEventListener('DOMContentLoaded', () => {
-  configurarBotoesAdicionar();
-  atualizarContadorHeader();
-  inicializarCarrossel();
-});
+const CART_KEY = "eduscience_cart";
+const TOKEN_KEY = "@EduScience:token";
+const USER_KEY = "@EduScience:user";
 
-function configurarBotoesAdicionar() {
-  document.addEventListener('click', async (e) => {
-    const btn = e.target.closest('.btn-add-cart');
-    if (!btn) return;
+const menuButton = document.querySelector(".menu-button");
+const navigation = document.querySelector(".main-nav");
+const cartCountEl = document.querySelector("#cart-count");
+const toastEl = document.querySelector("#cart-toast");
+const authLink = document.querySelector("#nav-auth-link");
 
-    const produto = {
-      id: Number(btn.dataset.id),
-      nome: btn.dataset.nome,
-      descricao: btn.dataset.descricao,
-      preco: Number(btn.dataset.preco),
-      quantidade: 1,
-      categoriaClass: btn.dataset.categoria || 'placeholder-chem'
-    };
-
-    await adicionarAoCarrinho(produto, btn);
-  });
-}
-
-async function adicionarAoCarrinho(novoProduto, btn) {
-  let produtos = [];
+function readCart() {
   try {
-    produtos = JSON.parse(localStorage.getItem(CART_STORAGE_KEY)) || [];
+    const raw = window.localStorage.getItem(CART_KEY);
+    const parsed = raw ? JSON.parse(raw) : [];
+    return Array.isArray(parsed) ? parsed : [];
   } catch {
-    produtos = [];
-  }
-
-  const itemExistente = produtos.find((p) => Number(p.id) === novoProduto.id);
-  if (itemExistente) {
-    itemExistente.quantidade += 1;
-  } else {
-    produtos.push(novoProduto);
-  }
-
-  localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(produtos));
-  atualizarContadorHeader();
-
-  const token = localStorage.getItem(TOKEN_KEY);
-  if (token) {
-    try {
-      await fetch(`${API_BASE_URL}/carrinho/adicionar`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          idProduto: novoProduto.id,
-          quantidade: 1
-        })
-      });
-    } catch {
-      // Mantém no localStorage como fallback se offline
-    }
-  }
-
-  if (btn) {
-    const textoOriginal = btn.textContent;
-    btn.textContent = 'Adicionado ao carrinho ✓';
-    btn.disabled = true;
-    setTimeout(() => {
-      btn.textContent = textoOriginal;
-      btn.disabled = false;
-    }, 1000);
+    return [];
   }
 }
 
-function atualizarContadorHeader() {
-  const cartCountEl = document.querySelector('.nav-cart-count');
+function saveCart(items) {
+  window.localStorage.setItem(CART_KEY, JSON.stringify(items));
+  updateCartCounter();
+}
+
+function updateCartCounter() {
   if (!cartCountEl) return;
-
-  let produtos = [];
-  try {
-    produtos = JSON.parse(localStorage.getItem(CART_STORAGE_KEY)) || [];
-  } catch {
-    produtos = [];
-  }
-
-  const totalItens = produtos.reduce((acc, item) => acc + (Number(item.quantidade) || 1), 0);
-  cartCountEl.textContent = totalItens;
+  const items = readCart();
+  const total = items.reduce((acc, item) => acc + Number(item.quantidade || item.quantity || 1), 0);
+  cartCountEl.textContent = String(total);
 }
 
-function inicializarCarrossel() {
-  const carousel = document.getElementById('kitsCarousel');
-  const track = document.getElementById('carouselTrack');
-  const prevBtn = document.getElementById('prevBtn');
-  const nextBtn = document.getElementById('nextBtn');
-  const navDots = document.getElementById('carouselNav');
+let toastTimer;
+function showToast(message) {
+  if (!toastEl) return;
+  toastEl.textContent = message;
+  toastEl.hidden = false;
+  window.clearTimeout(toastTimer);
+  toastTimer = window.setTimeout(() => {
+    toastEl.hidden = true;
+  }, 2600);
+}
 
-  if (!track || !prevBtn || !nextBtn) return;
+function addItemToCart({ id, nome, preco }) {
+  const numericId = Number(id);
+  const numericPrice = Number(String(preco ?? "").replace(",", "."));
+  if (!Number.isFinite(numericId) || numericId <= 0 || !Number.isFinite(numericPrice) || numericPrice < 0) {
+    return;
+  }
 
-  const slides = Array.from(track.children);
-  const dots = navDots ? Array.from(navDots.children) : [];
-  let currentIndex = 0;
+  const items = readCart();
+  const existing = items.find((item) => Number(item.id ?? item.id_produto ?? item.produtoId) === numericId);
 
-  function moveToSlide(index) {
-    if (index < 0) index = slides.length - 1;
-    if (index >= slides.length) index = 0;
-
-    currentIndex = index;
-    track.style.transform = `translateX(-${currentIndex * 100}%)`;
-
-    slides.forEach((slide, i) => {
-      const ativo = i === currentIndex;
-      slide.classList.toggle('current-slide', ativo);
-      slide.setAttribute('aria-hidden', String(!ativo));
-      slide.querySelectorAll('button, a').forEach((el) => {
-        el.tabIndex = ativo ? 0 : -1;
-      });
-    });
-
-    dots.forEach((dot, i) => {
-      const ativo = i === currentIndex;
-      dot.classList.toggle('current-slide', ativo);
-      dot.setAttribute('aria-current', String(ativo));
+  if (existing) {
+    existing.quantidade = Number(existing.quantidade || existing.quantity || 1) + 1;
+  } else {
+    items.push({
+      id: numericId,
+      id_produto: numericId,
+      nome: nome || `Kit #${numericId}`,
+      preco: numericPrice,
+      quantidade: 1
     });
   }
 
-  nextBtn.addEventListener('click', () => moveToSlide(currentIndex + 1));
-  prevBtn.addEventListener('click', () => moveToSlide(currentIndex - 1));
+  saveCart(items);
+  const current = items.find((item) => Number(item.id ?? item.id_produto ?? item.produtoId) === numericId);
+  showToast(`${current?.nome || nome} adicionado ao carrinho!`);
+}
 
-  dots.forEach((dot, index) => {
-    dot.addEventListener('click', () => moveToSlide(index));
+function initSessionNav() {
+  if (!authLink) return;
+  const token = window.localStorage.getItem(TOKEN_KEY);
+  if (!token) return;
+
+  authLink.textContent = "Sair";
+  authLink.href = "#sair";
+  authLink.addEventListener("click", (event) => {
+    event.preventDefault();
+    window.localStorage.removeItem(TOKEN_KEY);
+    window.localStorage.removeItem(USER_KEY);
+    window.sessionStorage.removeItem(USER_KEY);
+    window.location.reload();
   });
+}
 
-  if (carousel) {
-    carousel.addEventListener('keydown', (e) => {
-      if (e.key === 'ArrowRight') {
-        e.preventDefault();
-        moveToSlide(currentIndex + 1);
-      } else if (e.key === 'ArrowLeft') {
-        e.preventDefault();
-        moveToSlide(currentIndex - 1);
+async function syncProductsFromApi() {
+  try {
+    const response = await apiFetch("/produtos", { auth: false });
+    const produtos = Array.isArray(response) ? response : response?.produtos || response?.data;
+    if (!Array.isArray(produtos) || produtos.length === 0) return;
+
+    const buttons = document.querySelectorAll(".add-cart-btn");
+    buttons.forEach((btn, idx) => {
+      const prod = produtos[idx];
+      if (!prod) return;
+
+      const resolvedId = prod.id_produto ?? prod.id;
+      const resolvedName = prod.nome_kit ?? prod.nome;
+      const resolvedPrice = prod.preco;
+
+      if (resolvedId != null && Number.isFinite(Number(resolvedId))) {
+        btn.dataset.id = String(resolvedId);
+      }
+      if (resolvedName) {
+        btn.dataset.nome = String(resolvedName);
+      }
+      if (resolvedPrice != null && Number.isFinite(Number(resolvedPrice))) {
+        btn.dataset.preco = String(resolvedPrice);
+      }
+
+      const card = btn.closest(".product-copy");
+      const titleEl = card?.querySelector("h3");
+      const metaEl = card?.querySelector("span");
+      if (titleEl && resolvedName) titleEl.textContent = resolvedName;
+      if (metaEl && resolvedPrice != null) {
+        const precoFmt = Number(resolvedPrice).toLocaleString("pt-BR", {
+          style: "currency",
+          currency: "BRL"
+        });
+        metaEl.textContent = `${prod.estoque ?? 30} em estoque • ${precoFmt}`;
       }
     });
+  } catch {
+    // Mantém os cards estáticos se a API estiver fora do ar
+  }
+}
+
+menuButton?.addEventListener("click", () => {
+  const isOpen = menuButton.getAttribute("aria-expanded") === "true";
+  menuButton.setAttribute("aria-expanded", String(!isOpen));
+  menuButton.setAttribute("aria-label", isOpen ? "Abrir menu" : "Fechar menu");
+  navigation?.classList.toggle("is-open", !isOpen);
+});
+
+navigation?.querySelectorAll("a").forEach((link) => {
+  link.addEventListener("click", () => {
+    menuButton?.setAttribute("aria-expanded", "false");
+    menuButton?.setAttribute("aria-label", "Abrir menu");
+    navigation.classList.remove("is-open");
+  });
+});
+
+document.querySelectorAll(".add-cart-btn").forEach((button) => {
+  button.addEventListener("click", (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    addItemToCart({
+      id: button.dataset.id,
+      nome: button.dataset.nome,
+      preco: button.dataset.preco
+    });
+  });
+});
+
+const faqItems = document.querySelectorAll(".accordion details");
+faqItems.forEach((item) => {
+  item.addEventListener("toggle", () => {
+    if (!item.open) return;
+    faqItems.forEach((otherItem) => {
+      if (otherItem !== item) otherItem.open = false;
+    });
+  });
+});
+
+const leadForm = document.querySelector(".lead-form");
+const emailInput = document.querySelector("#school-email");
+const formStatus = document.querySelector(".form-status");
+
+leadForm?.addEventListener("submit", (event) => {
+  event.preventDefault();
+  if (!emailInput?.value.trim() || !emailInput.checkValidity()) {
+    if (formStatus) formStatus.textContent = "Informe um e-mail escolar válido.";
+    emailInput?.focus();
+    return;
   }
 
-  moveToSlide(0);
-}
+  try {
+    window.localStorage.setItem("eduscience-catalog-email", emailInput.value.trim());
+    if (formStatus) formStatus.textContent = "Pronto! Seu interesse foi salvo neste dispositivo.";
+  } catch {
+    if (formStatus) formStatus.textContent = "E-mail recebido para esta sessão. Obrigado pelo interesse!";
+  }
+
+  emailInput.value = "";
+});
+
+updateCartCounter();
+initSessionNav();
+syncProductsFromApi();

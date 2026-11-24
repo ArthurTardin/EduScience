@@ -1,107 +1,433 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-BR">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>EduScience - Kits Práticos de Ciência</title>
-  <link rel="stylesheet" href="../css/global.css">
-  <link rel="stylesheet" href="../css/landing.css">
-</head>
-<body>
-  <a href="#main-content" class="skip-link">Pular para o conteúdo principal</a>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Kits práticos de Química e Física da EduScience para transformar aulas em descobertas."
+    />
+    <title>EduScience — Ciência que acontece</title>
+    <link
+      rel="icon"
+      type="image/svg+xml"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 16 16' fill='none'%3E%3Cpath d='M0 2C0 0.895431 0.895431 0 2 0H14C15.1046 0 16 0.895431 16 2V14C16 15.1046 15.1046 16 14 16H2C0.895431 16 0 15.1046 0 14V2Z' fill='%232C2C2C'/%3E%3Cpath d='M9.50049 8.00043C9.77637 8.00071 10.0012 8.22457 9.99463 8.50043C9.96213 9.8546 9.7985 11.0857 9.54346 12.0209C9.40139 12.5418 9.22308 13.0001 9.00439 13.3393C8.80014 13.656 8.47201 14.0002 8.00049 14.0004C7.52881 14.0004 7.20092 13.6561 6.99658 13.3393C6.77785 13.0001 6.59961 12.5419 6.45752 12.0209C6.41638 11.8701 6.37825 11.7109 6.34229 11.5453C6.27454 11.2324 6.52935 10.9512 6.84912 10.9682C7.07892 10.9808 7.27644 11.1479 7.32666 11.3725C7.35676 11.5072 7.38904 11.6361 7.42236 11.7582C7.55165 12.2322 7.69634 12.58 7.83643 12.7973C7.91904 12.9251 8.08204 12.9253 8.16455 12.7973C8.3046 12.58 8.44937 12.2321 8.57861 11.7582C8.80619 10.9237 8.96224 9.78447 8.99463 8.50043C9.00164 8.22442 9.22438 8.00043 9.50049 8.00043ZM4.45361 6.34222C4.76614 6.27474 5.04808 6.52962 5.03174 6.84906C5.01983 7.07908 4.85213 7.27706 4.62744 7.32758C4.49318 7.35763 4.36448 7.39007 4.24268 7.42328C3.76898 7.5525 3.42095 7.69733 3.20361 7.83734C3.07577 7.91994 3.07564 8.08295 3.20361 8.16547C3.42098 8.30545 3.76908 8.45035 4.24268 8.57953C5.06635 8.8041 6.1872 8.95849 7.45068 8.99359H7.50732C7.78036 8.99773 8.00026 9.22052 8.00049 9.49359C8.00049 9.77226 7.77223 9.99805 7.49365 9.99457L7.42529 9.99359C6.10096 9.95695 4.89787 9.79462 3.97998 9.54437C3.45924 9.40235 3.00083 9.2239 2.66162 9.00531C2.3449 8.80105 1.99975 8.47295 1.99951 8.0014C1.99951 7.5297 2.34485 7.20184 2.66162 6.9975C3.00082 6.77886 3.45918 6.60048 3.97998 6.45844C4.13019 6.41748 4.28885 6.37812 4.45361 6.34222ZM8.50439 6.00726C9.85692 6.04001 11.0867 6.20364 12.021 6.45844C12.5418 6.60051 13.0002 6.77882 13.3394 6.9975C13.656 7.20186 14.0005 7.52988 14.0005 8.0014C14.0003 8.47278 13.656 8.80103 13.3394 9.00531C13.0002 9.22394 12.5417 9.40232 12.021 9.54437C11.8706 9.58539 11.7114 9.62294 11.5464 9.65863C11.2335 9.72604 10.9518 9.47149 10.9683 9.15179C10.9802 8.92168 11.1476 8.72417 11.3726 8.67426C11.5071 8.64445 11.6363 8.61279 11.7583 8.57953C12.2319 8.45031 12.5801 8.30547 12.7974 8.16547C12.9254 8.08263 12.9253 7.92026 12.7974 7.83734C12.5801 7.6973 12.232 7.55253 11.7583 7.42328C10.9347 7.19865 9.81387 7.04436 8.55029 7.00922L8.49658 7.00824C8.22144 7.00417 8.00049 6.77955 8.00049 6.50433C8.00059 6.22632 8.22643 6.00054 8.50439 6.00726ZM8.00049 2.00043C8.47201 2.00068 8.80014 2.34484 9.00439 2.66156C9.22308 3.0008 9.40139 3.45901 9.54346 3.97992C9.58443 4.13018 9.623 4.28869 9.65869 4.45355C9.72599 4.76622 9.47034 5.04793 9.15088 5.03168C8.92087 5.01966 8.72334 4.85222 8.67334 4.62738C8.64352 4.49302 8.61184 4.36445 8.57861 4.24261C8.44937 3.76878 8.3046 3.4209 8.16455 3.20355C8.08171 3.07508 7.91936 3.07524 7.83643 3.20355C7.69634 3.42086 7.55165 3.76869 7.42236 4.24261C7.19477 5.07713 7.03874 6.21632 7.00635 7.50043C6.99935 7.77627 6.77636 8.00015 6.50049 8.00043C6.22437 8.00043 5.99976 7.77646 6.00635 7.50043C6.03885 6.1462 6.20246 4.91521 6.45752 3.97992C6.59961 3.45895 6.77785 3.0008 6.99658 2.66156C7.20092 2.3448 7.52881 2.00044 8.00049 2.00043Z' fill='white'/%3E%3C/svg%3E"
+    />
+    <link rel="stylesheet" href="../css/global.css" />
+    <link rel="stylesheet" href="../css/landing.css" />
+    <link rel="stylesheet" href="../css/validacoes.css" />
+  </head>
+  <body>
+    <a href="#main-content" class="skip-link">Pular para o conteúdo principal</a>
 
-  <header class="navbar">
-    <div class="logo">
-      <h1>EduScience</h1>
-    </div>
-    <nav aria-label="Navegação principal">
-      <a href="landing.html" class="active" aria-current="page">Início</a>
-      <a href="carrinho.html">Carrinho <span class="nav-cart-count" aria-label="itens no carrinho">0</span></a>
-      <a href="login.html" class="btn-login">Entrar</a>
-    </nav>
-  </header>
+    <header class="site-header">
+      <div class="container nav-wrap">
+        <a class="brand" href="landing.html" aria-label="EduScience, início">
+          <span class="brand-mark" aria-hidden="true">
+            <svg viewBox="0 0 32 32">
+              <path
+                d="M11 5v8L5.8 23a3 3 0 0 0 2.7 4.3h15a3 3 0 0 0 2.7-4.3L21 13V5M9 5h14M9 21h14"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <circle cx="13" cy="18" r="1.4" fill="currentColor" />
+              <circle cx="19" cy="23" r="1" fill="currentColor" />
+            </svg>
+          </span>
+          eduscience
+        </a>
 
-  <main id="main-content">
-    <section class="hero" aria-labelledby="hero-title">
-      <h2 id="hero-title">Experimentos Científicos Práticos para a sua Escola</h2>
-      <p>Kits completos de Química e Física desenvolvidos para potencializar o aprendizado.</p>
-    </section>
+        <button
+          class="menu-button"
+          type="button"
+          aria-expanded="false"
+          aria-controls="main-nav"
+          aria-label="Abrir menu"
+        >
+          <span></span><span></span>
+        </button>
 
-    <section class="carousel-container" aria-roledescription="carrossel" aria-label="Kits em destaque">
-      <h2>Kits em Destaque</h2>
-      <div class="carousel" id="kitsCarousel">
-        <button type="button" class="carousel-btn prev" id="prevBtn" aria-label="Kit anterior">&#10094;</button>
-        
-        <div class="carousel-track-container">
-          <ul class="carousel-track" id="carouselTrack">
-            <li class="carousel-slide current-slide" aria-hidden="false">
-              <div class="kit-card">
-                <div class="kit-image placeholder-chem" role="img" aria-label="Ilustração do Kit Reações Químicas Base"></div>
-                <h3>Kit Reações Químicas Base</h3>
-                <p>Experimentos de ácido-base com indicadores visuais para ensino médio.</p>
-                <span class="price">R$ 189,90</span>
-                <button type="button" 
-                  class="btn-add btn-add-cart" 
-                  data-id="1" 
-                  data-nome="Kit Reações Químicas Base" 
-                  data-descricao="Experimentos de ácido-base com indicadores visuais para ensino médio." 
-                  data-preco="189.90" 
-                  data-categoria="placeholder-chem"
-                  aria-label="Adicionar Kit Reações Químicas Base ao carrinho">
-                  Adicionar ao Carrinho
-                </button>
-              </div>
-            </li>
-            <li class="carousel-slide" aria-hidden="true">
-              <div class="kit-card">
-                <div class="kit-image placeholder-phys" role="img" aria-label="Ilustração do Kit Circuitos Elétricos"></div>
-                <h3>Kit Circuitos Elétricos</h3>
-                <p>Montagem de circuitos em série e paralelo com LEDs e resistores.</p>
-                <span class="price">R$ 210,00</span>
-                <button type="button" 
-                  class="btn-add btn-add-cart" 
-                  data-id="2" 
-                  data-nome="Kit Circuitos Elétricos" 
-                  data-descricao="Montagem de circuitos em série e paralelo com LEDs e resistores." 
-                  data-preco="210.00" 
-                  data-categoria="placeholder-phys"
-                  aria-label="Adicionar Kit Circuitos Elétricos ao carrinho">
-                  Adicionar ao Carrinho
-                </button>
-              </div>
-            </li>
-            <li class="carousel-slide" aria-hidden="true">
-              <div class="kit-card">
-                <div class="kit-image placeholder-optics" role="img" aria-label="Ilustração do Kit Óptica e Lentes"></div>
-                <h3>Kit Óptica &amp; Lentes</h3>
-                <p>Estudo de refração, reflexão e prisma para laboratórios escolares.</p>
-                <span class="price">R$ 155,50</span>
-                <button type="button" 
-                  class="btn-add btn-add-cart" 
-                  data-id="3" 
-                  data-nome="Kit Óptica & Lentes" 
-                  data-descricao="Estudo de refração, reflexão e prisma para laboratórios escolares." 
-                  data-preco="155.50" 
-                  data-categoria="placeholder-optics"
-                  aria-label="Adicionar Kit Óptica e Lentes ao carrinho">
-                  Adicionar ao Carrinho
-                </button>
-              </div>
-            </li>
-          </ul>
+        <nav class="main-nav" id="main-nav" aria-label="Navegação principal">
+          <a href="#kits">Kits</a>
+          <a href="#metodo">Como funciona</a>
+          <a href="#escolas">Para escolas</a>
+          <a href="#duvidas">Dúvidas</a>
+        </nav>
+
+        <div class="nav-actions" id="nav-actions">
+          <a class="text-link" href="carrinho.html">Carrinho (<span id="cart-count">0</span>)</a>
+          <a class="text-link" id="nav-auth-link" href="login.html">Entrar</a>
+          <a class="button button--small" href="#kits">Explorar kits</a>
         </div>
-
-        <button type="button" class="carousel-btn next" id="nextBtn" aria-label="Próximo kit">&#10095;</button>
       </div>
+    </header>
 
-      <div class="carousel-nav" id="carouselNav" aria-label="Selecionar kit em destaque">
-        <button type="button" class="indicator current-slide" aria-label="Ir para o kit 1: Kit Reações Químicas Base" aria-current="true"></button>
-        <button type="button" class="indicator" aria-label="Ir para o kit 2: Kit Circuitos Elétricos" aria-current="false"></button>
-        <button type="button" class="indicator" aria-label="Ir para o kit 3: Kit Óptica e Lentes" aria-current="false"></button>
+    <main id="main-content">
+      <section class="hero" id="inicio">
+        <div class="container hero-grid">
+          <div class="hero-copy">
+            <p class="eyebrow"><span></span> Ciência que acontece</p>
+            <h1>Da curiosidade<br />à <em>descoberta.</em></h1>
+            <p class="hero-description">
+              Kits práticos de Química e Física, seguros e alinhados à BNCC, para transformar cada aula em uma experiência inesquecível.
+            </p>
+            <div class="hero-actions">
+              <a class="button" href="#kits">
+                Conhecer os kits
+                <svg viewBox="0 0 20 20" aria-hidden="true">
+                  <path
+                    d="m7 4 6 6-6 6"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+              </a>
+              <a class="play-link" href="#metodo"><span aria-hidden="true">▶</span> Veja como funciona</a>
+            </div>
+            <div class="hero-proof" aria-label="Mais de 200 escolas já usam EduScience">
+              <div class="avatars" aria-hidden="true">
+                <span>MA</span><span>JP</span><span>CL</span><span>+</span>
+              </div>
+              <p><strong>+200 escolas</strong><br />já experimentam com a gente</p>
+            </div>
+          </div>
+
+          <div class="hero-visual" aria-label="Ilustração de um kit científico EduScience">
+            <div class="orbit orbit--one"></div>
+            <div class="orbit orbit--two"></div>
+            <span class="atom atom--one" aria-hidden="true">H₂</span>
+            <span class="atom atom--two" aria-hidden="true">⚡</span>
+            <span class="atom atom--three" aria-hidden="true">O₂</span>
+            <div class="kit-box">
+              <div class="box-top">
+                <span class="mini-brand">eduscience</span>
+                <span class="kit-number">KIT 04</span>
+              </div>
+              <svg class="box-art" viewBox="0 0 360 230" aria-hidden="true">
+                <path
+                  d="M55 190c35-52 43-96 38-152M305 190c-35-52-43-96-38-152"
+                  fill="none"
+                  stroke="#efc058"
+                  stroke-width="2"
+                  stroke-dasharray="5 8"
+                />
+                <path
+                  d="M144 45v57l-46 76c-6 10 1 23 13 23h138c12 0 19-13 13-23l-46-76V45"
+                  fill="#fff9e8"
+                  stroke="#123d3a"
+                  stroke-width="5"
+                  stroke-linejoin="round"
+                />
+                <path d="M117 161h126l19 30c2 4-1 10-6 10H104c-5 0-8-6-6-10z" fill="#f47b5f" />
+                <path d="M130 45h100" stroke="#123d3a" stroke-width="8" stroke-linecap="round" />
+                <circle cx="151" cy="145" r="9" fill="#efc058" />
+                <circle cx="205" cy="175" r="7" fill="#efc058" />
+                <circle cx="186" cy="133" r="5" fill="#f47b5f" />
+                <path
+                  d="M45 115h32M61 99v32M283 87h32M299 71v32"
+                  stroke="#123d3a"
+                  stroke-width="3"
+                  stroke-linecap="round"
+                />
+              </svg>
+              <div class="box-label">
+                <strong>Reações incríveis</strong>
+                <span>Química • 8º e 9º ano</span>
+              </div>
+            </div>
+            <div class="floating-card">
+              <span class="check" aria-hidden="true">✓</span>
+              <p><strong>Pronto para a aula</strong><span>Materiais + guia do professor</span></p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="trust-strip" aria-label="Diferenciais">
+        <div class="container trust-grid">
+          <p><span>✓</span> Alinhado à BNCC</p>
+          <p><span>◇</span> Materiais seguros</p>
+          <p><span>♻</span> Kits reutilizáveis</p>
+          <p><span>✦</span> Suporte pedagógico</p>
+        </div>
+      </section>
+
+      <section class="section kits-section" id="kits">
+        <div class="container">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow"><span></span> Experimentos favoritos</p>
+              <h2>Uma caixa.<br />Infinitas descobertas.</h2>
+            </div>
+            <p>
+              Do invisível ao extraordinário: experiências completas para despertar perguntas e construir respostas.
+            </p>
+          </div>
+
+          <div class="kit-grid" id="kit-grid">
+            <article class="product-card product-card--coral">
+              <div class="product-art">
+                <span class="pill">Química</span>
+                <svg viewBox="0 0 240 180" aria-hidden="true">
+                  <path
+                    d="M92 27v54l-40 63c-6 9 1 20 12 20h112c11 0 18-11 12-20l-40-63V27"
+                    fill="#fff7df"
+                    stroke="#123d3a"
+                    stroke-width="5"
+                  />
+                  <path d="M73 129h94l21 33H52z" fill="#f47b5f" />
+                  <path d="M82 27h76" stroke="#123d3a" stroke-width="7" stroke-linecap="round" />
+                  <circle cx="107" cy="111" r="7" fill="#efc058" />
+                  <circle cx="139" cy="143" r="5" fill="#efc058" />
+                </svg>
+              </div>
+              <div class="product-copy">
+                <p>8º e 9º ano</p>
+                <h3>Kit Química Analítica</h3>
+                <span>6 experimentos • 30 alunos • R$ 289,90</span>
+                <button
+                  type="button"
+                  class="add-cart-btn"
+                  data-id="1"
+                  data-nome="Kit Química Analítica"
+                  data-preco="289.90"
+                  aria-label="Adicionar Kit Química Analítica ao carrinho"
+                >
+                  +
+                </button>
+              </div>
+            </article>
+
+            <article class="product-card product-card--yellow">
+              <div class="product-art">
+                <span class="pill">Física</span>
+                <svg viewBox="0 0 240 180" aria-hidden="true">
+                  <circle cx="120" cy="89" r="47" fill="#fff7df" stroke="#123d3a" stroke-width="5" />
+                  <path
+                    d="M120 42V22M120 156v-20M73 89H51M189 89h-22M87 56 71 40M169 138l-16-16M87 122l-16 16M169 40l-16 16"
+                    stroke="#123d3a"
+                    stroke-width="5"
+                    stroke-linecap="round"
+                  />
+                  <path
+                    d="m126 51-26 44h22l-8 34 30-48h-23z"
+                    fill="#efc058"
+                    stroke="#123d3a"
+                    stroke-width="3"
+                  />
+                </svg>
+              </div>
+              <div class="product-copy">
+                <p>7º e 8º ano</p>
+                <h3>Kit Eletromagnetismo</h3>
+                <span>5 experimentos • 30 alunos • R$ 349,90</span>
+                <button
+                  type="button"
+                  class="add-cart-btn"
+                  data-id="2"
+                  data-nome="Kit Eletromagnetismo"
+                  data-preco="349.90"
+                  aria-label="Adicionar Kit Eletromagnetismo ao carrinho"
+                >
+                  +
+                </button>
+              </div>
+            </article>
+
+            <article class="product-card product-card--teal">
+              <div class="product-art">
+                <span class="pill">Óptica</span>
+                <svg viewBox="0 0 240 180" aria-hidden="true">
+                  <path d="M120 155V80" stroke="#123d3a" stroke-width="6" stroke-linecap="round" />
+                  <path
+                    d="M119 92c-31 3-55-14-58-42 30-4 53 11 58 42ZM121 112c33 2 56-16 58-44-31-3-54 14-58 44Z"
+                    fill="#72aaa0"
+                    stroke="#123d3a"
+                    stroke-width="4"
+                    stroke-linejoin="round"
+                  />
+                  <path d="M85 156h70" stroke="#123d3a" stroke-width="6" stroke-linecap="round" />
+                  <circle cx="80" cy="94" r="8" fill="#f47b5f" />
+                  <circle cx="171" cy="126" r="6" fill="#efc058" />
+                </svg>
+              </div>
+              <div class="product-copy">
+                <p>6º e 7º ano</p>
+                <h3>Kit Óptica e Ondas</h3>
+                <span>7 experimentos • 30 alunos • R$ 219,90</span>
+                <button
+                  type="button"
+                  class="add-cart-btn"
+                  data-id="3"
+                  data-nome="Kit Óptica e Ondas"
+                  data-preco="219.90"
+                  aria-label="Adicionar Kit Óptica e Ondas ao carrinho"
+                >
+                  +
+                </button>
+              </div>
+            </article>
+          </div>
+
+          <p id="cart-toast" class="cart-toast" role="status" aria-live="polite" hidden></p>
+
+          <div class="center-action">
+            <a class="outline-button" href="carrinho.html">Ir para o carrinho <span>→</span></a>
+          </div>
+        </div>
+      </section>
+
+      <section class="section method-section" id="metodo">
+        <div class="container method-grid">
+          <div class="method-visual" aria-hidden="true">
+            <div class="experiment-card">
+              <span>EXPERIMENTO 03</span>
+              <svg viewBox="0 0 360 240">
+                <path
+                  d="M72 176c28-38 54-43 88-11 38 36 83 18 125-52"
+                  fill="none"
+                  stroke="#efc058"
+                  stroke-width="5"
+                  stroke-linecap="round"
+                />
+                <circle cx="72" cy="176" r="9" fill="#f47b5f" />
+                <circle cx="285" cy="113" r="9" fill="#f47b5f" />
+                <path
+                  d="M153 44v60l-37 64c-5 9 1 20 12 20h104c11 0 17-11 12-20l-37-64V44"
+                  fill="#f8f6ee"
+                  stroke="#123d3a"
+                  stroke-width="5"
+                />
+                <path d="M140 149h80l24 39H116z" fill="#72aaa0" />
+                <path d="M144 44h72" stroke="#123d3a" stroke-width="7" stroke-linecap="round" />
+              </svg>
+              <strong>Densidade em cores</strong>
+            </div>
+          </div>
+          <div class="method-copy">
+            <p class="eyebrow eyebrow--light"><span></span> Simples para ensinar</p>
+            <h2>Tudo o que você precisa. Nada que complique.</h2>
+            <div class="steps">
+              <div>
+                <span>01</span>
+                <p><strong>Escolha o kit</strong>Encontre por disciplina, ano ou habilidade da BNCC.</p>
+              </div>
+              <div>
+                <span>02</span>
+                <p><strong>Receba na escola</strong>Materiais organizados, seguros e na medida certa.</p>
+              </div>
+              <div>
+                <span>03</span>
+                <p><strong>Experimente</strong>Guias claros para professores e alunos conduzirem juntos.</p>
+              </div>
+            </div>
+            <a class="button button--coral" href="cadastro.html">Cadastrar instituição →</a>
+          </div>
+        </div>
+      </section>
+
+      <section class="section schools-section" id="escolas">
+        <div class="container quote-grid">
+          <div>
+            <p class="eyebrow"><span></span> Feito com educadores</p>
+            <blockquote>
+              “A sala mudou. Agora, antes de pedir a resposta, meus alunos querem testar.”
+            </blockquote>
+            <p class="quote-author">
+              <strong>Marina Alencar</strong>
+              <span>Professora de Ciências • Colégio Horizonte</span>
+            </p>
+          </div>
+          <div class="impact-card">
+            <p>Impacto em sala</p>
+            <strong>94%</strong>
+            <span>dos educadores relatam maior participação dos estudantes.</span>
+            <div class="impact-bar"><i></i></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section faq-section" id="duvidas">
+        <div class="container faq-grid">
+          <div>
+            <p class="eyebrow"><span></span> Perguntas frequentes</p>
+            <h2>Ficou com<br />alguma dúvida?</h2>
+            <p>Nossa equipe pedagógica está pronta para ajudar.</p>
+          </div>
+          <div class="accordion">
+            <details>
+              <summary>Os materiais são seguros para os alunos?<span>+</span></summary>
+              <p>
+                Sim. Todos os materiais são selecionados para uso escolar, com quantidades controladas, orientações claras e fichas de segurança.
+              </p>
+            </details>
+            <details>
+              <summary>Os kits seguem a BNCC?<span>+</span></summary>
+              <p>
+                Sim. Cada experimento indica as habilidades e competências relacionadas, facilitando o planejamento do professor.
+              </p>
+            </details>
+            <details>
+              <summary>Um kit atende quantos alunos?<span>+</span></summary>
+              <p>
+                A maioria dos kits foi planejada para turmas de até 30 alunos trabalhando em pequenos grupos.
+              </p>
+            </details>
+            <details>
+              <summary>Vocês atendem escolas de todo o Brasil?<span>+</span></summary>
+              <p>
+                Sim. Enviamos para todo o território nacional e apoiamos a escola desde a escolha dos kits até a aplicação.
+              </p>
+            </details>
+          </div>
+        </div>
+      </section>
+
+      <section class="newsletter" id="newsletter">
+        <div class="container newsletter-inner">
+          <div>
+            <p class="eyebrow eyebrow--yellow"><span></span> Comece agora</p>
+            <h2>Leve a ciência<br />para fora do livro.</h2>
+          </div>
+          <form class="lead-form" novalidate>
+            <label for="school-email">Receba o catálogo EduScience</label>
+            <div>
+              <input
+                id="school-email"
+                type="email"
+                placeholder="Seu e-mail escolar"
+                data-validate="email"
+                required
+              />
+              <button type="submit" aria-label="Enviar e-mail">→</button>
+            </div>
+            <p class="form-status" role="status">Sem spam. Apenas ciência boa chegando.</p>
+          </form>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <div class="container footer-grid">
+        <a class="brand brand--footer" href="landing.html">
+          <span class="brand-mark" aria-hidden="true">⌬</span>eduscience
+        </a>
+        <p>Experimentos que acendem ideias.</p>
+        <div>
+          <a href="#kits">Kits</a>
+          <a href="carrinho.html">Carrinho</a>
+          <a href="login.html">Acesso</a>
+        </div>
+        <span>© 2026 EduScience</span>
       </div>
-    </section>
-  </main>
+    </footer>
 
-  <script src="../js/landing.js"></script>
-</body>
+    <script type="module" src="../js/landing.js"></script>
+  </body>
 </html>

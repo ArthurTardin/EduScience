@@ -1,29 +1,70 @@
+/* Estados de validação inline — compatível com validacao.js (tema EduScience / Figma) */
+:root {
+  --val-error: var(--error, #b8513b);
+  --val-error-bg: var(--error-bg, #fef2f2);
+  --val-error-ring: rgb(184 81 59 / 20%);
+  --val-valid: var(--mint, #4f8279);
+  --val-valid-ring: rgb(79 130 121 / 14%);
+}
+
 input.invalid,
 select.invalid,
-textarea.invalid {
-  border-color: var(--color-error);
-  background-color: var(--color-error-bg);
+textarea.invalid,
+input.is-invalid,
+select.is-invalid,
+textarea.is-invalid {
+  border-color: var(--val-error);
+  background-color: var(--val-error-bg);
 }
 
 input.invalid:focus,
 select.invalid:focus,
-textarea.invalid:focus {
+textarea.invalid:focus,
+input.is-invalid:focus,
+select.is-invalid:focus,
+textarea.is-invalid:focus {
   outline: none;
-  border-color: var(--color-error);
-  box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.2);
+  border-color: var(--val-error);
+  box-shadow: 0 0 0 3px var(--val-error-ring);
 }
 
 input.valid,
 select.valid,
-textarea.valid {
-  border-color: var(--color-success);
+textarea.valid,
+input.is-valid,
+select.is-valid,
+textarea.is-valid {
+  border-color: var(--val-valid);
 }
 
+input.valid:focus,
+select.valid:focus,
+textarea.valid:focus,
+input.is-valid:focus,
+select.is-valid:focus,
+textarea.is-valid:focus {
+  outline: none;
+  border-color: var(--val-valid);
+  box-shadow: 0 0 0 3px var(--val-valid-ring);
+}
+
+/* Destaque para checkbox obrigatório inválido (ex.: aceite de termos) */
+input[type="checkbox"].invalid,
+input[type="checkbox"].is-invalid {
+  outline: 2px solid var(--val-error);
+  outline-offset: 2px;
+}
+
+/* Mensagem de erro injetada logo após o campo por obterCaixaErro() */
 .field-error {
   display: block;
-  margin-top: var(--space-1);
-  font-size: var(--font-size-xs);
-  font-weight: var(--font-weight-semibold);
-  color: var(--color-error);
-  line-height: 1.3;
+  margin-top: 4px;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--val-error);
+  line-height: 1.35;
+}
+
+.field-error[hidden] {
+  display: none;
 }
