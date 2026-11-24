@@ -1,3 +1,29 @@
+export const API_BASE_URL = "http://localhost:3000/api";
+export const TOKEN_KEY = "@EduScience:token";
+export const USER_KEY = "@EduScience:user";
+
+export function getToken() {
+  try {
+    return window.localStorage.getItem(TOKEN_KEY) || "";
+  } catch {
+    return "";
+  }
+}
+
+export function logout(redirectTo = null) {
+  try {
+    window.localStorage.removeItem(TOKEN_KEY);
+    window.localStorage.removeItem(USER_KEY);
+    window.sessionStorage.removeItem(USER_KEY);
+  } catch {
+    // Ignora falhas de storage em modo restrito
+  }
+
+  if (redirectTo) {
+    window.location.href = redirectTo;
+  }
+}
+
 export async function apiFetch(endpoint, options = {}) {
   const { auth = true, ...fetchOptions } = options;
   const token = getToken();

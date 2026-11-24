@@ -1,5 +1,4 @@
 import { apiFetch } from "./api.js";
-import { primeiroCampoInvalido, exibirErroInline } from "./validacao.js";
 
 const TOKEN_KEY = "@EduScience:token";
 const USER_KEY = "@EduScience:user";
@@ -30,7 +29,13 @@ function getRedirectUrl() {
   const next = params.get("next");
   if (!next) return "landing.html";
 
-  const safePages = ["landing.html", "carrinho.html", "checkout.html", "cadastro.html", "sucesso.html"];
+  const safePages = [
+    "landing.html",
+    "carrinho.html",
+    "checkout.html",
+    "cadastro.html",
+    "sucesso.html"
+  ];
   return safePages.includes(next) ? next : "landing.html";
 }
 
@@ -45,37 +50,36 @@ passwordToggle?.addEventListener("click", () => {
 });
 
 loginInput?.addEventListener("input", clearError);
-passwordInput?.addEventListener("input", () => {
-  clearError();
-  if (passwordInput.value.length >= 6) {
-    exibirErroInline(passwordInput, "");
-  }
-});
+passwordInput?.addEventListener("input", clearError);
 
 form?.addEventListener("submit", async (event) => {
   event.preventDefault();
   clearError();
 
-  const invalido = primeiroCampoInvalido(form);
-  if (invalido) {
-    invalido.focus();
-    return;
-  }
-
   const identifier = loginInput?.value.trim() || "";
   const senha = passwordInput?.value || "";
 
+  if (!identifier) {
+    const msg = "Informe seu e-mail ou usuário.";
+    showError(msg);
+    if (statusMessage) statusMessage.textContent = msg;
+    loginInput?.focus();
+    return;
+  }
+
   if (senha.length < 6) {
-    exibirErroInline(passwordInput, "A senha deve ter pelo menos 6 caracteres.");
-    showError("A senha deve ter pelo menos 6 caracteres.");
+    const msg = "A senha deve ter pelo menos 6 caracteres.";
+    showError(msg);
+    if (statusMessage) statusMessage.textContent = msg;
     passwordInput?.focus();
     return;
   }
-  exibirErroInline(passwordInput, "");
 
-  submitButton.disabled = true;
-  submitButton.classList.remove("is-success");
-  submitButton.classList.add("is-loading");
+  if (submitButton) {
+    submitButton.disabled = true;
+    submitButton.classList.remove("is-success");
+    submitButton.classList.add("is-loading");
+  }
   if (statusMessage) statusMessage.textContent = "Validando acesso...";
 
   try {
@@ -94,26 +98,30 @@ form?.addEventListener("submit", async (event) => {
       throw new Error("Token de autenticação não retornado pela API.");
     }
 
-    localStorage.setItem(TOKEN_KEY, token);
+    window.localStorage.setItem(TOKEN_KEY, token);
 
     const userData = data?.usuario || data?.user || data?.data?.usuario || { login: identifier };
     if (rememberInput?.checked) {
-      localStorage.setItem(USER_KEY, JSON.stringify(userData));
+      window.localStorage.setItem(USER_KEY, JSON.stringify(userData));
     } else {
-      sessionStorage.setItem(USER_KEY, JSON.stringify(userData));
+      window.sessionStorage.setItem(USER_KEY, JSON.stringify(userData));
     }
 
-    submitButton.classList.remove("is-loading");
-    submitButton.classList.add("is-success");
+    if (submitButton) {
+      submitButton.classList.remove("is-loading");
+      submitButton.classList.add("is-success");
+    }
     if (statusMessage) statusMessage.textContent = "Acesso confirmado. Redirecionando...";
 
     window.setTimeout(() => {
       window.location.href = getRedirectUrl();
     }, 500);
   } catch (error) {
-    submitButton.classList.remove("is-loading");
-    submitButton.classList.remove("is-success");
-    submitButton.disabled = false;
+    if (submitButton) {
+      submitButton.classList.remove("is-loading");
+      submitButton.classList.remove("is-success");
+      submitButton.disabled = false;
+    }
     const msg = error?.message || "Não foi possível entrar. Verifique suas credenciais.";
     showError(msg);
     if (statusMessage) statusMessage.textContent = msg;

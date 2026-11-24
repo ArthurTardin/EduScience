@@ -1,6 +1,13 @@
 import { apiFetch } from "./api.js";
 
 const LAST_ORDER_KEY = "@EduScience:last_order";
+const TOKEN_KEY = "@EduScience:token";
+
+const toNumberOr = (value, fallback) => {
+  if (value === null || value === undefined || value === "") return fallback;
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : fallback;
+};
 
 const formatCurrency = (value) =>
   new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(Number(value) || 0);
@@ -22,15 +29,26 @@ const formatAccessKey = (rawKey) => {
   return digits.padEnd(44, "0").slice(0, 44).replace(/(\d{4})(?=\d)/g, "$1 ");
 };
 
+const formatEnderecoObjeto = (end) => {
+  if (!end) return null;
+  if (typeof end === "string") return end;
+  const comp = end.complemento ? ` - ${end.complemento}` : "";
+  const local = [end.bairro, end.cidade].filter(Boolean).join(", ");
+  const uf = end.estado ? `/${end.estado}` : "";
+  const cep = end.cep ? ` • CEP ${end.cep}` : "";
+  return `${end.logradouro || ""}, ${end.numero || "S/N"}${comp} — ${local}${uf}${cep}`;
+};
+
 const paymentLabel = (code) => {
   const map = {
     card: "Cartão de Crédito",
     cartao: "Cartão de Crédito",
     pix: "Pix (5% de desconto)",
     invoice: "Nota de Empenho Institucional",
-    empenho: "Nota de Empenho Institucional"
+    empenho: "Nota de Empenho Institucional",
+    boleto: "Boleto Bancário"
   };
-  return map[String(code || "").toLowerCase()] || "Cartão de Crédito";
+  return map[String(code || "").toLowerCase()] || String(code || "Cartão de Crédito");
 };
 
 function escapeHtml(text) {
@@ -61,12 +79,13 @@ function buildFallbackData(pedidoId) {
           { produtoId: 3, nome: "Kit Óptica e Ondas", quantidade: 1, precoUnitario: 219.9 }
         ];
 
-  const subtotal =
-    Number(draft?.subtotal) ||
-    itens.reduce((acc, item) => acc + Number(item.precoUnitario) * Number(item.quantidade), 0);
-  const desconto = Number(draft?.desconto) || 0;
-  const frete = Number(draft?.frete) || 0;
-  const total = Number(draft?.total) || Math.max(0, subtotal - desconto + frete);
+  const subtotal = toNumberOr(
+    draft?.subtotal,
+    itens.reduce((acc, item) => acc + Number(item.precoUnitario) * Number(item.quantidade), 0)
+  );
+  const desconto = toNumberOr(draft?.desconto, 0);
+  const frete = toNumberOr(draft?.frete, 0);
+  const total = toNumberOr(draft?.total, Math.max(0, subtotal - desconto + frete));
 
   const numericId = String(pedidoId || draft?.id || "1").replace(/\D/g, "") || "1";
 
@@ -87,7 +106,7 @@ function buildFallbackData(pedidoId) {
         : "Av. da Universidade, 308 — Butantã, São Paulo/SP • CEP 05508-040"
     },
     formaPagamento: draft?.formaPagamento || "card",
-    parcelas: draft?.parcelas || 1,
+    parcelas: toNumberOr(draft?.parcelas, 1),
     itens,
     subtotal,
     desconto,
@@ -103,42 +122,70 @@ function buildFallbackData(pedidoId) {
 }
 
 function normalizeApiNfe(apiResponse, pedidoId) {
-  const nfe = apiResponse?.notaFiscal || apiResponse?.data?.notaFiscal || apiResponse?.data || apiResponse;
+  const nfObj =
+    apiResponse?.nota_fiscal ||
+    apiResponse?.notaFiscal ||
+    apiResponse?.data?.nota_fiscal ||
+    apiResponse?.data ||
+    apiResponse;
+  const pedidoObj = apiResponse?.pedido || {};
+  const destObj = apiResponse?.destinatario || {};
+  const tribVals = apiResponse?.tributos?.valores || {};
   const fallback = buildFallbackData(pedidoId);
 
-  const itensRaw = Array.isArray(nfe?.itens) ? nfe.itens : fallback.itens;
+  const itensRaw = Array.isArray(apiResponse?.itens)
+    ? apiResponse.itens
+    : Array.isArray(nfObj?.itens)
+      ? nfObj.itens
+      : fallback.itens;
+
   const itens = itensRaw.map((item, idx) => ({
-    produtoId: item.produtoId ?? item.produto_id ?? item.id ?? idx + 1,
-    nome: item.nome ?? item.produto?.nome ?? `Kit Educacional #${idx + 1}`,
-    quantidade: Number(item.quantidade ?? 1),
-    precoUnitario: Number(item.precoUnitario ?? item.preco_unitario ?? item.preco ?? 0)
+    produtoId: item.produtoId ?? item.id_produto ?? item.produto_id ?? item.id ?? idx + 1,
+    nome: item.nome ?? item.nome_kit ?? item.produto?.nome ?? `Kit Educacional #${idx + 1}`,
+    quantidade: toNumberOr(item.quantidade, 1),
+    precoUnitario: toNumberOr(item.precoUnitario ?? item.preco_unitario ?? item.preco, 0)
   }));
 
-  const subtotal = Number(
-    nfe?.subtotal ??
-      itens.reduce((acc, item) => acc + item.precoUnitario * item.quantidade, 0)
+  const subtotal = toNumberOr(
+    pedidoObj?.subtotal_produtos ?? nfObj?.subtotal,
+    itens.reduce((acc, item) => acc + item.precoUnitario * item.quantidade, 0)
   );
-  const desconto = Number(nfe?.desconto ?? fallback.desconto);
-  const frete = Number(nfe?.frete ?? nfe?.valorFrete ?? fallback.frete);
-  const total = Number(nfe?.valorTotal ?? nfe?.total ?? Math.max(0, subtotal - desconto + frete));
-  const baseCalculo = Number(nfe?.baseCalculoIcms ?? Math.max(0, subtotal - desconto));
+  const desconto = toNumberOr(pedidoObj?.desconto ?? nfObj?.desconto, fallback.desconto);
+  const frete = toNumberOr(
+    pedidoObj?.valor_frete ?? nfObj?.frete ?? nfObj?.valorFrete,
+    fallback.frete
+  );
+  const total = toNumberOr(
+    pedidoObj?.valor_total ?? nfObj?.valorTotal ?? nfObj?.total,
+    Math.max(0, subtotal - desconto + frete)
+  );
+  const baseCalculo = toNumberOr(
+    tribVals?.base_calculo ?? nfObj?.baseCalculoIcms,
+    Math.max(0, subtotal - desconto)
+  );
+
+  const resolvedPedidoId = String(
+    pedidoObj?.id_compra ?? nfObj?.id_compra ?? nfObj?.pedidoId ?? pedidoId ?? fallback.pedidoId
+  );
+  const numericId = resolvedPedidoId.replace(/\D/g, "") || "1";
 
   return {
-    pedidoId: String(nfe?.pedidoId ?? nfe?.pedido_id ?? pedidoId ?? fallback.pedidoId),
-    numeroNfe: String(nfe?.numero ?? nfe?.numeroNota ?? fallback.numeroNfe),
-    serie: String(nfe?.serie ?? "001"),
-    chaveAcesso: nfe?.chaveAcesso ?? nfe?.chave_acesso ?? fallback.chaveAcesso,
-    protocolo: nfe?.protocolo ?? fallback.protocolo,
-    dataEmissao: nfe?.dataEmissao ?? nfe?.createdAt ?? fallback.dataEmissao,
+    pedidoId: resolvedPedidoId,
+    numeroNfe: String(nfObj?.numero_nf ?? nfObj?.numero ?? nfObj?.numeroNota ?? fallback.numeroNfe),
+    serie: String(nfObj?.serie ?? "001").padStart(3, "0"),
+    chaveAcesso: nfObj?.chave_acesso ?? nfObj?.chaveAcesso ?? fallback.chaveAcesso,
+    protocolo:
+      nfObj?.protocolo ?? `13526${numericId.padStart(10, "0")} — Autorizada pela SEFAZ-SP`,
+    dataEmissao: nfObj?.data_emissao ?? nfObj?.dataEmissao ?? pedidoObj?.data_compra ?? fallback.dataEmissao,
     destinatario: {
-      nome: nfe?.destinatario?.nome ?? nfe?.escola ?? nfe?.clienteNome ?? fallback.destinatario.nome,
-      documento: nfe?.destinatario?.documento ?? nfe?.cnpj ?? nfe?.cpf ?? fallback.destinatario.documento,
-      email: nfe?.destinatario?.email ?? nfe?.email ?? fallback.destinatario.email,
-      telefone: nfe?.destinatario?.telefone ?? nfe?.telefone ?? fallback.destinatario.telefone,
-      endereco: nfe?.destinatario?.endereco ?? nfe?.enderecoEntrega ?? fallback.destinatario.endereco
+      nome: destObj?.nome_escola ?? destObj?.nome ?? fallback.destinatario.nome,
+      documento: destObj?.cnpj_cpf ?? destObj?.documento ?? fallback.destinatario.documento,
+      email: destObj?.email ?? fallback.destinatario.email,
+      telefone: destObj?.telefone ?? fallback.destinatario.telefone,
+      endereco: formatEnderecoObjeto(destObj?.endereco) || fallback.destinatario.endereco
     },
-    formaPagamento: nfe?.formaPagamento ?? fallback.formaPagamento,
-    parcelas: Number(nfe?.parcelas ?? fallback.parcelas),
+    formaPagamento: pedidoObj?.metodo_pagamento ?? nfObj?.formaPagamento ?? fallback.formaPagamento,
+    parcelas: toNumberOr(pedidoObj?.parcelas ?? nfObj?.parcelas, fallback.parcelas),
     itens,
     subtotal,
     desconto,
@@ -146,9 +193,9 @@ function normalizeApiNfe(apiResponse, pedidoId) {
     total,
     impostos: {
       baseCalculo,
-      icms: Number(nfe?.valorIcms ?? nfe?.icms ?? baseCalculo * 0.18),
-      pis: Number(nfe?.valorPis ?? nfe?.pis ?? baseCalculo * 0.0165),
-      cofins: Number(nfe?.valorCofins ?? nfe?.cofins ?? baseCalculo * 0.076)
+      icms: toNumberOr(tribVals?.icms ?? nfObj?.valorIcms ?? nfObj?.icms, baseCalculo * 0.18),
+      pis: toNumberOr(tribVals?.pis ?? nfObj?.valorPis ?? nfObj?.pis, baseCalculo * 0.0165),
+      cofins: toNumberOr(tribVals?.cofins ?? nfObj?.valorCofins ?? nfObj?.cofins, baseCalculo * 0.076)
     }
   };
 }
@@ -161,7 +208,8 @@ function renderNfe(data) {
   const nfeKeyEl = document.querySelector("#nfe-key");
   const nfeProtocolEl = document.querySelector("#nfe-protocol");
 
-  if (orderNumberEl) orderNumberEl.textContent = `#EDU-${String(data.pedidoId).padStart(4, "0")}`;
+  const numericOrder = String(data.pedidoId).replace(/\D/g, "") || data.pedidoId;
+  if (orderNumberEl) orderNumberEl.textContent = `#EDU-${String(numericOrder).padStart(4, "0")}`;
   if (nfeNumberEl) nfeNumberEl.textContent = data.numeroNfe;
   if (nfeSeriesEl) nfeSeriesEl.textContent = data.serie;
   if (nfeDateEl) nfeDateEl.textContent = formatDate(data.dataEmissao);
@@ -232,10 +280,13 @@ async function init() {
   const params = new URLSearchParams(window.location.search);
   const pedidoId = params.get("pedido") || getSavedDraft()?.id || "1";
   const statusEl = document.querySelector("#nfe-status");
+  const token = window.localStorage.getItem(TOKEN_KEY);
 
   try {
+    const headers = token ? { Authorization: `Bearer ${token}` } : {};
     const apiResponse = await apiFetch(`/pedidos/${encodeURIComponent(pedidoId)}/nota-fiscal`, {
-      method: "GET"
+      method: "GET",
+      headers
     });
 
     const normalized = normalizeApiNfe(apiResponse, pedidoId);

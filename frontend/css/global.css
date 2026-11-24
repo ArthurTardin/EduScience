@@ -1,7 +1,7 @@
 @import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap");
 
 :root {
-  /* Paleta EduScience (Figma) */
+  /* Paleta EduScience */
   --ink: #123d3a;
   --ink-hover: #1b514d;
   --text: #17312f;
@@ -129,7 +129,7 @@ textarea:focus-visible,
 }
 
 .container {
-  width: min(var(--container-max), calc(100% - 40px));
+  width: min(var(--container-max), calc(100% - 28px));
   margin-inline: auto;
 }
 
@@ -141,10 +141,10 @@ textarea:focus-visible,
 
 .header-inner {
   display: grid;
-  grid-template-columns: 1fr auto 1fr;
-  min-height: 78px;
+  grid-template-columns: 1fr auto;
+  min-height: 70px;
   align-items: center;
-  gap: 24px;
+  gap: 16px;
 }
 
 .brand {
@@ -216,7 +216,7 @@ textarea:focus-visible,
   background: #eef3f0;
 }
 
-/* Alertas e estados de formulário (compatível com validacao.js) */
+/* Alertas e estados de formulário */
 .alert {
   display: none;
   padding: 12px 16px;
@@ -299,9 +299,9 @@ footer {
 
 .footer-inner {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 24px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 14px;
   font-size: 10px;
 }
 
@@ -316,27 +316,6 @@ footer {
 
 .footer-inner a:hover {
   color: var(--ink);
-}
-
-.container {
-  width: min(var(--container-max), calc(100% - 28px));
-  margin-inline: auto;
-}
-
-.header-inner {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  min-height: 70px;
-  align-items: center;
-  gap: 16px;
-}
-
-.footer-inner {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 14px;
-  font-size: 10px;
 }
 
 @media (min-width: 640px) {

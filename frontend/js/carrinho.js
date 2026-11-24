@@ -1,5 +1,10 @@
 const CART_KEY = "eduscience_cart";
 const LEGACY_CART_KEY = "lumolab-cart";
+const CHECKOUT_META_KEY = "@EduScience:checkout_meta";
+
+const FREE_SHIPPING_THRESHOLD = 700;
+const ECONOMIC_SHIPPING_FEE = 29.9;
+const EXPRESS_SHIPPING_FEE = 39.9;
 
 const suggestion = {
   id: 2,
@@ -13,18 +18,23 @@ const suggestion = {
 };
 
 function normalizeItem(raw, index = 0) {
-  const preco = Number(raw.preco ?? raw.price ?? 0);
-  const quantidade = Math.max(1, Number(raw.quantidade ?? raw.quantity ?? 1));
+  const preco = Number(raw?.preco ?? raw?.price ?? 0);
+  const quantidade = Math.max(1, Number(raw?.quantidade ?? raw?.quantity ?? 1));
   const arts = ["coral", "mint", "yellow"];
+  const oldPrice =
+    raw?.oldPrice != null && Number(raw.oldPrice) > 0
+      ? Number(raw.oldPrice)
+      : preco * 1.08;
+
   return {
-    id: raw.id ?? index + 1,
-    name: raw.nome ?? raw.name ?? "Kit Científico",
-    tag: raw.tag ?? raw.categoria ?? "Ciências • Ensino Fundamental",
-    meta: raw.meta ?? "Experimentos práticos • Para até 30 alunos",
-    price: preco,
-    oldPrice: Number(raw.oldPrice ?? preco * 1.08),
-    quantity,
-    art: raw.art ?? arts[index % arts.length]
+    id: raw?.id ?? index + 1,
+    name: raw?.nome ?? raw?.name ?? "Kit Científico",
+    tag: raw?.tag ?? raw?.categoria ?? "Ciências • Ensino Fundamental",
+    meta: raw?.meta ?? "Experimentos práticos • Para até 30 alunos",
+    price: Number.isFinite(preco) ? preco : 0,
+    oldPrice: Number.isFinite(oldPrice) ? oldPrice : 0,
+    quantity: Number.isFinite(quantidade) ? quantidade : 1,
+    art: raw?.art ?? arts[index % arts.length]
   };
 }
 
@@ -44,14 +54,17 @@ function loadInitialCart() {
       }
     }
   } catch {
-    // Fallback para carrinho vazio
+    return [];
   }
   return [];
 }
 
 let items = loadInitialCart();
 let discountRate = 0;
-let shipping = Number(document.querySelector('input[name="shipping"]:checked')?.value ?? 0);
+let selectedShippingMode =
+  Number(document.querySelector('input[name="shipping"]:checked')?.value ?? 0) > 0
+    ? "express"
+    : "economic";
 
 const cartItems = document.querySelector("#cart-items");
 const emptyState = document.querySelector("#empty-state");
@@ -67,7 +80,15 @@ const shippingBanner = document.querySelector("#shipping-banner");
 const shippingBannerText = document.querySelector("#shipping-banner-text");
 
 const formatCurrency = (value) =>
-  new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(value);
+  new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(
+    Number.isFinite(value) ? value : 0
+  );
+
+function calculateShipping(subtotal) {
+  if (items.length === 0) return 0;
+  if (selectedShippingMode === "express") return EXPRESS_SHIPPING_FEE;
+  return subtotal >= FREE_SHIPPING_THRESHOLD ? 0 : ECONOMIC_SHIPPING_FEE;
+}
 
 const artMarkup = (type) => {
   if (type === "coral") {
@@ -100,7 +121,7 @@ const saveCart = () => {
   }
 };
 
-const render = () => {
+const render = (persist = true) => {
   if (cartItems) {
     cartItems.innerHTML = items
       .map(
@@ -130,15 +151,25 @@ const render = () => {
   const count = items.reduce((sum, item) => sum + item.quantity, 0);
   const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const discount = subtotal * discountRate;
+  const shipping = calculateShipping(subtotal);
   const total = Math.max(0, subtotal - discount + shipping);
+
+  const economicRadio = document.querySelector('input[name="shipping"][value="0"]');
+  const economicPriceEl = economicRadio?.closest("label")?.querySelector("b");
+  if (economicPriceEl) {
+    economicPriceEl.textContent =
+      subtotal >= FREE_SHIPPING_THRESHOLD || items.length === 0
+        ? "Grátis"
+        : formatCurrency(ECONOMIC_SHIPPING_FEE);
+  }
 
   if (shippingBanner && shippingBannerText) {
     shippingBanner.hidden = items.length === 0;
-    if (subtotal >= 700) {
+    if (subtotal >= FREE_SHIPPING_THRESHOLD) {
       shippingBannerText.innerHTML =
         "<strong>Frete grátis para sua escola!</strong><span>Seu pedido atingiu o patamar de R$ 700,00.</span>";
     } else {
-      const falta = Math.max(0, 700 - subtotal);
+      const falta = Math.max(0, FREE_SHIPPING_THRESHOLD - subtotal);
       shippingBannerText.innerHTML = `<strong>Entrega escolar disponível</strong><span>Adicione mais ${formatCurrency(falta)} para atingir R$ 700,00.</span>`;
     }
   }
@@ -167,7 +198,7 @@ const render = () => {
       : "<span>+</span> Adicionar";
   }
 
-  saveCart();
+  if (persist) saveCart();
 };
 
 cartItems?.addEventListener("click", (event) => {
@@ -184,20 +215,20 @@ cartItems?.addEventListener("click", (event) => {
     items = items.filter((entry) => String(entry.id) !== String(item.id));
   }
   if (checkoutStatus) checkoutStatus.textContent = "";
-  render();
+  render(true);
 });
 
 addSuggestionButton?.addEventListener("click", () => {
   if (!items.some((item) => String(item.id) === String(suggestion.id))) {
     items.push({ ...suggestion });
   }
-  render();
+  render(true);
 });
 
 document.querySelectorAll('input[name="shipping"]').forEach((option) => {
   option.addEventListener("change", () => {
-    shipping = Number(option.value);
-    render();
+    selectedShippingMode = Number(option.value) > 0 ? "express" : "economic";
+    render(true);
   });
 });
 
@@ -221,7 +252,7 @@ document.querySelector(".coupon-form")?.addEventListener("submit", (event) => {
       status.classList.add("is-error");
     }
   }
-  render();
+  render(true);
 });
 
 checkoutButton?.addEventListener("click", () => {
@@ -229,7 +260,15 @@ checkoutButton?.addEventListener("click", () => {
     if (checkoutStatus) checkoutStatus.textContent = "Adicione ao menos um kit antes de avançar.";
     return;
   }
+  const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const shipping = calculateShipping(subtotal);
+
   saveCart();
+  window.localStorage.setItem(
+    CHECKOUT_META_KEY,
+    JSON.stringify({ discountRate, shipping, selectedShippingMode })
+  );
+  window.location.href = "checkout.html";
 });
 
-render();
+render(false);

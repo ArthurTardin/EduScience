@@ -1,4 +1,3 @@
-/* Estilos exclusivos de cadastro.html — Mobile-First (depende de global.css e validacoes.css) */
 
 .secure-label,
 .help-link small {
@@ -149,6 +148,75 @@ main {
 .field input:focus {
   border-color: var(--mint);
   box-shadow: 0 0 0 3px rgb(79 130 121 / 12%);
+}
+
+.field select {
+  width: 100%;
+  height: 46px;
+  padding: 0 13px;
+  color: var(--ink);
+  font-size: 12px;
+  background: var(--surface);
+  border: 1px solid #d3d9d4;
+  border-radius: var(--radius-sm);
+  outline: 0;
+  transition:
+    border-color var(--transition-fast),
+    box-shadow var(--transition-fast);
+}
+
+.field select:focus {
+  border-color: var(--mint);
+  box-shadow: 0 0 0 3px rgb(79 130 121 / 12%);
+}
+
+.input-action {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px;
+}
+
+.input-action button {
+  height: 46px;
+  padding: 0 14px;
+  color: var(--ink);
+  font-size: 11px;
+  font-weight: 800;
+  background: #f2f3ef;
+  border: 1px solid #d3d9d4;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  white-space: nowrap;
+  transition:
+    background var(--transition-fast),
+    border-color var(--transition-fast);
+}
+
+.input-action button:hover:not(:disabled) {
+  background: #e6e9e2;
+  border-color: var(--mint);
+}
+
+.input-action button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+#postal-status {
+  display: block;
+  min-height: 14px;
+  margin-top: 5px;
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 700;
+}
+
+#postal-status.is-success {
+  color: var(--success);
+}
+
+#postal-status.is-error {
+  color: var(--error);
 }
 
 .segmented-control {

@@ -152,6 +152,101 @@
             </div>
 
             <div class="field">
+              <label for="postal-code">CEP</label>
+              <div class="input-action">
+                <input
+                  id="postal-code"
+                  name="postal-code"
+                  type="text"
+                  placeholder="00000-000"
+                  autocomplete="postal-code"
+                  inputmode="numeric"
+                  data-mask="cep"
+                  data-validate="cep"
+                  required
+                />
+                <button id="postal-button" type="button">Preencher</button>
+              </div>
+              <small id="postal-status" role="status"></small>
+            </div>
+
+            <div class="field">
+              <label for="street">Rua / avenida</label>
+              <input
+                id="street"
+                name="street"
+                type="text"
+                placeholder="Ex.: Av. da Universidade"
+                autocomplete="street-address"
+                required
+              />
+            </div>
+
+            <div class="field">
+              <label for="number">Número</label>
+              <input
+                id="number"
+                name="number"
+                type="text"
+                placeholder="Ex.: 308"
+                maxlength="10"
+                required
+              />
+            </div>
+
+            <div class="field">
+              <label for="complement">Complemento <span>opcional</span></label>
+              <input
+                id="complement"
+                name="complement"
+                type="text"
+                placeholder="Bloco, sala..."
+                maxlength="100"
+              />
+            </div>
+
+            <div class="field">
+              <label for="district">Bairro</label>
+              <input
+                id="district"
+                name="district"
+                type="text"
+                placeholder="Ex.: Butantã"
+                required
+              />
+            </div>
+
+            <div class="field">
+              <label for="city">Cidade</label>
+              <input
+                id="city"
+                name="city"
+                type="text"
+                placeholder="Ex.: São Paulo"
+                autocomplete="address-level2"
+                required
+              />
+            </div>
+
+            <div class="field">
+              <label for="state">UF</label>
+              <select id="state" name="state" required>
+                <option value="">UF</option>
+                <option>SP</option>
+                <option>RJ</option>
+                <option>MG</option>
+                <option>PR</option>
+                <option>SC</option>
+                <option>RS</option>
+                <option>BA</option>
+                <option>PE</option>
+                <option>CE</option>
+                <option>DF</option>
+                <option>GO</option>
+              </select>
+            </div>
+
+            <div class="field">
               <label for="password">Senha</label>
               <input
                 id="password"
